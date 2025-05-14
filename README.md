@@ -1,4 +1,4 @@
-# leuke_app_mvc
+# slike_app_mvc
 
 A new Flutter application.
 

@@ -1,4 +1,4 @@
-package com.leuke.app
+package com.slike.app
 
 import android.app.Activity
 import androidx.annotation.NonNull
