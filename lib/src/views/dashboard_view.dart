@@ -105,7 +105,7 @@ class CustomBottomNavBar extends StatelessWidget {
               Get.offNamed('/login');
             }
           }),
-          _buildIconNavItem(4, Icons.person, () {
+          _buildSvgNavItem(4, 'assets/icons/person.svg', () {
             dashboardService.currentPage.value = 4;
             dashboardService.currentPage.refresh();
             mainService.isOnHomePage.value = false;
