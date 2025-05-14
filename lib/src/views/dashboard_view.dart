@@ -81,7 +81,15 @@ class CustomBottomNavBar extends StatelessWidget {
               dashboardService.bottomPadding.value = 0.0;
               dashboardController.stopController(dashboardService.pageIndex.value);
               if (authService.currentUser.value.accessToken != '') {
-                mainService.isOnRecordingPage.value = true;
+                MBS.showCupertinoModalBottomSheet(
+                  context: context,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => SizedBox(
+                    width: Get.mediaQuery.size.width,
+                    height: 120,
+                    child: BottomSheetAddButton(),
+                  ),
+                );
               } else {
                 Get.offNamed('/login');
               }
@@ -105,24 +113,63 @@ class CustomBottomNavBar extends StatelessWidget {
               Get.offNamed('/login');
             }
           }),
-          _buildSvgNavItem(4, 'assets/icons/person.svg', () {
-            dashboardService.currentPage.value = 4;
-            dashboardService.currentPage.refresh();
-            mainService.isOnHomePage.value = false;
-            mainService.isOnHomePage.refresh();
-            dashboardController.stopController(dashboardService.pageIndex.value);
-            dashboardService.bottomPadding.value = 0.0;
-            dashboardService.bottomPadding.refresh();
-            if (authService.currentUser.value.accessToken != '') {
-              dashboardService.pageController.value.animateToPage(
-                dashboardService.currentPage.value,
-                duration: Duration(milliseconds: 100),
-                curve: Curves.linear,
-              );
-              dashboardService.pageController.refresh();
-            } else {
-              Get.offNamed('/login');
-            }
+          Obx(() {
+            final bool isSelected = 4 == currentIndex;
+            final bool isAuthenticated = authService.currentUser.value.accessToken != '';
+            return GestureDetector(
+              onTap: () {
+                dashboardService.currentPage.value = 4;
+                dashboardService.currentPage.refresh();
+                mainService.isOnHomePage.value = false;
+                mainService.isOnHomePage.refresh();
+                dashboardController.stopController(dashboardService.pageIndex.value);
+                dashboardService.bottomPadding.value = 0.0;
+                dashboardService.bottomPadding.refresh();
+                if (isAuthenticated) {
+                  dashboardService.pageController.value.animateToPage(
+                    dashboardService.currentPage.value,
+                    duration: Duration(milliseconds: 100),
+                    curve: Curves.linear,
+                  );
+                  dashboardService.pageController.refresh();
+                } else {
+                  Get.offNamed('/login');
+                }
+              },
+              child: Container(
+                width: 60,
+                height: 60,
+                alignment: Alignment.center,
+                decoration: isSelected
+                    ? BoxDecoration(
+                        color: Color(0XFFFFCD00),
+                        shape: BoxShape.circle,
+                      )
+                    : null,
+                child: isAuthenticated && authService.currentUser.value.userDP != ''
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(50.0),
+                        child: Image.network(
+                          authService.currentUser.value.userDP,
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => SvgPicture.asset(
+                            'assets/icons/person.svg',
+                            width: 24,
+                            height: 24,
+                            color: isSelected ? Colors.black : Colors.white,
+                          ),
+                        ),
+                      )
+                    : SvgPicture.asset(
+                        'assets/icons/person.svg',
+                        width: 24,
+                        height: 24,
+                        color: isSelected ? Colors.black : Colors.white,
+                      ),
+              ),
+            );
           }),
         ],
       ),
@@ -215,7 +262,7 @@ class _DashboardViewState extends State<DashboardView> {
           currentIndex: currentIndex,
           onTap: (newIndex) {},
         ),
-        appBar: AppBar(
+        appBar: dashboardService.currentPage.value != 4 ? AppBar(
           leading: Image.asset("assets/images/video-logo.png"),
           leadingWidth: 189,
           toolbarHeight: 59,
@@ -281,7 +328,7 @@ class _DashboardViewState extends State<DashboardView> {
               ],
             ),
           ],
-        ),
+        ) : null,
         body: WillPopScope(
           onWillPop: () {
             if (EasyLoading.isShow) {
