@@ -59,15 +59,9 @@ class CustomBottomNavBar extends StatelessWidget {
               dashboardService.bottomPadding.value = 0.0;
               dashboardController.stopController(dashboardService.pageIndex.value);
               if (authService.currentUser.value.accessToken != '') {
-                MBS.showCupertinoModalBottomSheet(
-                  context: context,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => SizedBox(
-                    width: Get.mediaQuery.size.width,
-                    height: 120,
-                    child: BottomSheetAddButton(),
-                  ),
-                );
+                mainService.isOnRecordingPage.value = true;
+                Get.put(VideoRecorderController(), permanent: true);
+                Get.offNamed('/video-recorder');
               } else {
                 Get.offNamed('/login');
               }
@@ -633,32 +627,24 @@ class _DashboardViewState extends State<DashboardView> {
   //                             ),
   //                           ),
   //                           onPressed: () async {
-  //                             /*if (dashboardService.isUploading.value) {
-  //                                         Fluttertoast.showToast(msg: 'Video is being uploaded kindly wait for the process to complete'.tr, textColor: Get.theme.primaryColor);
-  //                                       } else {
-  //                                         mainService.isOnHomePage.value = false;
-  //                                         mainService.isOnHomePage.refresh();
-  //                                         setState(() {
-  //                                           dashboardService.paddingBottom.value = 0.0;
-  //                                         });
-  //                                         dashboardController.stopController(dashboardService.pageIndex.value);
-  //                                         if (authService.currentUser.value.accessToken != '') {
-  //                                           mainService.isOnRecordingPage.value = true;
-  //                                           Get.offNamed('/video-recorder');
-  //                                         } else {
-  //                                           Get.offNamed('/login');
-  //                                         }
-  //                                       }*/
-  //                             MBS.showCupertinoModalBottomSheet(
-  //                               // expand: true,
-  //                               context: context,
-  //                               backgroundColor: Colors.transparent,
-  //                               builder: (context) => SizedBox(
-  //                                 width: Get.mediaQuery.size.width,
-  //                                 height: 120,
-  //                                 child: BottomSheetAddButton(),
-  //                               ),
-  //                             );
+  //                             if (dashboardService.isUploading.value) {
+  //                               Fluttertoast.showToast(
+  //                                 msg: 'Video is being uploaded kindly wait for the process to complete'.tr,
+  //                                 textColor: Get.theme.primaryColor,
+  //                               );
+  //                             } else {
+  //                               mainService.isOnHomePage.value = false;
+  //                               mainService.isOnHomePage.refresh();
+  //                               dashboardService.bottomPadding.value = 0.0;
+  //                               dashboardController.stopController(dashboardService.pageIndex.value);
+  //                               if (authService.currentUser.value.accessToken != '') {
+  //                                 mainService.isOnRecordingPage.value = true;
+  //                                 Get.put(VideoRecorderController(), permanent: true);
+  //                                 Get.offNamed('/video-recorder');
+  //                               } else {
+  //                                 Get.offNamed('/login');
+  //                               }
+  //                             }
   //                           },
   //                         ),
   //                         Obx(
