@@ -21,292 +21,265 @@ class ResetForgotPasswordView extends GetView<UserController> {
         Get.offNamed('/forgot-password');
         return Future.value(false);
       },
-      child: Container(
-        color: Get.theme.primaryColor,
-        child: SafeArea(
-          child: Scaffold(
-            appBar: AppBar(
-              backgroundColor: Get.theme.primaryColor,
-              titleSpacing: 0.0,
-              automaticallyImplyLeading: true,
-              title: "Reset Password".tr.text.uppercase.textStyle(Get.theme.textTheme.bodyLarge!.copyWith(fontSize: 18)).make(),
-              centerTitle: true,
-              leading: InkWell(
-                onTap: () {
-                  Get.offNamed('/forgot-password');
-                },
-                child: Icon(
-                  Icons.arrow_back,
-                  color: Get.theme.iconTheme.color,
-                ),
-              ),
-            ),
-            backgroundColor: Get.theme.primaryColor,
-            body: GestureDetector(
-              onTap: () {
-                FocusScope.of(context).requestFocus(new FocusNode());
-              },
-              child: SingleChildScrollView(
-                controller: controller.scrollController1,
-                child: Obx(
-                  () => Container(
-                    color: Get.theme.primaryColor,
-                    width: Get.width,
-                    height: Get.height,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(
-                          color: glShadeColor,
-                          width: Get.width,
-                          child: Obx(
-                            () => Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                    height: mainService.loginPageData.value.appleLogin == true || mainService.loginPageData.value.googleLogin == true || mainService.loginPageData.value.fbLogin == true
-                                        ? 12
-                                        : 0),
-                                mainService.loginPageData.value.fbLogin == true
-                                    ? ButtonTheme(
-                                        height: 60,
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            foregroundColor: Color(0xff4064AC),
-                                            backgroundColor: Color(0xff4064AC),
-                                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: <Widget>[
-                                              Image.asset(
-                                                'assets/images/small-fb.png',
-                                                width: 22,
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              "Sign up with Facebook".tr.text.textStyle(Get.theme.textTheme.titleMedium).color(Colors.white).center.make(),
-                                            ],
-                                          ),
-                                          onPressed: () {
-                                            controller.loginWithFB();
-                                          },
-                                        ),
-                                      ).pOnly(bottom: 12)
-                                    : SizedBox(),
-                                mainService.loginPageData.value.googleLogin == true
-                                    ? ButtonTheme(
-                                        height: 60,
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: <Widget>[
-                                              Image.asset(
-                                                'assets/images/small-google.png',
-                                                width: 20,
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              "Sign up with Google".tr.text.center.make(),
-                                            ],
-                                          ),
-                                          onPressed: () {
-                                            controller.loginWithGoogle();
-                                          },
-                                        ),
-                                      ).pOnly(bottom: 12)
-                                    : SizedBox(),
-                                Platform.isIOS && mainService.loginPageData.value.appleLogin == true
-                                    ? ButtonTheme(
-                                        height: 60,
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            // backgroundColor: Color(0xff000000),
-                                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: <Widget>[
-                                              SvgPicture.asset(
-                                                'assets/icons/apple.svg',
-                                                width: 25.0,
-                                                colorFilter: ColorFilter.mode(Get.theme.primaryColor, BlendMode.srcATop),
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              "Sign up with Apple".tr.text.center.make(),
-                                            ],
-                                          ),
-                                          onPressed: () {
-                                            controller.signInWithApple();
-                                          },
-                                        ),
-                                      ).pOnly(bottom: 12)
-                                    : SizedBox()
-                              ],
-                            ).px16(),
-                          ),
-                        ),
-                        Container(
-                          color: Get.theme.primaryColor,
-                          width: Get.width,
-                          // height: Get.height * 0.66,
-                          child: Form(
-                            autovalidateMode: AutovalidateMode.always,
-                            key: controller.resetForgotPassword,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                SizedBox(
-                                  height: 40,
-                                ),
-                                TextFormField(
-                                  style: Get.textTheme.titleMedium,
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (input) {
-                                    controller.otp = input;
-                                  },
-                                  onSaved: (input) {
-                                    controller.otp = input!;
-                                  },
-                                  validator: (value) {
-                                    return controller.validateField(value!, "OTP");
-                                  },
-                                  decoration: InputDecoration(
-                                    labelText: "Enter OTP".tr,
-                                    labelStyle: TextStyle(color: Get.theme.hintColor, fontSize: 16),
-                                    contentPadding: EdgeInsets.zero,
-                                    border: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 2, color: Get.theme.dividerColor)),
-                                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                                  ),
-                                ),
-                                SizedBox(height: 30),
-                                TextFormField(
-                                  style: Get.textTheme.titleMedium,
-                                  keyboardType: TextInputType.text,
-                                  onChanged: (input) {
-                                    controller.password = input;
-                                  },
-                                  onSaved: (input) {
-                                    controller.password = input!;
-                                  },
-                                  validator: (input) {
-                                    return controller.validateField(input!, "Password");
-                                  },
-                                  obscureText: controller.hidePassword.value,
-                                  decoration: InputDecoration(
-                                    labelText: "Enter Password".tr,
-                                    labelStyle: TextStyle(color: Get.theme.hintColor, fontSize: 16),
-                                    contentPadding: EdgeInsets.zero,
-                                    hintStyle: TextStyle(color: Get.theme.hintColor),
-                                    suffixIcon: IconButton(
-                                      onPressed: () {
-                                        controller.hidePassword.value = !controller.hidePassword.value;
-                                        controller.hidePassword.refresh();
-                                      },
-                                      color: Get.theme.highlightColor,
-                                      icon: Icon(!controller.hidePassword.value ? Icons.visibility : Icons.visibility_off),
-                                    ),
-                                    border: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 2, color: Get.theme.dividerColor)),
-                                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                                  ),
-                                ),
-                                SizedBox(height: 30),
-                                TextFormField(
-                                  obscureText: true,
-                                  maxLines: 1,
-                                  keyboardType: TextInputType.multiline,
-                                  controller: controller.confirmPasswordController,
-                                  style: Get.textTheme.titleMedium,
-                                  validator: (value) {
-                                    return controller.validateField(value!, "Confirm Password");
-                                  },
-                                  onSaved: (String? val) {
-                                    controller.confirmPassword = val!;
-                                  },
-                                  onChanged: (String val) {
-                                    controller.confirmPassword = val;
-                                  },
-                                  decoration: InputDecoration(
-                                    border: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 2, color: Get.theme.dividerColor)),
-                                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                                    labelText: "Confirm Password".tr,
-                                    labelStyle: TextStyle(color: Get.theme.hintColor, fontSize: 16),
-                                    // errorBorder: OutlineInputBorder(
-                                    //   borderSide: BorderSide(
-                                    //     color: Colors.red,
-                                    //     width: 1,
-                                    //   ),
-                                    // ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 40,
-                                ),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                  ),
-                                  child: "Reset".tr.text.center.make(),
-                                  onPressed: () {
-                                    if (controller.resetForgotPassword.currentState!.validate()) {
-                                      controller.updateForgotPassword();
-                                    }
-                                  },
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: <Widget>[
-                                    GestureDetector(
-                                        onTap: () {
-                                          controller.launchURL("${baseUrl}terms");
-                                        },
-                                        child: "Terms of use".tr.text.textStyle(Get.theme.textTheme.titleSmall).make().centered()),
-                                    SizedBox(
-                                      width: 15,
-                                    ),
-                                    Container(
-                                      width: 1,
-                                      height: 17,
-                                      color: Get.theme.dividerColor,
-                                    ),
-                                    SizedBox(
-                                      width: 15,
-                                    ),
-                                    GestureDetector(
-                                        onTap: () {
-                                          controller.launchURL(baseUrl + "privacy-policy");
-                                        },
-                                        child: "Privacy Policy".tr.text.textStyle(Get.theme.textTheme.titleSmall).make().centered()),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ).px20(),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
+      child: Stack(
+        children: [
+          // Background image
+          Container(
+            width: Get.width,
+            height: Get.height,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/login-bg.png"),
+                fit: BoxFit.cover,
               ),
             ),
           ),
-        ),
+          // Dark overlay
+          Container(
+            width: Get.width,
+            height: Get.height,
+            color: Colors.black.withOpacity(0.8),
+          ),
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Back Arrow and Logo Row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFFFFD700)),
+                          onPressed: () {
+                            Get.offNamed('/forgot-password');
+                          },
+                        ),
+                        SizedBox(width: 8),
+                        Image.asset(
+                          "assets/images/register-logo.png",
+                          height: 55,
+                          fit: BoxFit.contain,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+                    // Title
+                    const Text(
+                      "Reset Password",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFFFD700),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    // Subtitle
+                    const Text(
+                      "Enter the OTP and your new password.",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 32),
+                    // Form
+                    Form(
+                      autovalidateMode: AutovalidateMode.always,
+                      key: controller.resetForgotPassword,
+                      child: Column(
+                        children: [
+                          // OTP Field
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Color(0xFFFFD700),
+                                width: 2,
+                              ),
+                            ),
+                            child: TextFormField(
+                              style: const TextStyle(color: Colors.white),
+                              keyboardType: TextInputType.number,
+                              onChanged: (input) {
+                                controller.otp = input;
+                              },
+                              onSaved: (input) {
+                                controller.otp = input!;
+                              },
+                              validator: (value) {
+                                return controller.validateField(value!, "OTP");
+                              },
+                              decoration: InputDecoration(
+                                hintText: "Enter OTP",
+                                hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                                prefixIcon: Icon(
+                                  Icons.verified_user_outlined,
+                                  color: Color(0xFFFFD700),
+                                ),
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          // Password Field
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Color(0xFFFFD700),
+                                width: 2,
+                              ),
+                            ),
+                            child: Obx(() => TextFormField(
+                              style: const TextStyle(color: Colors.white),
+                              keyboardType: TextInputType.text,
+                              onChanged: (input) {
+                                controller.password = input;
+                              },
+                              onSaved: (input) {
+                                controller.password = input!;
+                              },
+                              validator: (input) {
+                                return controller.validateField(input!, "Password");
+                              },
+                              obscureText: controller.hidePassword.value,
+                              decoration: InputDecoration(
+                                hintText: "Enter Password",
+                                hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                                prefixIcon: Icon(
+                                  Icons.lock_outline,
+                                  color: Color(0xFFFFD700),
+                                ),
+                                suffixIcon: IconButton(
+                                  onPressed: () {
+                                    controller.hidePassword.value = !controller.hidePassword.value;
+                                    controller.hidePassword.refresh();
+                                  },
+                                  color: Color(0xFFFFD700),
+                                  icon: Icon(!controller.hidePassword.value ? Icons.visibility : Icons.visibility_off),
+                                ),
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                              ),
+                            )),
+                          ),
+                          const SizedBox(height: 24),
+                          // Confirm Password Field
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Color(0xFFFFD700),
+                                width: 2,
+                              ),
+                            ),
+                            child: TextFormField(
+                              obscureText: true,
+                              maxLines: 1,
+                              keyboardType: TextInputType.text,
+                              controller: controller.confirmPasswordController,
+                              style: const TextStyle(color: Colors.white),
+                              validator: (value) {
+                                return controller.validateField(value!, "Confirm Password");
+                              },
+                              onSaved: (String? val) {
+                                controller.confirmPassword = val!;
+                              },
+                              onChanged: (String val) {
+                                controller.confirmPassword = val;
+                              },
+                              decoration: InputDecoration(
+                                hintText: "Confirm Password",
+                                hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                                prefixIcon: Icon(
+                                  Icons.lock_outline,
+                                  color: Color(0xFFFFD700),
+                                ),
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+                          // Reset Button
+                          SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFFFD700),
+                                foregroundColor: Colors.black,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 0,
+                              ),
+                              child: const Text(
+                                "Reset",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              onPressed: () {
+                                if (controller.resetForgotPassword.currentState!.validate()) {
+                                  controller.updateForgotPassword();
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    // Terms and Privacy
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () {
+                            controller.launchURL("${baseUrl}terms");
+                          },
+                          child: const Text(
+                            "Terms of use",
+                            style: TextStyle(fontSize: 14, color: Color(0xFFFFD700)),
+                          ),
+                        ),
+                        SizedBox(width: 15),
+                        Container(
+                          width: 1,
+                          height: 17,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 15),
+                        GestureDetector(
+                          onTap: () {
+                            controller.launchURL(baseUrl + "privacy-policy");
+                          },
+                          child: const Text(
+                            "Privacy Policy",
+                            style: TextStyle(fontSize: 14, color: Color(0xFFFFD700)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ).paddingSymmetric(horizontal: 24),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -68,7 +68,7 @@ class _CompleteProfileViewState extends State<CompleteProfileView> with SingleTi
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(statusBarColor: Get.theme.primaryColor, statusBarIconBrightness: Brightness.light),
+      SystemUiOverlayStyle(statusBarColor: Get.theme.primaryColor, statusBarIconBrightness: Brightness.dark),
     );
     return WillPopScope(
       onWillPop: () {
@@ -83,489 +83,451 @@ class _CompleteProfileViewState extends State<CompleteProfileView> with SingleTi
       },
       child: Obx(
         () => Scaffold(
-          backgroundColor: Get.theme.primaryColor,
-          appBar: AppBar(
-            backgroundColor: Get.theme.primaryColor,
-            leading: InkWell(
-              onTap: () {
-                Get.back();
-              },
-              child: Icon(
-                Icons.arrow_back,
-                color: Get.theme.iconTheme.color,
-              ),
-            ),
-            title: "Complete Profile".tr.text.uppercase.textStyle(Get.theme.textTheme.bodyLarge!.copyWith(fontSize: 18)).make(),
-            centerTitle: true,
-            actions: [
-              IconButton(
-                onPressed: () async {
-                  FocusManager.instance.primaryFocus!.unfocus();
-                  print("userController.loginType ${userController.loginType}");
-                  if (userController.loginType == 'O') {
-                    await userController.register();
-                  } else {
-                    userController.registerSocial();
-                  }
-                },
-                icon: Icon(
-                  Icons.check,
-                  color: mainService.setting.value.buttonColor,
+          backgroundColor: Colors.transparent,
+          body: Stack(
+            children: [
+              // Background image
+              Container(
+                width: Get.width,
+                height: Get.height,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/images/login-bg.png"),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-            ],
-          ),
-          key: userController.completeProfileScaffoldKey,
-          body: editProfilePanel(),
-        ),
-      ),
-    );
-  }
-
-  Widget editProfilePanel() {
-    return SingleChildScrollView(
-      child: Container(
-        color: Get.theme.primaryColor,
-        child: Form(
-          key: userController.completeProfileFormKey,
-          child: Column(
-            children: <Widget>[
+              // Dark overlay
               Container(
-                height: Get.height * (0.25),
                 width: Get.width,
-                color: Get.theme.shadowColor.withValues(alpha:0.3),
+                height: Get.height,
+                color: Colors.black.withOpacity(0.8),
+              ),
+              SafeArea(
                 child: Center(
-                  child: Stack(
-                    children: <Widget>[
-                      GestureDetector(
-                        onTap: () {
-                          showModalBottomSheet<void>(
-                              backgroundColor: Get.theme.primaryColor,
-                              context: context,
-                              isScrollControlled: true,
-                              builder: (BuildContext context) {
-                                return Container(
-                                  height: 75,
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      top: BorderSide(
-                                        width: 0.5,
-                                        color: Get.theme.dividerColor,
-                                      ),
-                                    ),
-                                    color: Get.theme.primaryColor,
-                                  ),
-                                  padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                        children: <Widget>[
-                                          GestureDetector(
-                                            onTap: () {
-                                              Get.back();
-                                              userController.getImageOption(true);
-                                            },
-                                            child: SvgPicture.asset(
-                                              'assets/icons/camera.svg',
-                                              width: 40.0,
-                                              colorFilter: ColorFilter.mode(Get.theme.iconTheme.color!, BlendMode.srcIn),
-                                            ),
-                                          ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              Get.back();
-                                              userController.getImageOption(false);
-                                            },
-                                            child: SvgPicture.asset(
-                                              'assets/icons/image-gallery.svg',
-                                              width: 40.0,
-                                              colorFilter: ColorFilter.mode(Get.theme.iconTheme.color!, BlendMode.srcIn),
-                                            ),
-                                          ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              Get.back();
-                                              Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                  builder: (context) {
-                                                    return Scaffold(
-                                                      appBar: PreferredSize(
-                                                        preferredSize: Size.fromHeight(45.0),
-                                                        child: AppBar(
-                                                          iconTheme: IconThemeData(
-                                                            color: Get.theme.iconTheme.color, //change your color here
-                                                          ),
-                                                          backgroundColor: Get.theme.primaryColor,
-                                                          title: "Profile Picture".tr.text.textStyle(Get.theme.textTheme.bodyLarge!.copyWith(fontSize: 18)).make(),
-                                                          centerTitle: true,
-                                                        ),
-                                                      ),
-                                                      backgroundColor: Get.theme.primaryColor,
-                                                      body: Center(
-                                                        child: PhotoView(
-                                                          enableRotation: true,
-                                                          imageProvider: authService.socialUserProfile.value.userDP != ''
-                                                              ? CachedNetworkImageProvider(authService.socialUserProfile.value.userDP)
-                                                              : AssetImage("assets/images/default-user.png") as ImageProvider,
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                            },
-                                            child: Column(
-                                              children: <Widget>[
-                                                SvgPicture.asset(
-                                                  'assets/icons/views.svg',
-                                                  width: 40.0,
-                                                  colorFilter: ColorFilter.mode(Get.theme.iconTheme.color!, BlendMode.srcIn),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              });
-                        },
-                        child: Container(
-                          decoration: new BoxDecoration(
-                            borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
-                            border: new Border.all(
-                              color: Get.theme.dividerColor,
-                              width: 5.0,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Back Arrow and Logo Row
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFFFFD700)),
+                              onPressed: () {
+                                Get.back();
+                              },
                             ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(2.0),
-                            child: Container(
-                              height: Get.height * 0.2,
-                              width: Get.height * 0.2,
+                            SizedBox(width: 8),
+                            Image.asset(
+                              "assets/images/register-logo.png",
+                              height: 55,
+                              fit: BoxFit.contain,
+                            ),
+                          ],
+                        ),
+                        // const SizedBox(height: 32),
+                        // Title
+                        // const Text(
+                        //   "Complete Profile",
+                        //   style: TextStyle(
+                        //     fontSize: 24,
+                        //     fontWeight: FontWeight.bold,
+                        //     color: Color(0xFFFFD700),
+                        //   ),
+                        //   textAlign: TextAlign.center,
+                        // ),
+                        // const SizedBox(height: 8),
+                        // // Subtitle
+                        // const Text(
+                        //   "Fill in your details to continue",
+                        //   style: TextStyle(
+                        //     fontSize: 16,
+                        //     color: Colors.white,
+                        //   ),
+                        //   textAlign: TextAlign.center,
+                        // ),
+                        const SizedBox(height: 32),
+                        // Profile Photo
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              width: 100,
+                              height: 100,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
+                                border: Border.all(color: Color(0xFFFFD700), width: 3),
                                 image: DecorationImage(
                                   image: userController.selectedDp.value.path != ''
-                                      ? FileImage(
-                                          userController.selectedDp.value,
-                                        )
+                                      ? FileImage(userController.selectedDp.value)
                                       : authService.socialUserProfile.value.userDP != ''
-                                          ? CachedNetworkImageProvider(
-                                              authService.socialUserProfile.value.userDP,
-                                            )
+                                          ? CachedNetworkImageProvider(authService.socialUserProfile.value.userDP)
                                           : AssetImage("assets/images/default-user.png") as ImageProvider,
                                   fit: BoxFit.cover,
                                 ),
                               ),
                             ),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: GestureDetector(
+                                onTap: () {
+                                  showModalBottomSheet<void>(
+                                    backgroundColor: Colors.black,
+                                    context: context,
+                                    isScrollControlled: true,
+                                    builder: (BuildContext context) {
+                                      return Container(
+                                        height: 75,
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                            top: BorderSide(
+                                              width: 0.5,
+                                              color: Get.theme.dividerColor,
+                                            ),
+                                          ),
+                                          color: Colors.black,
+                                        ),
+                                        padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                          children: <Widget>[
+                                            GestureDetector(
+                                              onTap: () {
+                                                Get.back();
+                                                userController.getImageOption(true);
+                                              },
+                                              child: SvgPicture.asset(
+                                                'assets/icons/camera.svg',
+                                                width: 40.0,
+                                                colorFilter: ColorFilter.mode(Color(0xFFFFD700), BlendMode.srcIn),
+                                              ),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Get.back();
+                                                userController.getImageOption(false);
+                                              },
+                                              child: SvgPicture.asset(
+                                                'assets/icons/image-gallery.svg',
+                                                width: 40.0,
+                                                colorFilter: ColorFilter.mode(Color(0xFFFFD700), BlendMode.srcIn),
+                                              ),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Get.back();
+                                                Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                    builder: (context) {
+                                                      return Scaffold(
+                                                        appBar: PreferredSize(
+                                                          preferredSize: Size.fromHeight(45.0),
+                                                          child: AppBar(
+                                                            iconTheme: IconThemeData(
+                                                              color: Color(0xFFFFD700),
+                                                            ),
+                                                            backgroundColor: Colors.black,
+                                                            title: const Text(
+                                                              "Profile Picture",
+                                                              style: TextStyle(fontSize: 18, color: Color(0xFFFFD700)),
+                                                            ),
+                                                            centerTitle: true,
+                                                          ),
+                                                        ),
+                                                        backgroundColor: Colors.black,
+                                                        body: Center(
+                                                          child: PhotoView(
+                                                            enableRotation: true,
+                                                            imageProvider: authService.socialUserProfile.value.userDP != ''
+                                                                ? CachedNetworkImageProvider(authService.socialUserProfile.value.userDP)
+                                                                : AssetImage("assets/images/default-user.png") as ImageProvider,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
+                                                );
+                                              },
+                                              child: SvgPicture.asset(
+                                                'assets/icons/views.svg',
+                                                width: 40.0,
+                                                colorFilter: ColorFilter.mode(Color(0xFFFFD700), BlendMode.srcIn),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(color: Color(0xFFFFD700), width: 2),
+                                  ),
+                                  child: SvgPicture.asset(
+                                    'assets/icons/camera.svg',
+                                    width: 28.0,
+                                    colorFilter: ColorFilter.mode(Color(0xFFFFD700), BlendMode.srcIn),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 32),
+                        // Form
+                        Form(
+                          key: userController.completeProfileFormKey,
+                          child: Column(
+                            children: [
+                              // Full Name
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: Color(0xFFFFD700),
+                                    width: 2,
+                                  ),
+                                ),
+                                child: TextFormField(
+                                  controller: userController.fullNameController.value,
+                                  style: const TextStyle(color: Colors.white),
+                                  keyboardType: TextInputType.text,
+                                  onChanged: (val) {
+                                    userController.fullName.value = val;
+                                  },
+                                  validator: (value) {
+                                    return userController.validateField(value!, "Full Name");
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: "Full Name",
+                                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                                    prefixIcon: Icon(
+                                      Icons.person_outline,
+                                      color: Color(0xFFFFD700),
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              // Username
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: Color(0xFFFFD700),
+                                    width: 2,
+                                  ),
+                                ),
+                                child: TextFormField(
+                                  controller: userController.profileUsernameController,
+                                  style: const TextStyle(color: Colors.white),
+                                  keyboardType: TextInputType.text,
+                                  onChanged: (val) {
+                                    userController.username = val;
+                                  },
+                                  validator: (value) {
+                                    return userController.validateField(value!, "Username");
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: "Username",
+                                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                                    prefixIcon: Icon(
+                                      Icons.alternate_email,
+                                      color: Color(0xFFFFD700),
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              // Date of Birth
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: Color(0xFFFFD700),
+                                    width: 2,
+                                  ),
+                                ),
+                                child: TextFormField(
+                                  readOnly: true,
+                                  controller: userController.conDob..text,
+                                  style: const TextStyle(color: Colors.white),
+                                  keyboardType: TextInputType.text,
+                                  validator: (input) {
+                                    if (userController.profileDOBString == '') {
+                                      return "Date of birth is required!";
+                                    } else {
+                                      return null;
+                                    }
+                                  },
+                                  onTap: () {
+                                    FocusScope.of(context).unfocus();
+                                    DatePicker.showDatePicker(
+                                      context,
+                                      theme: datePick.DatePickerTheme(
+                                        headerColor: Colors.black,
+                                        backgroundColor: Colors.black,
+                                        itemStyle: TextStyle(color: Color(0xFFFFD700), fontWeight: FontWeight.w400, fontSize: 18),
+                                        doneStyle: TextStyle(
+                                          color: Color(0xFFFFD700),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        cancelStyle: TextStyle(
+                                          color: Color(0xFFFFD700),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      showTitleActions: true,
+                                      minTime: minDate,
+                                      maxTime: yearBefore,
+                                      onConfirm: (date) {
+                                        userController.conDob..text = userController.validDob(date.year.toString(), date.month.toString(), date.day.toString());
+                                        userController.profileDOBString = userController.validDob(date.year.toString(), date.month.toString(), date.day.toString());
+                                      },
+                                      currentTime: DateTime.now(),
+                                      locale: LocaleType.en,
+                                    );
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: "Date of Birth",
+                                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                                    prefixIcon: Icon(
+                                      Icons.calendar_today_outlined,
+                                      color: Color(0xFFFFD700),
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              // Email
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: Color(0xFFFFD700),
+                                    width: 2,
+                                  ),
+                                ),
+                                child: Obx(() => TextFormField(
+                                  controller: userController.profileEmailController.value,
+                                  enabled: userController.email == "" ? true : false,
+                                  style: const TextStyle(color: Colors.white),
+                                  keyboardType: TextInputType.emailAddress,
+                                  onChanged: (val) {
+                                    userController.email.value = val;
+                                  },
+                                  validator: (value) {
+                                    return userController.validateEmail(value!);
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: "Email",
+                                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                                    prefixIcon: Icon(
+                                      Icons.email_outlined,
+                                      color: Color(0xFFFFD700),
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                                  ),
+                                )),
+                              ),
+                              const SizedBox(height: 16),
+                              // Password
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: Color(0xFFFFD700),
+                                    width: 2,
+                                  ),
+                                ),
+                                child: TextFormField(
+                                  controller: userController.passwordController,
+                                  style: const TextStyle(color: Colors.white),
+                                  keyboardType: TextInputType.text,
+                                  obscureText: true,
+                                  onChanged: (val) {
+                                    userController.password = val;
+                                  },
+                                  validator: (value) {
+                                    return userController.validateField(value!, "Password");
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: "Password",
+                                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                                    prefixIcon: Icon(
+                                      Icons.lock_outline,
+                                      color: Color(0xFFFFD700),
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 32),
+                              // Validate Button
+                              SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFFFD700),
+                                    foregroundColor: Colors.black,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: const Text(
+                                    "VALIDATE",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  onPressed: () async {
+                                    FocusManager.instance.primaryFocus?.unfocus();
+                                    if (userController.completeProfileFormKey.currentState!.validate()) {
+                                      if (userController.loginType == 'O') {
+                                        await userController.register();
+                                      } else {
+                                        userController.registerSocial();
+                                      }
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                      Positioned(
-                        bottom: 10,
-                        right: 15,
-                        child: SvgPicture.asset(
-                          'assets/icons/camera.svg',
-                          width: 28.0,
-                          colorFilter: ColorFilter.mode(Get.theme.dividerColor, BlendMode.srcIn),
-                        ),
-                      ),
-                    ],
+                        const SizedBox(height: 24),
+                      ],
+                    ).paddingSymmetric(horizontal: 24),
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Obx(
-                () => TextFormField(
-                  controller: userController.fullNameController.value,
-                  style: Get.textTheme.titleMedium,
-                  validator: (value) {
-                    return userController.validateField(value!, "Full Name");
-                  },
-                  keyboardType: TextInputType.text,
-                  onChanged: (String val) {
-                    userController.fullName.value = val;
-                  },
-                  decoration: InputDecoration(
-                    errorStyle: TextStyle(
-                      color: Colors.red,
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.bold,
-                      wordSpacing: 2.0,
-                    ),
-                    border: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 2, color: Get.theme.dividerColor)),
-                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                    labelText: "Full Name".tr,
-                    labelStyle: TextStyle(color: Get.theme.hintColor, fontSize: 16),
-                  ),
-                ).pSymmetric(h: 20),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Obx(
-                () => TextFormField(
-                  maxLines: 1,
-                  keyboardType: TextInputType.multiline,
-                  controller: userController.profileEmailController.value,
-                  enabled: userController.email == "" ? true : false,
-                  style: Get.textTheme.titleMedium,
-                  validator: (value) {
-                    return userController.validateEmail(value!);
-                  },
-                  onSaved: (String? val) {
-                    userController.email.value = val!;
-                  },
-                  onChanged: (String val) {
-                    userController.email.value = val;
-                  },
-                  decoration: InputDecoration(
-                    border: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 2, color: Get.theme.dividerColor)),
-                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                    labelText: "Email".tr,
-                    labelStyle: TextStyle(color: Get.theme.hintColor, fontSize: 16),
-                  ),
-                ).pSymmetric(h: 20),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              TextFormField(
-                maxLines: 1,
-                keyboardType: TextInputType.multiline,
-                controller: userController.profileUsernameController,
-                style: Get.textTheme.titleMedium,
-                validator: (value) {
-                  return userController.validateField(value!, "Username");
-                },
-                onSaved: (String? val) {
-                  userController.username = val!;
-                },
-                onChanged: (String val) {
-                  userController.username = val;
-                },
-                decoration: InputDecoration(
-                  border: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 2, color: Get.theme.dividerColor)),
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                  labelText: "Username".tr,
-                  labelStyle: TextStyle(color: Get.theme.hintColor, fontSize: 16),
-                ),
-              ).pSymmetric(h: 20),
-              SizedBox(
-                height: 20,
-              ),
-              TextFormField(
-                readOnly: true,
-                controller: userController.conDob..text,
-                style: Get.textTheme.titleMedium,
-                keyboardType: TextInputType.text,
-                validator: (input) {
-                  if (userController.profileDOBString == '') {
-                    return "${'Date of birth'.tr} ${'field'.tr} ${'is required!'.tr}";
-                  } else {
-                    return null;
-                  }
-                },
-                onTap: () {
-                  FocusScope.of(context).unfocus();
-                  DatePicker.showDatePicker(
-                    context,
-                    theme: datePick.DatePickerTheme(
-                      headerColor: Get.theme.primaryColor,
-                      backgroundColor: Get.theme.primaryColor,
-                      itemStyle: TextStyle(color: Get.theme.indicatorColor, fontWeight: FontWeight.w400, fontSize: 18),
-                      doneStyle: TextStyle(
-                        color: Get.theme.iconTheme.color,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      cancelStyle: TextStyle(
-                        color: Get.theme.iconTheme.color,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    showTitleActions: true,
-                    minTime: minDate,
-                    maxTime: yearBefore,
-                    onConfirm: (date) {
-                      userController.conDob..text = userController.validDob(date.year.toString(), date.month.toString(), date.day.toString());
-                      userController.profileDOBString = userController.validDob(date.year.toString(), date.month.toString(), date.day.toString());
-                    },
-                    currentTime: DateTime.now(),
-                    locale: LocaleType.en,
-                  );
-                },
-                decoration: InputDecoration(
-                  border: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 2, color: Get.theme.dividerColor)),
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                  labelText: "Date of Birth".tr,
-                  labelStyle: TextStyle(color: Get.theme.hintColor, fontSize: 16),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.red,
-                      width: 1,
-                    ),
-                  ),
-                ),
-              ).pSymmetric(h: 20),
-              SizedBox(
-                height: 20,
-              ),
-              TextFormField(
-                maxLines: 1,
-                keyboardType: TextInputType.multiline,
-                controller: userController.passwordController,
-                style: Get.textTheme.titleMedium,
-                validator: (value) {
-                  return userController.validateField(value!, "Password");
-                },
-                obscureText: true,
-                onSaved: (String? val) {
-                  userController.password = val!;
-                },
-                onChanged: (String val) {
-                  userController.password = val;
-                },
-                decoration: InputDecoration(
-                  border: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 2, color: Get.theme.dividerColor)),
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                  labelText: "Password".tr,
-                  labelStyle: TextStyle(color: Get.theme.hintColor, fontSize: 16),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.red,
-                      width: 1,
-                    ),
-                  ),
-                ),
-              ).pSymmetric(h: 20),
-              SizedBox(
-                height: 20,
-              ),
-              TextFormField(
-                obscureText: true,
-                maxLines: 1,
-                keyboardType: TextInputType.multiline,
-                controller: userController.confirmPasswordController,
-                style: Get.textTheme.titleMedium,
-                validator: (value) {
-                  return userController.validateField(value!, "Confirm Password");
-                },
-                onSaved: (String? val) {
-                  userController.confirmPassword = val!;
-                },
-                onChanged: (String val) {
-                  userController.confirmPassword = val;
-                },
-                decoration: InputDecoration(
-                  border: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 2, color: Get.theme.dividerColor)),
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                  labelText: "Confirm Password".tr,
-                  labelStyle: TextStyle(color: Get.theme.hintColor, fontSize: 16),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.red,
-                      width: 1,
-                    ),
-                  ),
-                ),
-              ).pSymmetric(h: 20),
-              SizedBox(
-                height: 20,
-              ),
-              Container(
-                child: Theme(
-                  data: ThemeData(
-                    // backgroundColor: Get.theme.primaryColor,
-                    textTheme: TextTheme(
-                      titleMedium: TextStyle(
-                        // color: mainService.setting.value.dividerColor,
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w300,
-                      ),
-                    ),
-                    inputDecorationTheme: InputDecorationTheme(
-                      fillColor: Get.theme.primaryColor,
-                      contentPadding: EdgeInsets.zero,
-                      labelStyle: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w300,
-                      ),
-                    ),
-                  ),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: DropdownSearch<Gender>(
-                      popupProps: PopupProps.bottomSheet(),
-                      decoratorProps: DropDownDecoratorProps(
-                        baseStyle: const TextStyle(fontSize: 14),
-                        decoration: InputDecoration(
-                          labelText: "Select Gender".tr,
-                          labelStyle: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 14,
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 15,
-                            vertical: 10,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.lightGreen),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          border: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.lightGreen),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                      compareFn: (Gender? item1, Gender? item2) {
-                        if (item1 == null || item2 == null) return false;
-                        return item1.value == item2.value; // Replace 'id' with your own comparison logic
-                      },
-                      // dropdownDecoratorProps: DropDownDecoratorProps(
-                      //   dropdownSearchDecoration: InputDecoration(
-                      //     contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                      //     border: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                      //     focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 2, color: Get.theme.dividerColor)),
-                      //     enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                      //     labelText: "Select Gender".tr,
-                      //     labelStyle: TextStyle(color: Get.theme.hintColor, fontSize: 16),
-                      //     errorBorder: OutlineInputBorder(
-                      //       borderSide: BorderSide(
-                      //         color: Colors.red,
-                      //         width: 1,
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
-                      items: (f, cs) => userController.gender,
-                      // mode: Mode.BOTTOM_SHEET,
-                      // popupBackgroundColor: Get.theme.shadowColor,
-                      // popupBarrierColor: mainService.setting.value.dividerColor != null ? mainService.setting.value.dividerColor!.withValues(alpha:0.2) : Colors.grey[200],
-                      itemAsString: (Gender? u) => u!.name,
-                      onChanged: (Gender? data) {
-                        userController.selectedGender.value = data!.value;
-                        userController.selectedGender.refresh();
-                      },
-                    ),
-                  ),
-                ).pSymmetric(h: 20),
               ),
             ],
           ),

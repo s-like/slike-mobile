@@ -12,6 +12,8 @@ class LoginView extends GetView<UserController> {
   final MainService mainService = Get.find();
   final AuthService authService = Get.find();
   final DashboardController dashboardController = Get.find();
+
+  @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(statusBarColor: Get.theme.primaryColor, statusBarIconBrightness: Brightness.dark),
@@ -26,320 +28,287 @@ class LoginView extends GetView<UserController> {
             Get.offNamed('/home');
             return Future.value(false);
           },
-          child: Container(
-            color: Get.theme.primaryColor,
-            child: SafeArea(
-              child: Scaffold(
-                appBar: AppBar(
-                  backgroundColor: Get.theme.primaryColor,
-                  titleSpacing: 0.0,
-                  automaticallyImplyLeading: true,
-                  title: "Log In".tr.text.uppercase.textStyle(Get.theme.textTheme.bodyLarge!.copyWith(fontSize: 18)).make(),
-                  centerTitle: true,
-                  leading: InkWell(
-                    onTap: () {
-                      dashboardController.getVideos();
-                      Get.offNamed('/home');
-                    },
-                    child: Icon(
-                      Icons.arrow_back,
-                      color: Get.theme.iconTheme.color,
+          child: Scaffold(
+            body: Stack(
+              children: [
+                Container(
+                  width: Get.width,
+                  height: Get.height,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage("assets/images/login-bg.png"),
+                      fit: BoxFit.cover,
+                      scale: 0.8
                     ),
                   ),
                 ),
-                backgroundColor: Get.theme.primaryColor,
-                body: GestureDetector(
-                  onTap: () {
-                    FocusScope.of(context).requestFocus(new FocusNode());
-                  },
-                  child: SingleChildScrollView(
-                    controller: controller.scrollController1,
-                    child: Obx(
-                      () => Container(
-                        color: Get.theme.primaryColor,
-                        width: Get.width,
-                        height: Get.height,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Container(
-                              color: glShadeColor,
-                              width: Get.width,
-                              child: Obx(
-                                () => Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      height:
-                                          mainService.loginPageData.value.appleLogin == true || mainService.loginPageData.value.googleLogin == true || mainService.loginPageData.value.fbLogin == true
-                                              ? 12
-                                              : 0,
-                                    ),
-                                    mainService.loginPageData.value.fbLogin == true
-                                        ? ButtonTheme(
-                                            height: 60,
-                                            child: ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                foregroundColor: Color(0xff4064AC),
-                                                backgroundColor: Color(0xff4064AC),
-                                                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                                              ),
-                                              child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: <Widget>[
-                                                  Image.asset(
-                                                    'assets/images/small-fb.png',
-                                                    width: 22,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                  "Sign up with Facebook".tr.text.textStyle(Get.theme.textTheme.titleMedium).color(Colors.white).center.make(),
-                                                ],
-                                              ),
-                                              onPressed: () {
-                                                controller.loginWithFB();
-                                              },
-                                            ),
-                                          ).pOnly(bottom: 12)
-                                        : SizedBox(),
-                                    mainService.loginPageData.value.googleLogin == true
-                                        ? ButtonTheme(
-                                            height: 60,
-                                            child: ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                                              ),
-                                              child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: <Widget>[
-                                                  Image.asset(
-                                                    'assets/images/small-google.png',
-                                                    width: 20,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                  "Sign up with Google".tr.text.center.make(),
-                                                ],
-                                              ),
-                                              onPressed: () {
-                                                controller.loginWithGoogle();
-                                              },
-                                            ),
-                                          ).pOnly(bottom: 12)
-                                        : SizedBox(),
-                                    Platform.isIOS && mainService.loginPageData.value.appleLogin == true
-                                        ? ButtonTheme(
-                                            height: 60,
-                                            child: ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                // backgroundColor: Color(0xff000000),
-                                                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                                              ),
-                                              child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: <Widget>[
-                                                  SvgPicture.asset(
-                                                    'assets/icons/apple.svg',
-                                                    width: 25.0,
-                                                    colorFilter: ColorFilter.mode(Get.theme.primaryColor, BlendMode.srcATop),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                  "Sign up with Apple".tr.text.center.make(),
-                                                ],
-                                              ),
-                                              onPressed: () {
-                                                controller.signInWithApple();
-                                              },
-                                            ),
-                                          ).pOnly(bottom: 12)
-                                        : SizedBox()
-                                  ],
-                                ).px16(),
+                Container(
+                  width: Get.width,
+                  height: Get.height,
+                  color: Colors.black.withOpacity(0.8),
+                ),
+                SafeArea(
+                  child: Center(
+                    child: SingleChildScrollView(
+                      controller: controller.scrollController1,
+                      child: Obx(
+                        () => Form(
+                          key: controller.loginFormKey,
+                          autovalidateMode: AutovalidateMode.always,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // Logo
+                              Image.asset(
+                                "assets/images/login-logo.png",
+                                height: 120,
+                                fit: BoxFit.contain,
                               ),
-                            ),
-                            Container(
-                              color: Get.theme.primaryColor,
-                              width: Get.width,
-                              // height: Get.height * 0.66,
-                              child: Form(
-                                autovalidateMode: AutovalidateMode.always,
-                                key: controller.loginFormKey,
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    SizedBox(
-                                      height: 40,
-                                    ),
-                                    Obx(
-                                      () => TextFormField(
-                                        style: Get.textTheme.titleMedium,
-                                        keyboardType: TextInputType.emailAddress,
-                                        onChanged: (input) {
-                                          controller.email.value = input;
-                                        },
-                                        validator: controller.validateEmail,
-                                        decoration: InputDecoration(
-                                          labelText: "Email".tr,
-                                          labelStyle: TextStyle(color: Get.theme.hintColor, fontSize: 16),
-                                          contentPadding: EdgeInsets.zero,
-                                          suffixIcon: controller.isValidEmail.value
-                                              ? Icon(
-                                                  Icons.check,
-                                                  color: glSuccessColor,
-                                                )
-                                              : null,
-                                          border: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                                          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 2, color: Get.theme.dividerColor)),
-                                          enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(height: 30),
-                                    TextFormField(
-                                      style: Get.textTheme.titleMedium,
-                                      keyboardType: TextInputType.text,
-                                      onChanged: (input) {
-                                        controller.password = input;
-                                      },
-                                      validator: (input) {
-                                        if (input!.isEmpty) {
-                                          return "Please enter your password!".tr;
-                                        } else {
-                                          return null;
-                                        }
-                                      },
-                                      obscureText: controller.hidePassword.value,
-                                      decoration: InputDecoration(
-                                        labelText: "Password".tr,
-                                        labelStyle: TextStyle(color: Get.theme.hintColor, fontSize: 16),
-                                        contentPadding: EdgeInsets.zero,
-                                        hintStyle: TextStyle(color: Get.theme.hintColor),
-                                        suffixIcon: IconButton(
-                                          onPressed: () {
-                                            controller.hidePassword.value = !controller.hidePassword.value;
-                                            controller.hidePassword.refresh();
-                                          },
-                                          color: Get.theme.highlightColor,
-                                          icon: Icon(!controller.hidePassword.value ? Icons.visibility : Icons.visibility_off),
-                                        ),
-                                        border: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                                        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 2, color: Get.theme.dividerColor)),
-                                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Get.theme.dividerColor)),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 40,
-                                    ),
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                      ),
-                                      child: "Continue".tr.text.center.make(),
-                                      onPressed: () {
-                                        if (controller.loginFormKey.currentState!.validate()) {
-                                          controller.login();
-                                        }
-                                      },
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Expanded(
-                                          child: "${'Forgot Password'.tr}?".text.textStyle(Get.theme.textTheme.titleSmall).letterSpacing(1).make().onTap(() {
-                                            Get.offNamed('/forgot-password');
-                                          }),
-                                        ),
-                                        Expanded(
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            mainAxisAlignment: MainAxisAlignment.end,
-                                            crossAxisAlignment: CrossAxisAlignment.end,
-                                            children: [
-                                              SvgPicture.asset(
-                                                "assets/icons/skip.svg",
-                                                width: 18,
-                                                height: 18,
-                                              ).pOnly(right: 6),
-                                              "Skip".tr.text.textStyle(Get.theme.textTheme.titleSmall).make().centered().onTap(() {
-                                                dashboardController.getVideos();
-                                                Get.offNamed('/home');
-                                              }),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 15,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Flexible(child: "Don't have an account?".tr.text.textStyle(Get.theme.textTheme.titleSmall).bold.align(TextAlign.center).make()),
-                                        SizedBox(width: 5,),
-                                        Flexible(
-                                          child: "Create an account".tr.text.textStyle(Get.theme.textTheme.titleSmall).bold.align(TextAlign.center).make().onTap(() {
-                                            Get.offNamed('/register');
-                                          }),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 15,
-                                    ),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: <Widget>[
-                                        SizedBox(
-                                          width: 15,
-                                        ),
-                                        Flexible(
-                                          child: GestureDetector(
-                                              onTap: () {
-                                                controller.launchURL("${baseUrl}terms");
-                                              },
-                                              child: "Terms of use".tr.text.textStyle(Get.theme.textTheme.titleSmall).align(TextAlign.center).make()),
-                                        ),
-                                        Container(
-                                          width: 1,
-                                          height: 17,
-                                          color: Get.theme.dividerColor,
-                                        ),
-                                        Flexible(
-                                          child: GestureDetector(
-                                              onTap: () {
-                                                controller.launchURL(baseUrl + "privacy-policy");
-                                              },
-                                              child: "Privacy Policy".tr.text.textStyle(Get.theme.textTheme.titleSmall).align(TextAlign.center).make().centered()),
-                                        ),
-                                        SizedBox(
-                                          width: 15,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                              const SizedBox(height: 32),
+                              // Welcome text
+                              const Text(
+                                "Welcome back",
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFFFFD700),
                                 ),
-                              ).px20(),
-                            )
-                          ],
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 8),
+                              // Subtitle
+                              const Text(
+                                "Log in to your account",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 32),
+                              // Username field
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: Color(0xFFFFD700),
+                                    width: 2,
+                                  ),
+                                ),
+                                child: TextFormField(
+                                  style: const TextStyle(color: Colors.white),
+                                  keyboardType: TextInputType.emailAddress,
+                                  onChanged: (input) {
+                                    controller.email.value = input;
+                                  },
+                                  validator: controller.validateEmail,
+                                  decoration: InputDecoration(
+                                    hintText: "User Email",
+                                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                                    prefixIcon: Icon(
+                                      Icons.person_outline,
+                                      color: Color(0xFFFFD700),
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                    ),
+                                    errorStyle: TextStyle(color: Colors.red, fontSize: 12, height: 1),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              // Password field
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: Color(0xFFFFD700),
+                                    width: 2,
+                                  ),
+                                ),
+                                child: TextFormField(
+                                  style: const TextStyle(color: Colors.white),
+                                  obscureText: controller.hidePassword.value,
+                                  onChanged: (input) {
+                                    controller.password = input;
+                                  },
+                                  validator: (input) {
+                                    if (input!.isEmpty) {
+                                      return "Please enter your password!".tr;
+                                    } else {
+                                      return null;
+                                    }
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: "**************",
+                                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                                    prefixIcon: Icon(
+                                      Icons.lock_outline,
+                                      color: Color(0xFFFFD700),
+                                    ),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        !controller.hidePassword.value ? Icons.visibility : Icons.visibility_off,
+                                        color: Color(0xFFFFD700),
+                                      ),
+                                      onPressed: () {
+                                        controller.hidePassword.value = !controller.hidePassword.value;
+                                        controller.hidePassword.refresh();
+                                      },
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                    ),
+                                    errorStyle: TextStyle(color: Colors.red, fontSize: 12, height: 1.2),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              // Remember me and password row
+                              Row(
+                                children: [
+                                  Spacer(),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Get.offNamed('/forgot-password');
+                                    },
+                                    child: const Text(
+                                      "Forgot password?",
+                                      style: TextStyle(
+                                        color: Color(0xFFFFD700),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 32),
+                              // Log in button
+                              SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    if (controller.loginFormKey.currentState!.validate()) {
+                                      controller.login();
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFFFD700),
+                                    foregroundColor: Colors.black,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: const Text(
+                                    "Log in",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              // Sign up row
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    "Don't have account?",
+                                    style: TextStyle(fontSize: 14, color: Colors.white),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Get.offNamed('/register');
+                                    },
+                                    child: const Text(
+                                      "Register",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Color(0xFFFFD700),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              // Divider with Or
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Divider(
+                                      color: Colors.white,
+                                      thickness: 1,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                                    child: Text(
+                                      "Or",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Divider(
+                                      color: Colors.white,
+                                      thickness: 1,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 32),
+                              // Google sign in button
+                              SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    controller.loginWithGoogle();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    foregroundColor: Colors.black,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        'assets/images/small-google.png',
+                                        width: 20,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      const Text(
+                                        "Sign in with Google",
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ).paddingSymmetric(horizontal: 24),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
           ),
         );

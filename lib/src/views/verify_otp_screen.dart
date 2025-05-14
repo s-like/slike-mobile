@@ -33,138 +33,156 @@ class _VerifyOTPViewState extends State<VerifyOTPView> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(statusBarColor: Get.theme.primaryColor, statusBarIconBrightness: Brightness.light),
+      SystemUiOverlayStyle(statusBarColor: Get.theme.primaryColor, statusBarIconBrightness: Brightness.dark),
     );
     return Scaffold(
-      backgroundColor: Get.theme.primaryColor,
-      appBar: AppBar(
-        iconTheme: IconThemeData(
-          size: 16,
-          color: Get.theme.indicatorColor, //change your color here
-        ),
-        backgroundColor: Get.theme.primaryColor,
-        leading: InkWell(
-          onTap: () {
-            Get.back();
-          },
-          child: Icon(
-            Icons.arrow_back,
-            color: Get.theme.iconTheme.color,
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          // Background image
+          Container(
+            width: Get.width,
+            height: Get.height,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/login-bg.png"),
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
-        ),
-        title: "Email Verification".tr.text.uppercase.bold.size(18).color(Get.theme.indicatorColor).make(),
-        centerTitle: true,
-      ),
-      body: Container(
-        height: Get.height,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                height: Get.height / 3,
-                width: Get.height / 3,
-                margin: EdgeInsets.only(bottom: 50),
-                decoration: new BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: new DecorationImage(
-                    fit: BoxFit.fill,
-                    image: new AssetImage(
-                      "assets/images/video-logo.png",
-                    ),
-                  ),
-                ),
-              ),
-              "Enter 6 digits verification code has sent in your registered email account."
-                  .tr
-                  .text
-                  .color(Get.theme.indicatorColor)
-                  .lineHeight(1.4)
-                  .size(16)
-                  .wide
-                  .center
-                  .make()
-                  .centered(),
-              SizedBox(
-                height: 30,
-              ),
-              PinCodeTextField(
-                backgroundColor: Get.theme.primaryColor,
-                appContext: context,
-                pastedTextStyle: TextStyle(
-                  color: Colors.green.shade600,
-                  fontWeight: FontWeight.bold,
-                ),
-                length: 6,
-                obscureText: true,
-                obscuringCharacter: '*',
-                blinkWhenObscuring: true,
-                animationType: AnimationType.fade,
-                pinTheme: PinTheme(
-                  inactiveColor: Get.theme.highlightColor.withValues(alpha:0.3),
-                  disabledColor: Get.theme.primaryColor,
-                  inactiveFillColor: Get.theme.primaryColor,
-                  selectedFillColor: Get.theme.primaryColor,
-                  shape: PinCodeFieldShape.box,
-                  borderRadius: BorderRadius.circular(0),
-                  fieldHeight: Get.width * 0.15,
-                  fieldWidth: Get.width * 0.15,
-                  activeFillColor: Get.theme.primaryColor,
-                ),
-                cursorColor: Get.theme.shadowColor,
-                animationDuration: Duration(milliseconds: 300),
-                enableActiveFill: true,
-                // errorAnimationController: errorController,
-                // controller: textEditingController,
-                keyboardType: TextInputType.number,
-                boxShadows: [
-                  BoxShadow(
-                    offset: Offset(0, 1),
-                    color: Get.theme.shadowColor,
-                    blurRadius: 10,
-                  )
-                ],
-                onCompleted: (v) {
-                  userController.otp = v;
-
-                  userController.verifyOtp();
-                },
-                onChanged: (value) {
-                  userController.otp = value;
-                },
-                beforeTextPaste: (text) {
-                  return true;
-                },
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Obx(() => userController.bHideTimer.value
-                  ? '${"Resend OTP in".tr} ${userController.countTimer.value} ${"seconds".tr}'
-                      .text
-                      .color(Get.theme.indicatorColor)
-                      .lineHeight(1.4)
-                      .size(16)
-                      .wide
-                      .center
-                      .make()
-                      .centered()
-                  : Row(
+          // Dark overlay
+          Container(
+            width: Get.width,
+            height: Get.height,
+            color: Colors.black.withOpacity(0.8),
+          ),
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Back Arrow and Logo Row
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        "Did not get OTP?".tr.text.color(Get.theme.indicatorColor).size(16).wide.center.make(),
-                        SizedBox(
-                          width: 10,
+                        IconButton(
+                          icon: Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFFFFD700)),
+                          onPressed: () {
+                            Get.back();
+                          },
                         ),
-                        "Resend OTP".tr.text.color(mainService.setting.value.buttonColor!).size(16).wide.center.make().onTap(() {
-                          userController.resendOtp(verifyPage: true);
-                        }),
+                        SizedBox(width: 8),
+                        Image.asset(
+                          "assets/images/register-logo.png",
+                          height: 55,
+                          fit: BoxFit.contain,
+                        ),
                       ],
-                    )),
-            ],
+                    ),
+                    const SizedBox(height: 32),
+                    // Title
+                    const Text(
+                      "Email Verification",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFFFD700),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    // Subtitle
+                    const Text(
+                      "Enter the 6-digit code sent to your registered email.",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 32),
+                    // Pin Code Field
+                    PinCodeTextField(
+                      backgroundColor: Colors.transparent,
+                      appContext: context,
+                      pastedTextStyle: TextStyle(
+                        color: Colors.green.shade600,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      length: 6,
+                      obscureText: true,
+                      obscuringCharacter: '*',
+                      blinkWhenObscuring: true,
+                      animationType: AnimationType.fade,
+                      pinTheme: PinTheme(
+                        inactiveColor: Color(0xFFFFD700).withOpacity(0.3),
+                        disabledColor: Colors.transparent,
+                        inactiveFillColor: Colors.transparent,
+                        selectedFillColor: Colors.transparent,
+                        shape: PinCodeFieldShape.box,
+                        borderRadius: BorderRadius.circular(8),
+                        fieldHeight: Get.width * 0.13,
+                        fieldWidth: Get.width * 0.13,
+                        activeFillColor: Colors.transparent,
+                        activeColor: Color(0xFFFFD700),
+                        selectedColor: Color(0xFFFFD700),
+                      ),
+                      cursorColor: Color(0xFFFFD700),
+                      animationDuration: Duration(milliseconds: 300),
+                      enableActiveFill: true,
+                      keyboardType: TextInputType.number,
+                      boxShadows: [
+                        BoxShadow(
+                          offset: Offset(0, 1),
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 10,
+                        )
+                      ],
+                      onCompleted: (v) {
+                        userController.otp = v;
+                        userController.verifyOtp();
+                      },
+                      onChanged: (value) {
+                        userController.otp = value;
+                      },
+                      beforeTextPaste: (text) {
+                        return true;
+                      },
+                      textStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                    const SizedBox(height: 20),
+                    // Timer or Resend
+                    Obx(() => userController.bHideTimer.value
+                        ? '${"Resend OTP in".tr} ${userController.countTimer.value} ${"seconds".tr}'
+                            .text
+                            .color(Colors.white)
+                            .lineHeight(1.4)
+                            .size(16)
+                            .wide
+                            .center
+                            .make()
+                            .centered()
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              "Did not get OTP?".tr.text.color(Colors.white).size(16).wide.center.make(),
+                              SizedBox(width: 10),
+                              "Resend OTP".tr.text.color(Color(0xFFFFD700)).size(16).wide.center.make().onTap(() {
+                                userController.resendOtp(verifyPage: true);
+                              }),
+                            ],
+                          )),
+                  ],
+                ).paddingSymmetric(horizontal: 24),
+              ),
+            ),
           ),
-        ),
-      ).pSymmetric(h: 10),
+        ],
+      ),
     );
   }
 }

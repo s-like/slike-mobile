@@ -3,23 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>350815494171-ehuf8n0g42ms3lphos7krkham8od5p0d.apps.googleusercontent.com</string>
+	<string>258489829851-fpe455c3rahs93s4r5jgsa179l6iqehp.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.350815494171-ehuf8n0g42ms3lphos7krkham8od5p0d</string>
+	<string>com.googleusercontent.apps.258489829851-fpe455c3rahs93s4r5jgsa179l6iqehp</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>350815494171-6ssf8s9c0ukrcnh4ennmosfukv9gqtj0.apps.googleusercontent.com</string>
+	<string>258489829851-27ff328g1k0m0p5utrgigani9kk88duq.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyB40SoWbgrj8PrUvissYcW6bDvZvZW3pV0</string>
+	<string>AIzaSyCg4-J4xUGY4FlyD3-pxIHQK-lcj_J7dsg</string>
 	<key>GCM_SENDER_ID</key>
-	<string>350815494171</string>
+	<string>258489829851</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.leuke.app</string>
+	<string>com.slike.slikeapps</string>
 	<key>PROJECT_ID</key>
-	<string>leuke-6d736</string>
+	<string>spitch-work</string>
 	<key>STORAGE_BUCKET</key>
-	<string>leuke-6d736.appspot.com</string>
+	<string>spitch-work.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:350815494171:ios:70144c557be50ff312d8be</string>
+	<string>1:258489829851:ios:64b14bdae352ece6457ffe</string>
 </dict>
 </plist>

@@ -1,4 +1,4 @@
-String appName = "Leuke";
+String appName = "Slike";
 String baseUrl = "https://slike.com/public/";
 String streamServerUrl = "wss://webrtc.unifysofttech.in:5443/WebRTCAppEE/websocket";
 String pusherKey = "f6db19e9525c26c8fdba";
