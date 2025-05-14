@@ -1,4 +1,4 @@
-package com.leukevideo.app
+package com.slikevideo.app
 
 import android.app.Activity
 import androidx.annotation.NonNull

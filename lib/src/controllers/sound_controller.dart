@@ -47,7 +47,7 @@ class SoundController extends GetxController {
     super.onInit();
     super.onInit();
     audioPlayer.setAudioSource(
-      AudioSource.uri(Uri.parse("https://leuke.blr1.digitaloceanspaces.com/public/sounds/1704886450.mp3?qq=1"), tag: "https://leuke.blr1.digitaloceanspaces.com/public/sounds/1704886450.mp3?qq=1"),
+      AudioSource.uri(Uri.parse("https://slike.blr1.digitaloceanspaces.com/public/sounds/1704886450.mp3?qq=1"), tag: "https://slike.blr1.digitaloceanspaces.com/public/sounds/1704886450.mp3?qq=1"),
     );
   }
 
