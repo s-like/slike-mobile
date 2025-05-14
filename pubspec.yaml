@@ -1,5 +1,5 @@
-name: leuke
-description: Leuke - A social platform for Videos.
+name: Slike
+description: Slike - A social platform for Sports.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -25,6 +25,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0
+  badges: ^3.1.2
 
 dev_dependencies:
   flutter_test:
@@ -152,6 +153,7 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/animations/
+    - assets/images/sample/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

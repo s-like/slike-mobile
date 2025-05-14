@@ -319,7 +319,7 @@ class _SettingUsersState extends State<SettingUsers> {
                       Share.share(
                           // '$baseUrl',
                           'https://slike.com/public/',
-                          subject: "Hey, enjoy me on Leuke...open this link and download the app".tr);
+                          subject: "Hey, enjoy me on Slike...open this link and download the app".tr);
                     },
                   ),
                   Divider(color: Get.theme.indicatorColor, thickness: 0.3),
@@ -334,7 +334,7 @@ class _SettingUsersState extends State<SettingUsers> {
                             ),
                             // trailing: Icon(Icons.arrow_forward_ios),
                           ),
-                          onTap: () => launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=com.leuke.app')))
+                          onTap: () => launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=com.slike.apps')))
                       : Container(),
                   /*InkWell(
                           child: ListTile(
@@ -423,7 +423,7 @@ class _SettingUsersState extends State<SettingUsers> {
                         padding: const EdgeInsets.only(top: 10.0, right: 10, bottom: 10),
                         child: ListTile(
                           title: Text(
-                            "© Leuke ${'All right reserved'.tr}",
+                            "© Slike ${'All right reserved'.tr}",
                             style: TextStyle(fontSize: 14, color: Get.theme.indicatorColor),
                             textAlign: TextAlign.center,
                           ),

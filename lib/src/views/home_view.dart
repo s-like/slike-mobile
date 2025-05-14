@@ -8,9 +8,9 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:like_button/like_button.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:skeleton_loader/skeleton_loader.dart';
-import 'package:sliding_up_panel2/sliding_up_panel2.dart';
-
+// import 'package:skeleton_loader/skeleton_loader.dart';
+// import 'package:sliding_up_panel2/sliding_up_panel2.dart';
+// import 'package:badges/badges.dart' as badges;
 import '../core.dart';
 
 class HomeView extends StatefulWidget {
@@ -19,12 +19,13 @@ class HomeView extends StatefulWidget {
   _HomeViewState createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin, RouteAware {
+class _HomeViewState extends State<HomeView>
+    with SingleTickerProviderStateMixin, RouteAware {
   DashboardController dashboardController = Get.find();
   MainService mainService = Get.find();
   AuthService authService = Get.find();
   DashboardService dashboardService = Get.find();
-  VideoRecorderService videoRecorderService = Get.find();
+
   PostService postService = Get.find();
   // double hgt = 0;
   late AnimationController musicAnimationController;
@@ -102,7 +103,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
   }
 
   reportLayout(context, Video videoObj) {
-    print("dashboardController.selectedType ${dashboardController.selectedType}");
+    print(
+        "dashboardController.selectedType ${dashboardController.selectedType}");
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -140,7 +142,9 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                                 hint: new Text(
                                   "Select Type".tr,
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+                                  style: TextStyle(
+                                      color:
+                                          Colors.white.withValues(alpha: 0.7)),
                                 ),
                                 iconEnabledColor: Get.theme.iconTheme.color,
                                 style: new TextStyle(
@@ -150,11 +154,15 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                                 value: dashboardController.selectedType,
                                 onChanged: (String? newValue) {
                                   setState(() {
-                                    dashboardController.selectedType = newValue!;
+                                    dashboardController.selectedType =
+                                        newValue!;
                                   });
                                 },
-                                validator: (value) => value == null ? 'This field is required!'.tr : null,
-                                items: dashboardController.reportType.map((String val) {
+                                validator: (value) => value == null
+                                    ? 'This field is required!'.tr
+                                    : null,
+                                items: dashboardController.reportType
+                                    .map((String val) {
                                   print("val $val");
                                   return new DropdownMenuItem(
                                     value: val,
@@ -199,7 +207,12 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                                 flex: 6,
                                 child: Row(
                                   children: [
-                                    "Block".tr.text.color(Colors.white).size(16).make(),
+                                    "Block"
+                                        .tr
+                                        .text
+                                        .color(Colors.white)
+                                        .size(16)
+                                        .make(),
                                   ],
                                 ),
                               ),
@@ -209,10 +222,15 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                                   scale: 0.6,
                                   child: CupertinoSwitch(
                                     activeTrackColor: Get.theme.highlightColor,
-                                    value: dashboardService.videoReportBlocked.value,
+                                    value: dashboardService
+                                        .videoReportBlocked.value,
                                     onChanged: (value) {
-                                      dashboardService.videoReportBlocked.value = !dashboardService.videoReportBlocked.value;
-                                      dashboardService.videoReportBlocked.refresh();
+                                      dashboardService
+                                              .videoReportBlocked.value =
+                                          !dashboardService
+                                              .videoReportBlocked.value;
+                                      dashboardService.videoReportBlocked
+                                          .refresh();
                                     },
                                   ),
                                 ),
@@ -229,9 +247,11 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                           children: [
                             GestureDetector(
                               onTap: () {
-                                WidgetsBinding.instance.addPostFrameCallback((_) async {
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) async {
                                   setState(() {
-                                    if (!dashboardController.showReportLoader.value) {
+                                    if (!dashboardController
+                                        .showReportLoader.value) {
                                       validateForm(videoObj, context);
                                     }
                                   });
@@ -240,20 +260,24 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                               child: Container(
                                 height: 30,
                                 width: 60,
-                                decoration: BoxDecoration(color: Get.theme.highlightColor),
+                                decoration: BoxDecoration(
+                                    color: Get.theme.highlightColor),
                                 child: Obx(
                                   () => Center(
-                                    child: (!dashboardController.showReportLoader.value)
+                                    child: (!dashboardController
+                                            .showReportLoader.value)
                                         ? Text(
                                             "Submit".tr,
                                             style: TextStyle(
-                                              color: mainService.setting.value.buttonTextColor,
+                                              color: mainService.setting.value
+                                                  .buttonTextColor,
                                               fontWeight: FontWeight.bold,
                                               fontSize: 11,
                                               fontFamily: 'RockWellStd',
                                             ),
                                           )
-                                        : CommonHelper.showLoaderSpinner(Colors.white),
+                                        : CommonHelper.showLoaderSpinner(
+                                            Colors.white),
                                   ),
                                 ),
                               ),
@@ -263,19 +287,22 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                             ),
                             GestureDetector(
                               onTap: () {
-                                dashboardController.playController(dashboardService.pageIndex.value);
+                                dashboardController.playController(
+                                    dashboardService.pageIndex.value);
 
                                 Get.back();
                               },
                               child: Container(
                                 height: 30,
                                 width: 60,
-                                decoration: BoxDecoration(color: Get.theme.highlightColor),
+                                decoration: BoxDecoration(
+                                    color: Get.theme.highlightColor),
                                 child: Center(
                                   child: Text(
                                     "Cancel".tr,
                                     style: TextStyle(
-                                      color: mainService.setting.value.buttonTextColor,
+                                      color: mainService
+                                          .setting.value.buttonTextColor,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 11,
                                       fontFamily: 'RockWellStd',
@@ -295,7 +322,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                           width: Get.width - 100,
                           child: Center(
                             child: Text(
-                              "Thanks for reporting. If we find this content to be in violation of our Guidelines, we will remove it".tr,
+                              "Thanks for reporting. If we find this content to be in violation of our Guidelines, we will remove it"
+                                  .tr,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,
@@ -320,7 +348,10 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
           dashboardController.pc.close();
           return Future.value(false);
         }
-        if (mainService.userVideoObj.value.videoId > 0 || mainService.userVideoObj.value.userId > 0 || mainService.userVideoObj.value.hashTag != "" || mainService.userVideoObj.value.name != "") {
+        if (mainService.userVideoObj.value.videoId > 0 ||
+            mainService.userVideoObj.value.userId > 0 ||
+            mainService.userVideoObj.value.hashTag != "" ||
+            mainService.userVideoObj.value.name != "") {
           mainService.userVideoObj.value.videoId = 0;
           mainService.userVideoObj.value.userId = 0;
           mainService.userVideoObj.value.name = "";
@@ -343,7 +374,6 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
       },
       child: Scaffold(
         // key: dashboardController.scaffoldKey,
-        extendBodyBehindAppBar: true,
         backgroundColor: Colors.black,
 
         body: Obx(
@@ -352,10 +382,12 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
               RefreshIndicator(
                 onRefresh: () {
                   if (dashboardService.randomString.value != "") {
-                    dashboardService.randomString.value = CommonHelper.getRandomString(4, numeric: true);
+                    dashboardService.randomString.value =
+                        CommonHelper.getRandomString(4, numeric: true);
                     dashboardService.randomString.refresh();
                   }
-                  dashboardController.stopController(dashboardService.pageIndex.value);
+                  dashboardController
+                      .stopController(dashboardService.pageIndex.value);
                   Get.offNamed('/home');
                   dashboardService.postIds = [];
                   return dashboardController.getVideos();
@@ -366,97 +398,6 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                   ? Container(
                       width: Get.width,
                       height: Get.height,
-                    )
-                  : Container(),
-              !dashboardController.hideBottomBar.value
-                  ? Positioned(
-                      right: 10,
-                      top: (mainService.userVideoObj.value.userId == 0 || mainService.userVideoObj.value.userId == 0) &&
-                              (mainService.userVideoObj.value.videoId == 0 || mainService.userVideoObj.value.videoId == 0) &&
-                              mainService.userVideoObj.value.hashTag == ""
-                          ? Get.height * 0.052
-                          : Get.height * 0.056,
-                      child: InkWell(
-                        onTap: () {
-                          Get.toNamed("/notifications");
-                        },
-                        child: Obx(
-                          () => Stack(
-                            children: [
-                              Container(
-                                width: Get.width * 0.15,
-                                child: SvgPicture.asset(
-                                  "assets/icons/notification.svg",
-                                  colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                                  width: 25,
-                                  height: 25,
-                                ),
-                              ),
-                              Positioned(
-                                top: 0,
-                                right: 10,
-                                child: authService.notificationsCount.value > 0
-                                    ? Transform.translate(
-                                        offset: Offset(-10, -2),
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                                          decoration: BoxDecoration(
-                                            color: Get.theme.highlightColor,
-                                            borderRadius: BorderRadius.circular(100),
-                                          ),
-                                          // child: Center(
-                                          //   child: Text(
-                                          //     authService.notificationsCount.value.toString(),
-                                          //     style: TextStyle(
-                                          //       color: Colors.white,
-                                          //       fontSize: 10,
-                                          //     ),
-                                          //   ),
-                                          // ),
-                                        ),
-                                      )
-                                    : SizedBox(
-                                        height: 0,
-                                      ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  : Container(),
-              !dashboardController.hideBottomBar.value
-                  ? Positioned(
-                      left: (mainService.userVideoObj.value.userId == 0 || mainService.userVideoObj.value.userId == 0) &&
-                              (mainService.userVideoObj.value.videoId == 0 || mainService.userVideoObj.value.videoId == 0) &&
-                              mainService.userVideoObj.value.hashTag == ""
-                          ? 10
-                          : 30,
-                      top: (mainService.userVideoObj.value.userId == 0 || mainService.userVideoObj.value.userId == 0) &&
-                              (mainService.userVideoObj.value.videoId == 0 || mainService.userVideoObj.value.videoId == 0) &&
-                              mainService.userVideoObj.value.hashTag == ""
-                          ? Get.height * 0.048
-                          : Get.height * 0.052,
-                      child: InkWell(
-                        onTap: () {
-                          dashboardService.postIds = [];
-                          if (authService.currentUser.value.accessToken != '') {
-                            Get.toNamed("/live-users");
-                          } else {
-                            Get.offNamed(
-                              '/login',
-                            );
-                          }
-                        },
-                        child: Container(
-                          width: Get.width * 0.15,
-                          child: Icon(
-                            Icons.live_tv,
-                            color: Colors.white,
-                            size: 34,
-                          ),
-                        ),
-                      ),
                     )
                   : Container(),
             ],
@@ -499,7 +440,10 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         decoration: new InputDecoration(
           fillColor: Get.theme.shadowColor,
           filled: true,
-          contentPadding: EdgeInsets.only(left: CommonHelper.isRtl ? 0 : 20, right: CommonHelper.isRtl ? 20 : 0, top: 0),
+          contentPadding: EdgeInsets.only(
+              left: CommonHelper.isRtl ? 0 : 20,
+              right: CommonHelper.isRtl ? 20 : 0,
+              top: 0),
           errorStyle: TextStyle(
             color: Color(0xFF210ed5),
             fontSize: 16.0,
@@ -522,17 +466,23 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
             borderRadius: BorderRadius.circular(50),
           ),
           hintText: "Add a comment".tr,
-          hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 14),
+          hintStyle: TextStyle(
+              color: Colors.white.withValues(alpha: 0.5), fontSize: 14),
           suffixIcon: InkWell(
             onTap: () {
               setState(() {
                 dashboardController.textFieldMoveToUp = false;
               });
-              if (dashboardController.commentValue.trim() != '' && dashboardController.commentValue != "") {
-                print("dashboardController.editedComment.value ${dashboardController.editedComment.value} videoObj!.videoId ${dashboardController.videoObj.value.videoId}");
+              if (dashboardController.commentValue.trim() != '' &&
+                  dashboardController.commentValue != "") {
+                print(
+                    "dashboardController.editedComment.value ${dashboardController.editedComment.value} videoObj!.videoId ${dashboardController.videoObj.value.videoId}");
                 dashboardController.editedComment.value != ""
-                    ? dashboardController.editComment(dashboardController.editedComment.value, dashboardController.videoObj.value.videoId)
-                    : dashboardController.addComment(dashboardController.videoObj.value.videoId);
+                    ? dashboardController.editComment(
+                        dashboardController.editedComment.value,
+                        dashboardController.videoObj.value.videoId)
+                    : dashboardController
+                        .addComment(dashboardController.videoObj.value.videoId);
               }
             },
             child: Padding(
@@ -547,7 +497,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                 width: 15,
                 height: 15,
                 fit: BoxFit.fill,
-                colorFilter: ColorFilter.mode(Get.theme.highlightColor, BlendMode.srcIn),
+                colorFilter:
+                    ColorFilter.mode(Get.theme.highlightColor, BlendMode.srcIn),
               ),
             ),
           ),
@@ -557,867 +508,149 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
   }
 
   Widget homeWidget() {
-    {
-      _keyboardVisible = View.of(context).viewInsets.bottom != 0;
-      return (dashboardService.videosData.value.videos.isNotEmpty)
-          ? Obx(
-              () => SlidingUpPanel(
-                  controller: dashboardController.pc,
-                  minHeight: 0,
-                  backdropEnabled: true,
-                  color: Colors.black,
-                  backdropColor: Colors.white,
-                  padding: EdgeInsets.only(top: 20, bottom: 0),
-                  maxHeight: Get.height * (_keyboardVisible ? 0.5 : 0.7),
-                  header: Column(
-                    children: [
-                      Container(
-                        width: Get.width,
-                        height: 20,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Row(
-                              children: [
-                                Obx(
-                                  () => LikeButton(
-                                    size: 25,
-                                    circleColor: CircleColor(start: Colors.transparent, end: Colors.transparent),
-                                    bubblesColor: BubblesColor(
-                                      dotPrimaryColor: dashboardController.videoObj.value.isLike ? Color(0xffee1d52) : Color(0xffffffff),
-                                      dotSecondaryColor: dashboardController.videoObj.value.isLike ? Color(0xffee1d52) : Color(0xffffffff),
-                                    ),
-                                    likeBuilder: (bool isLiked) {
-                                      return SvgPicture.asset(
-                                        'assets/icons/liked.svg',
-                                        width: 28.0,
-                                        colorFilter: ColorFilter.mode(dashboardController.videoObj.value.isLike ? Color(0xffee1d52) : Colors.white, BlendMode.srcIn),
-                                      );
-                                    },
-                                    onTap: dashboardController.onLikeButtonTapped,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  CommonHelper.formatter(dashboardController.videoObj.value.totalLikes.toString()),
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                SvgPicture.asset(
-                                  'assets/icons/chat.svg',
-                                  width: 25,
-                                  colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  CommonHelper.formatter(dashboardController.videoObj.value.totalComments.toString()),
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                SvgPicture.asset(
-                                  'assets/icons/views.svg',
-                                  width: 25,
-                                  colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  CommonHelper.formatter(dashboardController.videoObj.value.totalViews.toString()),
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            InkWell(
-                              onTap: () {
-                                Codec<String, String> stringToBase64 = utf8.fuse(base64);
-                                String vId = stringToBase64.encode(dashboardController.videoObj.value.videoId.toString());
-                                Share.share('$baseUrl$vId');
-                              },
-                              child: Row(
-                                children: [
-                                  SvgPicture.asset(
-                                    'assets/icons/share.svg',
-                                    width: 35,
-                                    colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                                  ),
-                                  Text(
-                                    "0",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 18,
-                      ),
-                      Container(
-                        width: Get.width,
-                        height: .5,
-                        color: Colors.white,
-                      )
-                    ],
-                  ),
-                  onPanelOpened: () async {
-                    if (dashboardController.bannerShowOn.indexOf("1") > -1) {
-                      dashboardController.showBannerAd.value = false;
-                      dashboardController.showBannerAd.refresh();
-                      _tempAdPadding = dashboardService.bottomPadding.value;
-                      dashboardService.bottomPadding.value = 0;
-                      dashboardService.bottomPadding.refresh();
-                    }
-                  },
-                  onPanelClosed: () {
-                    dashboardService.bottomPadding.value = _tempAdPadding;
-                    dashboardService.bottomPadding.refresh();
-                    dashboardController.showBannerAd.value = true;
-                    dashboardController.showBannerAd.refresh();
-                    setState(() {
-                      if (dashboardController.bannerShowOn.indexOf("1") > -1) {
-                        // dashboardService.bottomPadding.value = Platform.isAndroid ? 50.0 : 80.0;
-                      }
-                    });
-                    dashboardController.textFieldMoveToUp = false;
-                    FocusScope.of(context).unfocus();
-                    // setState(() {
-                    dashboardController.hideBottomBar.value = false;
-                    dashboardController.hideBottomBar.refresh();
-                    postService.commentsObj.value.comments = [];
-                    // });
+    _keyboardVisible = View.of(context).viewInsets.bottom != 0;
+    return Container(
+      decoration: BoxDecoration(color: Colors.black87),
+      height: Get.height,
+      width: Get.width,
+      padding: EdgeInsets.symmetric(vertical: 5),
+      child: Column(
+        children: [
+          Expanded(
+            child: buildImageRow(
+              label: 'MY TEAM',
+              labelColor: Colors.white,
+              imagePaths: [
+                'assets/images/sample/first.jpg',
+                'assets/images/sample/third.jpg',
+                'assets/images/sample/fourth.jpg',
+                'assets/images/sample/first.jpg',
+              ],
+            ),
+          ),
+          SizedBox(height: 10),
+          Expanded(
+            child: buildImageRow(
+              label: 'NEWS',
+              labelColor: Color.fromRGBO(255, 204, 0, 1),
+              imagePaths: [
+                'assets/images/sample/third.jpg',
+                'assets/images/sample/fourth.jpg',
+                'assets/images/sample/first.jpg',
+                'assets/images/sample/third.jpg',
+              ],
+            ),
+          ),
+          SizedBox(height: 10),
+          Expanded(
+            child: buildImageRow(
+              label: '#SPORT',
+              labelColor: Color.fromRGBO(255, 204, 0, 1),
+              imagePaths: [
+                'assets/images/sample/fourth.jpg',
+                'assets/images/sample/first.jpg',
+                'assets/images/sample/third.jpg',
+                'assets/images/sample/fourth.jpg',
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-                    dashboardController.commentController.value = new TextEditingController(text: "");
-                    dashboardController.loadMoreUpdateView.value = false;
-                    dashboardController.loadMoreUpdateView.refresh();
-                  },
-                  panelBuilder: () => Padding(
-                        padding: const EdgeInsets.only(top: 55, bottom: 0),
-                        child: Obx(() {
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Stack(
-                                  children: [
-                                    Container(
-                                      width: Get.width,
-                                      decoration: BoxDecoration(
-                                        color: Colors.black,
-                                      ),
-                                      child: (postService.commentsObj.value.comments.length > 0)
-                                          ? Obx(
-                                              () => Padding(
-                                                padding: postService.commentsObj.value.comments.length > 5
-                                                    ? authService.currentUser.value.accessToken != ''
-                                                        ? EdgeInsets.only(bottom: 10)
-                                                        : EdgeInsets.zero
-                                                    : EdgeInsets.zero,
-                                                child: ListView.separated(
-                                                  controller: dashboardController.scrollController,
-                                                  padding: EdgeInsets.zero,
-                                                  scrollDirection: Axis.vertical,
-                                                  itemCount: postService.commentsObj.value.comments.length,
-                                                  itemBuilder: (context, i) {
-                                                    return Container(
-                                                      padding: EdgeInsets.symmetric(horizontal: 10),
-                                                      child: Row(
-                                                        children: [
-                                                          Container(
-                                                            width: Get.width * (0.25),
-                                                            child: InkWell(
-                                                              onTap: () {
-                                                                mainService.isOnHomePage.value = false;
-                                                                mainService.isOnHomePage.refresh();
-                                                                dashboardController.hideBottomBar.value = false;
-                                                                dashboardController.hideBottomBar.refresh();
-                                                                if (!dashboardService.showFollowingPage.value) {
-                                                                  dashboardController.stopController(dashboardService.pageIndex.value);
-                                                                } else {}
-                                                                if (postService.commentsObj.value.comments.elementAt(i).userId == authService.currentUser.value.id) {
-                                                                  dashboardService.currentPage.value = 4;
-                                                                  dashboardService.currentPage.refresh();
-                                                                  dashboardService.pageController.value
-                                                                      .animateToPage(dashboardService.currentPage.value, duration: Duration(milliseconds: 100), curve: Curves.linear);
-                                                                  dashboardService.pageController.refresh();
-                                                                } else {
-                                                                  UserController userCon = Get.find();
-                                                                  userCon.openUserProfile(postService.commentsObj.value.comments.elementAt(i).userId);
-                                                                }
-                                                              },
-                                                              child: Container(
-                                                                width: 60.0,
-                                                                height: 60.0,
-                                                                decoration: new BoxDecoration(
-                                                                  border: Border.all(color: Colors.white, width: 2),
-                                                                  shape: BoxShape.circle,
-                                                                  image: new DecorationImage(
-                                                                    fit: BoxFit.cover,
-                                                                    image: postService.commentsObj.value.comments.elementAt(i).userDp.isNotEmpty
-                                                                        ? CachedNetworkImageProvider(
-                                                                            postService.commentsObj.value.comments.elementAt(i).userDp,
-                                                                            maxWidth: 120,
-                                                                            maxHeight: 120,
-                                                                          )
-                                                                        : AssetImage(
-                                                                            "assets/images/video-logo.png",
-                                                                          ) as ImageProvider,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            child: Column(
-                                                              mainAxisAlignment: MainAxisAlignment.start,
-                                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                                              children: [
-                                                                Row(
-                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                  children: [
-                                                                    InkWell(
-                                                                      onTap: () {
-                                                                        mainService.isOnHomePage.value = false;
-                                                                        mainService.isOnHomePage.refresh();
-                                                                        mainService.isOnHomePage.value = false;
-                                                                        mainService.isOnHomePage.refresh();
-                                                                        dashboardController.hideBottomBar.value = false;
-                                                                        dashboardController.hideBottomBar.refresh();
-                                                                        if (postService.commentsObj.value.comments.elementAt(i).userId == authService.currentUser.value.id) {
-                                                                          dashboardService.currentPage.value = 4;
-                                                                          dashboardService.currentPage.refresh();
-                                                                          dashboardService.pageController.value
-                                                                              .animateToPage(dashboardService.currentPage.value, duration: Duration(milliseconds: 100), curve: Curves.linear);
-                                                                          dashboardService.pageController.refresh();
-                                                                        } else {
-                                                                          UserController userCon = Get.find();
-                                                                          userCon.openUserProfile(postService.commentsObj.value.comments.elementAt(i).userId);
-                                                                        }
-                                                                      },
-                                                                      child: Row(
-                                                                        children: [
-                                                                          Text(
-                                                                            postService.commentsObj.value.comments.elementAt(i).username,
-                                                                            style: TextStyle(
-                                                                              fontWeight: FontWeight.bold,
-                                                                              color: Colors.white,
-                                                                              fontSize: 18.0,
-                                                                            ),
-                                                                          ),
-                                                                          SizedBox(
-                                                                            width: 5,
-                                                                          ),
-                                                                          postService.commentsObj.value.comments.elementAt(i).isVerified == true
-                                                                              ? Icon(
-                                                                                  Icons.verified,
-                                                                                  color: Get.theme.highlightColor,
-                                                                                  size: 16,
-                                                                                )
-                                                                              : Container(),
-                                                                        ],
-                                                                      ),
-                                                                    ),
-                                                                    authService.currentUser.value.id == postService.commentsObj.value.comments.elementAt(i).userId ||
-                                                                            authService.currentUser.value.id == dashboardController.videoObj.value.userId
-                                                                        ? Container(
-                                                                            width: 50,
-                                                                            child: Row(
-                                                                              mainAxisAlignment: MainAxisAlignment.end,
-                                                                              children: [
-                                                                                Container(
-                                                                                  padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                                                                                  child: Text(
-                                                                                    postService.commentsObj.value.comments.elementAt(i).time,
-                                                                                    style: TextStyle(
-                                                                                      color: Colors.white.withValues(alpha: 0.5),
-                                                                                      fontSize: 12.0,
-                                                                                    ),
-                                                                                  ),
-                                                                                ),
-                                                                                Container(
-                                                                                  height: 20,
-                                                                                  width: 18,
-                                                                                  padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 0),
-                                                                                  child: Center(
-                                                                                    child: PopupMenuButton<int>(
-                                                                                        padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                                                                                        color: Get.theme.shadowColor,
-                                                                                        icon: Icon(
-                                                                                          Icons.more_vert,
-                                                                                          size: 18,
-                                                                                          color: Colors.white.withValues(alpha: 0.5),
-                                                                                        ),
-                                                                                        onSelected: (int) {
-                                                                                          print("onSelected int $int");
-                                                                                          if (int == 0) {
-                                                                                            dashboardController.onEditComment(i, context);
-                                                                                          } else {
-                                                                                            PostController postController = Get.find();
-                                                                                            postController.showDeleteAlert(
-                                                                                                context,
-                                                                                                "Delete Confirmation".tr,
-                                                                                                "Do you really want to delete this comment".tr,
-                                                                                                postService.commentsObj.value.comments.elementAt(i).commentId,
-                                                                                                dashboardController.videoObj.value.videoId);
-                                                                                          }
-                                                                                        },
-                                                                                        itemBuilder: (context) {
-                                                                                          return authService.currentUser.value.id == postService.commentsObj.value.comments.elementAt(i).userId
-                                                                                              ? [
-                                                                                                  PopupMenuItem(
-                                                                                                    height: 15,
-                                                                                                    value: 0,
-                                                                                                    child: Padding(
-                                                                                                      padding: const EdgeInsets.all(8.0),
-                                                                                                      child: Text(
-                                                                                                        "Edit",
-                                                                                                        style: TextStyle(
-                                                                                                          color: Colors.white,
-                                                                                                          // fontFamily: 'RockWellStd',
-                                                                                                          fontSize: 12,
-                                                                                                        ),
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                  ),
-                                                                                                  PopupMenuItem(
-                                                                                                    height: 15,
-                                                                                                    value: 1,
-                                                                                                    child: Padding(
-                                                                                                      padding: const EdgeInsets.all(8.0),
-                                                                                                      child: Text(
-                                                                                                        "Delete".tr,
-                                                                                                        style: TextStyle(
-                                                                                                          color: Colors.white,
-                                                                                                          fontSize: 12,
-                                                                                                        ),
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                  )
-                                                                                                ]
-                                                                                              : [
-                                                                                                  PopupMenuItem(
-                                                                                                    height: 15,
-                                                                                                    value: 1,
-                                                                                                    child: Text(
-                                                                                                      "Delete".tr,
-                                                                                                      style: TextStyle(
-                                                                                                        color: Colors.white,
-                                                                                                        // fontFamily: 'RockWellStd',
-                                                                                                        fontSize: 12,
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                  )
-                                                                                                ];
-                                                                                        }),
-                                                                                  ),
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                          )
-                                                                        : Container(
-                                                                            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                                                                            child: Text(
-                                                                              postService.commentsObj.value.comments.elementAt(i).time,
-                                                                              style: TextStyle(
-                                                                                color: Colors.white.withValues(alpha: 0.5),
-                                                                                fontSize: 12.0,
-                                                                              ),
-                                                                            ),
-                                                                          )
-                                                                  ],
-                                                                ),
-                                                                SizedBox(
-                                                                  height: 5,
-                                                                ),
-                                                                Text(
-                                                                  postService.commentsObj.value.comments.elementAt(i).comment,
-                                                                  style: TextStyle(
-                                                                    color: Colors.white,
-                                                                    fontSize: 12.0,
-                                                                  ),
-                                                                )
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          SizedBox(
-                                                            width: 5,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    );
-                                                  },
-                                                  separatorBuilder: (context, index) {
-                                                    return Divider(
-                                                      color: Colors.white,
-                                                      thickness: 0.1,
-                                                    );
-                                                  },
-                                                ),
-                                              ),
-                                            )
-                                          : (dashboardController.videoObj.value.totalComments > 0)
-                                              ? SkeletonLoader(
-                                                  builder: Container(
-                                                    padding: EdgeInsets.symmetric(
-                                                      horizontal: 15,
-                                                      vertical: 10,
-                                                    ),
-                                                    child: Row(
-                                                      children: <Widget>[
-                                                        CircleAvatar(
-                                                          backgroundColor: Colors.white,
-                                                          radius: 18,
-                                                        ),
-                                                        SizedBox(width: 20),
-                                                        Expanded(
-                                                          child: Column(
-                                                            children: <Widget>[
-                                                              Align(
-                                                                alignment: Alignment.topLeft,
-                                                                child: Container(
-                                                                  height: 8,
-                                                                  width: 80,
-                                                                  color: Colors.white,
-                                                                ),
-                                                              ),
-                                                              SizedBox(height: 10),
-                                                              Container(
-                                                                width: double.infinity,
-                                                                height: 8,
-                                                                color: Colors.white,
-                                                              ),
-                                                              SizedBox(height: 4),
-                                                              Container(
-                                                                width: double.infinity,
-                                                                height: 8,
-                                                                color: Colors.white,
-                                                              ),
-                                                              SizedBox(height: 15),
-                                                              Align(
-                                                                alignment: Alignment.topLeft,
-                                                                child: Container(
-                                                                  width: 50,
-                                                                  height: 9,
-                                                                  color: Colors.white,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  items: dashboardController.videoObj.value.totalComments > 3 ? 3 : dashboardController.videoObj.value.totalComments,
-                                                  period: Duration(seconds: 1),
-                                                  highlightColor: Colors.white60,
-                                                  direction: SkeletonDirection.ltr,
-                                                )
-                                              : Center(
-                                                  child: Text(
-                                                    "No comment available".tr,
-                                                    style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 17, fontWeight: FontWeight.w500),
-                                                  ),
-                                                ),
-                                    ),
-                                    dashboardController.commentsLoader.value
-                                        ? CommonHelper.showLoaderSpinner(Colors.white)
-                                        : SizedBox(
-                                            height: 0,
-                                          )
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                height: 0.1,
-                                color: Colors.white.withValues(alpha: 0.5),
-                              ),
-                              authService.currentUser.value.accessToken != ''
-                                  ? Container(
-                                      padding: EdgeInsets.only(bottom: 20),
-                                      height: 100,
-                                      width: Get.width,
-                                      child: Center(
-                                        child: Obx(() {
-                                          return Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Container(
-                                                width: Get.width * 0.25,
-                                                child: Center(
-                                                  child: Container(
-                                                    width: 40.0,
-                                                    height: 40.0,
-                                                    child: ClipRRect(
-                                                      borderRadius: BorderRadius.circular(100),
-                                                      child: authService.currentUser.value.userDP != ""
-                                                          ? CachedNetworkImage(
-                                                              imageUrl: authService.currentUser.value.userDP,
-                                                              placeholder: (context, url) => Center(
-                                                                child: CommonHelper.showLoaderSpinner(Colors.white),
-                                                              ),
-                                                              fit: BoxFit.fill,
-                                                            )
-                                                          : Image.asset(
-                                                              "assets/images/video-logo.png",
-                                                              width: 40,
-                                                              height: 40,
-                                                            ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              Expanded(
-                                                child: Container(
-                                                  width: Get.width * 0.70,
-                                                  child: commentField(),
-                                                ),
-                                              ),
-                                            ],
-                                          );
-                                        }),
-                                      ),
-                                    )
-                                  : SizedBox(
-                                      height: 0,
-                                    ),
-                            ],
-                          );
-                        }),
-                      ),
-                  body: GetBuilder<DashboardController>(
-                      initState: (_) => dashboardController.jumpToCurrentVideo(),
-                      builder: (logic) {
-                        return Obx(
-                          () {
-                            return Stack(
-                              alignment: AlignmentDirectional.topCenter,
-                              children: <Widget>[
-                                PageView.builder(
-                                  allowImplicitScrolling: true,
-                                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                                  controller: dashboardController.pageViewController.value,
-                                  onPageChanged: (index) {
-                                    print("onIndexChanged $index ${dashboardService.videosData.value.videos.length}");
-                                    dashboardController.videoObj.value = dashboardService.videosData.value.videos.elementAt(index);
-                                    dashboardService.pageIndex.value = index;
-                                    dashboardController.videoObj.refresh();
-                                    dashboardController.showProgress.value = false;
-                                    dashboardController.showProgress.refresh();
-                                    if (dashboardService.videosData.value.videos.length - index == 3) {
-                                      dashboardController.listenForMoreVideos();
-                                    }
-                                  },
-                                  restorationId: dashboardService.videosData.value.videos.elementAt(0).videoId.toString(),
-                                  itemBuilder: (BuildContext context, int index) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        print("Page index $index");
-                                        dashboardController.onTap.value = true;
-                                        dashboardController.onTap.refresh();
-                                        dashboardController.playOrPauseVideo();
-                                      },
-                                      child: Stack(
-                                        fit: StackFit.passthrough,
-                                        children: <Widget>[
-                                          Container(
-                                            height: Get.height,
-                                            width: Get.width,
-                                            child: Center(
-                                              child: Container(
-                                                color: Colors.black,
-                                                child: VideoPlayerWidgetV2(videoObj: dashboardService.videosData.value.videos.elementAt(index)),
-                                              ),
-                                            ),
-                                          ),
-                                          Column(
-                                            mainAxisAlignment: MainAxisAlignment.end,
-                                            children: <Widget>[
-                                              // Top section
-                                              // Middle expanded
-                                              Obx(
-                                                () => Container(
-                                                  padding: new EdgeInsets.only(
-                                                    bottom: dashboardService.bottomPadding.value + Get.mediaQuery.viewPadding.bottom,
-                                                  ),
-                                                  child: Row(
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                                    children: <Widget>[
-                                                      VideoDescription(
-                                                        dashboardService.videosData.value.videos.elementAt(index),
-                                                        dashboardController.pc3,
-                                                      ),
-                                                      sidebar(index)
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                height: 60.0,
-                                              ),
-                                            ],
-                                          ),
-                                          (dashboardService.pageIndex.value == 0 && !dashboardController.initializePage)
-                                              ? SafeArea(
-                                                  child: Container(
-                                                    height: Get.height / 4,
-                                                    width: Get.width,
-                                                    color: Colors.transparent,
-                                                  ),
-                                                )
-                                              : Container(),
-                                        ],
-                                      ),
-                                    );
-                                    // }
-                                  },
-                                  itemCount: dashboardService.videosData.value.videos.length,
-                                  scrollDirection: Axis.vertical,
-                                ),
-                                Obx(() {
-                                  return (mainService.userVideoObj.value.userId == 0 || mainService.userVideoObj.value.userId == 0) &&
-                                          (mainService.userVideoObj.value.videoId == 0 || mainService.userVideoObj.value.videoId == 0) &&
-                                          mainService.userVideoObj.value.hashTag == ""
-                                      ? topSection()
-                                      : Padding(
-                                          padding: const EdgeInsets.only(top: 40.0, bottom: 20),
-                                          child: Container(
-                                            child: Row(
-                                              children: [
-                                                Expanded(
-                                                  flex: 0,
-                                                  child: IconButton(
-                                                    icon: Icon(
-                                                      Icons.arrow_back_ios,
-                                                      color: Colors.white,
-                                                    ),
-                                                    onPressed: () async {
-                                                      if (mainService.userVideoObj.value.videoId != 0 && mainService.userVideoObj.value.userId == 0) {
-                                                        mainService.userVideoObj.value.userId = 0;
-                                                        mainService.userVideoObj.value.videoId = 0;
-                                                        mainService.userVideoObj.value.hashTag = '';
-                                                        mainService.userVideoObj.value.name = '';
-                                                        mainService.userVideoObj.refresh();
-                                                        dashboardService.postIds = [];
-                                                        Get.offNamed('/home');
-                                                        dashboardController.getVideos();
-                                                      } else {
-                                                        mainService.userVideoObj.value.userId = 0;
-                                                        mainService.userVideoObj.value.videoId = 0;
-                                                        mainService.userVideoObj.value.name = '';
-                                                        mainService.userVideoObj.value.hashTag = '';
-                                                        mainService.userVideoObj.refresh();
-                                                        if (!dashboardService.showFollowingPage.value) {
-                                                          dashboardController.stopController(dashboardService.pageIndex.value);
-                                                        } else {}
-                                                        // await dashboardController.getFollowingUserVideos();
-                                                        dashboardService.postIds = [];
-                                                        Get.offNamed('/home');
-                                                        dashboardController.getVideos();
-                                                      }
-                                                    },
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  flex: 1,
-                                                  child: Transform.translate(
-                                                    offset: Offset(-10, 0),
-                                                    child: Text(
-                                                      mainService.userVideoObj.value.name != ""
-                                                          ? mainService.userVideoObj.value.name + " Videos".tr
-                                                          : mainService.userVideoObj.value.userId != 0
-                                                              ? "My Videos".tr
-                                                              : "",
-                                                      textAlign: TextAlign.center,
-                                                      style: TextStyle(color: Colors.white, fontSize: 16),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        );
-                                }),
-                              ],
-                            );
-                          },
-                        );
-                      })),
-            )
-          : Container(
-              decoration: BoxDecoration(color: Colors.black87),
-              height: Get.height,
-              width: Get.width,
-              child: Stack(
-                alignment: Alignment.topCenter,
-                children: <Widget>[
-                  (!dashboardController.isLoading.value && dashboardService.showFollowingPage.value)
-                      ? Container(
-                          decoration: BoxDecoration(color: Colors.black87),
-                          height: Get.mediaQuery.size.height,
-                          width: Get.mediaQuery.size.width,
-                          child: Center(
-                            child: GestureDetector(
-                              onTap: () async {
-                                if (authService.currentUser.value.accessToken != '') {
-                                  dashboardService.postIds = [];
-                                  Get.offNamed(
-                                    '/users',
-                                  );
-                                } else {
-                                  dashboardService.postIds = [];
-                                  Get.offNamed(
-                                    '/login',
-                                  );
-                                }
-                              },
-                              child: Container(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Container(
-                                      margin: EdgeInsets.all(10),
-                                      padding: EdgeInsets.all(5),
-                                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), border: Border.all(width: 2, color: Colors.white)),
-                                      child: Icon(
-                                        Icons.person,
-                                        color: Colors.white,
-                                        size: 24,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 5,
-                                    ),
-                                    Text(
-                                      "This is your feed of the users you follow".tr,
-                                      style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
-                                    ),
-                                    SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      "You can follow people or subscribe to hashtags".tr,
-                                      style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
-                                    ),
-                                    SizedBox(
-                                      height: 5,
-                                    ),
-                                    Icon(Icons.person_add, color: Colors.white, size: 45),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                  ],
-                                ),
-                              ),
+  Widget buildImageRow({
+    required String label,
+    required Color labelColor,
+    required List<String> imagePaths,
+  }) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final rowHeight = constraints.maxHeight;
+        return SizedBox(
+          height: rowHeight,
+          child: Stack(
+            children: [
+              ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: imagePaths.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    margin: EdgeInsets.only(right: 8),
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.asset(
+                            imagePaths[index],
+                            width: rowHeight * 0.75, // keep aspect ratio
+                            height: rowHeight,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 8,
+                          right: 8,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.black54,
+                              borderRadius: BorderRadius.circular(4),
                             ),
-                          ),
-                        )
-                      : dashboardController.isLoading.value
-                          ? Center(
-                              child: Center(
-                                child: CommonHelper.showLoaderSpinner(Get.theme.iconTheme.color!),
-                              ),
-                            )
-                          : Container(
-                              decoration: BoxDecoration(color: Colors.black87),
-                              height: Get.mediaQuery.size.height,
-                              width: Get.mediaQuery.size.width,
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Text(
-                                      "No Videos yet".tr,
-                                      style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                  Container(
-                    height: 111,
-                    width: Get.width,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 25.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            "Following".tr,
-                            style: TextStyle(
-                              color: dashboardService.showFollowingPage.value ? Colors.white : Colors.white.withValues(alpha: 0.8),
-                              fontWeight: dashboardService.showFollowingPage.value ? FontWeight.w500 : FontWeight.w400,
-                              fontSize: 13.0,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Container(
-                            height: 13,
-                            width: 1,
-                            color: Get.theme.primaryColor.withValues(alpha: 0.5),
-                          ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          GestureDetector(
                             child: Text(
-                              "Featured".tr,
-                              style: TextStyle(
-                                color: !dashboardService.showFollowingPage.value ? Colors.white : Colors.white.withValues(alpha: 0.8),
-                                fontWeight: !dashboardService.showFollowingPage.value ? FontWeight.w500 : FontWeight.w400,
-                                fontSize: 13.0,
-                              ),
+                              '10,3K',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 12),
                             ),
-                            onTap: () async {
-                              if (!dashboardService.showFollowingPage.value) {
-                                dashboardController.stopController(dashboardService.pageIndex.value);
-                              } else {
-                                dashboardService.showFollowingPage.value = false;
-                                dashboardService.showFollowingPage.refresh();
-                              }
-                              dashboardService.postIds = [];
-                              Get.offNamed('/home');
-                              dashboardController.getVideos();
-                            },
                           ),
-                        ],
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+              Positioned(
+                left: 0,
+                top: 0,
+                bottom: 0,
+                child: Container(
+                  width: 50,
+                  height: rowHeight,
+                  padding: EdgeInsets.only(top: 15),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: labelColor, width: 2),
+                    borderRadius: BorderRadius.circular(8),
+                    color: Color.fromRGBO(0, 0, 0, 0.6)
+                  ),
+                  child: RotatedBox(
+                    quarterTurns: -1,
+                    child: Container(
+                      alignment:
+                          Alignment.centerRight, // text at the top of the box
+                      padding: EdgeInsets.only(top: 8),
+                      child: Text(
+                        label,
+                        style: TextStyle(
+                          fontFamily:
+                              'ArimoHebrewSubsetItalic', // ensure it's defined in pubspec.yaml
+                          fontWeight: FontWeight.w700,
+                          fontStyle: FontStyle.italic,
+                          fontSize: 34,
+                          height: 1.0, // line-height: 100%
+                          letterSpacing: -0.3,
+                          color: labelColor,
+                        ),
                       ),
                     ),
                   ),
-                ],
+                ),
               ),
-            );
-    }
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Widget topSection() {
@@ -1440,12 +673,15 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                       return Text("Following".tr,
                           style: TextStyle(
                             color: Colors.white,
-                            fontWeight: dashboardService.showFollowingPage.value ? FontWeight.bold : FontWeight.w400,
+                            fontWeight: dashboardService.showFollowingPage.value
+                                ? FontWeight.bold
+                                : FontWeight.w400,
                             fontSize: 13.0,
                           ));
                     }),
                     onTap: () async {
-                      dashboardController.stopController(dashboardService.pageIndex.value);
+                      dashboardController
+                          .stopController(dashboardService.pageIndex.value);
                       dashboardService.showFollowingPage.value = true;
                       dashboardService.showFollowingPage.refresh();
                       dashboardService.postIds = [];
@@ -1470,13 +706,16 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                         "Featured".tr,
                         style: TextStyle(
                           color: Colors.white,
-                          fontWeight: dashboardService.showFollowingPage.value ? FontWeight.w400 : FontWeight.bold,
+                          fontWeight: dashboardService.showFollowingPage.value
+                              ? FontWeight.w400
+                              : FontWeight.bold,
                           fontSize: 13.0,
                         ),
                       );
                     }),
                     onTap: () async {
-                      dashboardController.stopController(dashboardService.pageIndex.value);
+                      dashboardController
+                          .stopController(dashboardService.pageIndex.value);
                       dashboardService.showFollowingPage.value = false;
                       dashboardService.showFollowingPage.refresh();
                       dashboardService.postIds = [];
@@ -1498,20 +737,19 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
       onTap: () async {
         if (authService.currentUser.value.accessToken != '') {
           if (!dashboardService.showFollowingPage.value) {
-            dashboardController.stopController(dashboardService.pageIndex.value);
+            dashboardController
+                .stopController(dashboardService.pageIndex.value);
           } else {}
           dashboardController.soundShowLoader.value = true;
           dashboardController.soundShowLoader.refresh();
           SoundController soundController = Get.find();
-          SoundData sound = await soundController.getSound(dashboardController.videoObj.value.soundId);
+          SoundData sound = await soundController
+              .getSound(dashboardController.videoObj.value.soundId);
           await soundController.selectSound(sound);
           dashboardController.soundShowLoader.value = false;
           dashboardController.soundShowLoader.refresh();
-          videoRecorderService.isOnRecordingPage.value = true;
-          videoRecorderService.isOnRecordingPage.refresh();
+
           dashboardService.postIds = [];
-          Get.put(VideoRecorderController(), permanent: true);
-          Get.offNamed("/video-recorder");
         } else {
           dashboardController.stopController(dashboardService.pageIndex.value);
           Get.offNamed("/login");
@@ -1544,9 +782,12 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(50.0),
-                            child: dashboardController.videoObj.value.soundImageUrl != ""
+                            child: dashboardController
+                                        .videoObj.value.soundImageUrl !=
+                                    ""
                                 ? CachedNetworkImage(
-                                    imageUrl: dashboardController.videoObj.value.soundImageUrl,
+                                    imageUrl: dashboardController
+                                        .videoObj.value.soundImageUrl,
                                     memCacheHeight: 50,
                                     memCacheWidth: 50,
                                     errorWidget: (a, b, c) {
@@ -1574,7 +815,9 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
 
   Widget sidebar(index) {
     Codec<String, String> stringToBase64 = utf8.fuse(base64);
-    dashboardController.encodedVideoId = stringToBase64.encode(dashboardController.encKey + dashboardController.videoObj.value.videoId.toString());
+    dashboardController.encodedVideoId = stringToBase64.encode(
+        dashboardController.encKey +
+            dashboardController.videoObj.value.videoId.toString());
     return Obx(
       () => Container(
         // padding: new EdgeInsets.only(bottom: dashboardService.paddingBottom.value - 30 > 0 ? dashboardService.paddingBottom.value - 30 : 0),
@@ -1584,22 +827,32 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
             children: [
               LikeButton(
                 size: 25,
-                circleColor: CircleColor(start: Colors.transparent, end: Colors.transparent),
+                circleColor: CircleColor(
+                    start: Colors.transparent, end: Colors.transparent),
                 bubblesColor: BubblesColor(
-                  dotPrimaryColor: dashboardController.videoObj.value.isLike ? Color(0xffee1d52) : Color(0xffffffff),
-                  dotSecondaryColor: dashboardController.videoObj.value.isLike ? Color(0xffee1d52) : Color(0xffffffff),
+                  dotPrimaryColor: dashboardController.videoObj.value.isLike
+                      ? Color(0xffee1d52)
+                      : Color(0xffffffff),
+                  dotSecondaryColor: dashboardController.videoObj.value.isLike
+                      ? Color(0xffee1d52)
+                      : Color(0xffffffff),
                 ),
                 likeBuilder: (bool isLiked) {
                   return SvgPicture.asset(
                     'assets/icons/liked.svg',
                     width: 25.0,
-                    colorFilter: ColorFilter.mode(dashboardController.videoObj.value.isLike ? Color(0xffee1d52) : Colors.white, BlendMode.srcIn),
+                    colorFilter: ColorFilter.mode(
+                        dashboardController.videoObj.value.isLike
+                            ? Color(0xffee1d52)
+                            : Colors.white,
+                        BlendMode.srcIn),
                   );
                 },
                 onTap: dashboardController.onLikeButtonTapped,
               ),
               Text(
-                CommonHelper.formatter(dashboardController.videoObj.value.totalLikes.toString()),
+                CommonHelper.formatter(
+                    dashboardController.videoObj.value.totalLikes.toString()),
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
@@ -1620,7 +873,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
               () => Column(
                 children: [
                   if (mainService.enableGifts.value)
-                    (authService.currentUser.value.id != dashboardController.videoObj.value.userId)
+                    (authService.currentUser.value.id !=
+                            dashboardController.videoObj.value.userId)
                         ? InkWell(
                             child: Image.asset(
                               "assets/icons/gift.png",
@@ -1633,9 +887,12 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                                 DashboardService dashboardService = Get.find();
                                 dashboardService.firstLoad.value = false;
                                 GiftController giftController = Get.find();
-                                giftController.openGiftsWidget(id: dashboardController.videoObj.value.videoId);
+                                giftController.openGiftsWidget(
+                                    id: dashboardController
+                                        .videoObj.value.videoId);
                               } else {
-                                Fluttertoast.showToast(msg: "You must Login first to send gifts.");
+                                Fluttertoast.showToast(
+                                    msg: "You must Login first to send gifts.");
                                 Get.toNamed("/login");
                               }
                             },
@@ -1659,14 +916,17 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                     width: 50.0,
                     child: IconButton(
                       alignment: Alignment.bottomCenter,
-                      padding: EdgeInsets.only(top: 9, bottom: 6, left: 5.0, right: 5.0),
+                      padding: EdgeInsets.only(
+                          top: 9, bottom: 6, left: 5.0, right: 5.0),
                       icon: SvgPicture.asset(
                         'assets/icons/comments.svg',
                         width: 25.0,
-                        colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                        colorFilter:
+                            ColorFilter.mode(Colors.white, BlendMode.srcIn),
                       ),
                       onPressed: () {
-                        if (dashboardController.bannerShowOn.indexOf("1") > -1) {
+                        if (dashboardController.bannerShowOn.indexOf("1") >
+                            -1) {
                           setState(() {
                             dashboardService.bottomPadding.value = 0;
                           });
@@ -1677,10 +937,14 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                         dashboardController.showBannerAd.value = false;
                         dashboardController.showBannerAd.refresh();
                         dashboardController.pc.open();
-                        if (dashboardController.videoObj.value.totalComments > 0) {
-                          dashboardController.getComments(dashboardController.videoObj.value).whenComplete(
+                        if (dashboardController.videoObj.value.totalComments >
+                            0) {
+                          dashboardController
+                              .getComments(dashboardController.videoObj.value)
+                              .whenComplete(
                             () {
-                              Timer(Duration(seconds: 1), () => setState(() {}));
+                              Timer(
+                                  Duration(seconds: 1), () => setState(() {}));
                             },
                           );
                         }
@@ -1688,7 +952,9 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                     ),
                   ),
                   Text(
-                    CommonHelper.formatter(dashboardController.videoObj.value.totalComments.toString()),
+                    CommonHelper.formatter(dashboardController
+                        .videoObj.value.totalComments
+                        .toString()),
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 12,
@@ -1713,17 +979,21 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                     width: 50.0,
                     child: IconButton(
                       alignment: Alignment.bottomCenter,
-                      padding: EdgeInsets.only(top: 0, bottom: 0, left: 5.0, right: 5.0),
+                      padding: EdgeInsets.only(
+                          top: 0, bottom: 0, left: 5.0, right: 5.0),
                       icon: SvgPicture.asset(
                         'assets/icons/views.svg',
                         width: 25.0,
-                        colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                        colorFilter:
+                            ColorFilter.mode(Colors.white, BlendMode.srcIn),
                       ),
                       onPressed: () {},
                     ),
                   ),
                   Text(
-                    CommonHelper.formatter(dashboardController.videoObj.value.totalViews.toString()),
+                    CommonHelper.formatter(dashboardController
+                        .videoObj.value.totalViews
+                        .toString()),
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 12,
@@ -1751,11 +1021,15 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                           icon: SvgPicture.asset(
                             'assets/icons/share.svg',
                             width: 25.0,
-                            colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                            colorFilter:
+                                ColorFilter.mode(Colors.white, BlendMode.srcIn),
                           ),
                           onPressed: () async {
-                            Codec<String, String> stringToBase64 = utf8.fuse(base64);
-                            String vId = stringToBase64.encode(dashboardController.videoObj.value.videoId.toString());
+                            Codec<String, String> stringToBase64 =
+                                utf8.fuse(base64);
+                            String vId = stringToBase64.encode(
+                                dashboardController.videoObj.value.videoId
+                                    .toString());
                             Share.share('$baseUrl$vId');
                           },
                         )
@@ -1779,7 +1053,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                   icon: SvgPicture.asset(
                     'assets/icons/report.svg',
                     width: 25.0,
-                    colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                    colorFilter:
+                        ColorFilter.mode(Colors.white, BlendMode.srcIn),
                   ),
                   onPressed: () async {
                     if (authService.currentUser.value.accessToken != '') {
@@ -1787,7 +1062,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                       dashboardController.showReportMsg.refresh();
                       reportLayout(context, dashboardController.videoObj.value);
                     } else {
-                      dashboardController.stopController(dashboardService.pageIndex.value);
+                      dashboardController
+                          .stopController(dashboardService.pageIndex.value);
                       Get.offNamed("/login");
                     }
                   },

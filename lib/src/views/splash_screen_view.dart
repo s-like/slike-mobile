@@ -17,7 +17,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class SplashScreenState extends State<SplashScreen> {
-  late VideoPlayerController _controller;
+  // late VideoPlayerController _controller;
 
   String dataShared = "No Data";
   SplashScreenController splashScreenController = Get.find();
@@ -28,12 +28,12 @@ class SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/videos/loading-video.mp4');
+    // _controller = VideoPlayerController.asset('assets/videos/loading-video.mp4');
 
-    _controller.setLooping(false);
-    _controller.initialize().then((_) => setState(() {}));
-    _controller.play();
-    super.initState();
+    // _controller.setLooping(false);
+    // _controller.initialize().then((_) => setState(() {}));
+    // _controller.play();
+    // super.initState();
   }
 
   @override
@@ -65,7 +65,7 @@ class SplashScreenState extends State<SplashScreen> {
             splashScreenBody: Center(
               child: Lottie.asset(
                 "assets/animations/loading-lottie.json",
-                repeat: true,
+                repeat: false,
               ),
             ), /*FlutterSplashScreen.gif(
               useImmersiveMode: true,

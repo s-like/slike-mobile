@@ -367,7 +367,7 @@ class UserController extends GetxController {
         ],
         webAuthenticationOptions: WebAuthenticationOptions(
           // TODO: Set the `clientId` and `redirectUri` arguments to the values you entered in the Apple Developer portal during the setup
-          clientId: 'com.leuke.applogin',
+          clientId: 'com.slike.appslogin',
           redirectUri: Uri.parse(
             'https://smiling-abrupt-screw.glitch.me/callbacks/sign_in_with_apple',
           ),
@@ -1315,17 +1315,46 @@ class UserController extends GetxController {
         padding: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
         child: Column(
           children: [
-            errorTitle.text.textStyle(Get.theme.textTheme.headlineMedium).make().pOnly(bottom: 5),
-            errorString.text.textStyle(Get.theme.textTheme.titleMedium).make().pOnly(bottom: 10),
+            Text(
+              errorTitle,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFFFD700),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 5),
+            Text(
+              errorString,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 10),
             showSendOtp
                 ? Row(
                     children: [
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFFFFD700),
+                            foregroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
                             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                           ),
-                          child: "Resend OTP".tr.text.center.make(),
+                          child: Text(
+                            "Resend OTP",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           onPressed: () {
                             CommonHelper.showLoaderSpinner(Get.theme.indicatorColor);
                             Get.back();
@@ -1338,15 +1367,25 @@ class UserController extends GetxController {
                           },
                         ),
                       ),
-                      SizedBox(
-                        width: 2,
-                      ),
+                      SizedBox(width: 2),
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFFFFD700),
+                            foregroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
                             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                           ),
-                          child: "Ok".tr.text.center.make(),
+                          child: Text(
+                            "OK",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           onPressed: () => Get.back(),
                         ),
                       ),
@@ -1356,12 +1395,24 @@ class UserController extends GetxController {
                     width: Get.width,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFFFD700),
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
                         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                       ),
-                      child: "Ok".tr.text.center.make(),
+                      child: Text(
+                        "OK",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       onPressed: () => Get.back(),
                     ),
-                  )
+                  ),
           ],
         ),
       ),
