@@ -1,0 +1,2 @@
+-keep class com.pusher.client.** { *; }
+-dontwarn org.slf4j.impl.StaticLoggerBinder
