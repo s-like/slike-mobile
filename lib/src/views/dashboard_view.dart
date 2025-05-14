@@ -45,31 +45,9 @@ class CustomBottomNavBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildSvgNavItem(0, 'assets/icons/home.svg', () {
-            dashboardService.currentPage.value = 0;
-            dashboardService.currentPage.refresh();
-            mainService.isOnHomePage.value = true;
-            mainService.isOnHomePage.refresh();
-            dashboardService.pageController.value.animateToPage(
-              dashboardService.currentPage.value,
-              duration: Duration(milliseconds: 100),
-              curve: Curves.linear,
-            );
-            dashboardService.pageController.refresh();
-          }),
-          _buildSvgNavItem(1, 'assets/icons/video.svg', () {
-            dashboardService.currentPage.value = 1;
-            dashboardService.currentPage.refresh();
-            mainService.isOnHomePage.value = false;
-            mainService.isOnHomePage.refresh();
-            dashboardService.pageController.value.animateToPage(
-              dashboardService.currentPage.value,
-              duration: Duration(milliseconds: 100),
-              curve: Curves.linear,
-            );
-            dashboardService.pageController.refresh();
-          }),
-          _buildSvgNavItem(2, 'assets/icons/create-video.svg', () {
+          _buildNavItem(0, 'assets/icons/home.svg', () => onTap(0)),
+          _buildNavItem(1, 'assets/icons/video.svg', () => onTap(1)),
+          _buildNavItem(2, 'assets/icons/create-video.svg', () {
             if (dashboardService.isUploading.value) {
               Fluttertoast.showToast(
                 msg: 'Video is being uploaded kindly wait for the process to complete'.tr,
@@ -95,20 +73,9 @@ class CustomBottomNavBar extends StatelessWidget {
               }
             }
           }),
-          _buildSvgNavItem(3, 'assets/icons/market.svg', () {
-            dashboardService.currentPage.value = 3;
-            dashboardService.currentPage.refresh();
-            mainService.isOnHomePage.value = false;
-            mainService.isOnHomePage.refresh();
-            dashboardService.bottomPadding.value = 0.0;
-            dashboardService.bottomPadding.refresh();
+          _buildNavItem(3, 'assets/icons/market.svg', () {
             if (authService.currentUser.value.accessToken != '') {
-              dashboardService.pageController.value.animateToPage(
-                dashboardService.currentPage.value,
-                duration: Duration(milliseconds: 100),
-                curve: Curves.linear,
-              );
-              dashboardService.pageController.refresh();
+              onTap(3);
             } else {
               Get.offNamed('/login');
             }
@@ -118,20 +85,8 @@ class CustomBottomNavBar extends StatelessWidget {
             final bool isAuthenticated = authService.currentUser.value.accessToken != '';
             return GestureDetector(
               onTap: () {
-                dashboardService.currentPage.value = 4;
-                dashboardService.currentPage.refresh();
-                mainService.isOnHomePage.value = false;
-                mainService.isOnHomePage.refresh();
-                dashboardController.stopController(dashboardService.pageIndex.value);
-                dashboardService.bottomPadding.value = 0.0;
-                dashboardService.bottomPadding.refresh();
                 if (isAuthenticated) {
-                  dashboardService.pageController.value.animateToPage(
-                    dashboardService.currentPage.value,
-                    duration: Duration(milliseconds: 100),
-                    curve: Curves.linear,
-                  );
-                  dashboardService.pageController.refresh();
+                  onTap(4);
                 } else {
                   Get.offNamed('/login');
                 }
@@ -176,7 +131,7 @@ class CustomBottomNavBar extends StatelessWidget {
     );
   }
 
-  Widget _buildSvgNavItem(int index, String asset, VoidCallback onTap) {
+  Widget _buildNavItem(int index, String asset, VoidCallback onTap) {
     final bool isSelected = index == currentIndex;
     return GestureDetector(
       onTap: onTap,
@@ -194,29 +149,6 @@ class CustomBottomNavBar extends StatelessWidget {
           asset,
           width: 24,
           height: 24,
-          color: isSelected ? Colors.black : Colors.white,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildIconNavItem(int index, IconData icon, VoidCallback onTap) {
-    final bool isSelected = index == currentIndex;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 60,
-        height: 60,
-        alignment: Alignment.center,
-        decoration: isSelected
-            ? BoxDecoration(
-                color: Color(0XFFFFCD00),
-                shape: BoxShape.circle,
-              )
-            : null,
-        child: Icon(
-          icon,
-          size: 24,
           color: isSelected ? Colors.black : Colors.white,
         ),
       ),
@@ -253,14 +185,29 @@ class _DashboardViewState extends State<DashboardView> {
 
   // DateTime currentBackPressTime = DateTime.now();
   Widget build(BuildContext context) {
-    var currentIndex = 0;
     return Obx(() {
       return Scaffold(
         backgroundColor: Colors.black,
         resizeToAvoidBottomInset: false,
         bottomNavigationBar: CustomBottomNavBar(
-          currentIndex: currentIndex,
-          onTap: (newIndex) {},
+          currentIndex: dashboardService.currentPage.value,
+          onTap: (newIndex) {
+            dashboardService.currentPage.value = newIndex;
+            dashboardService.currentPage.refresh();
+            if (newIndex == 0) {
+              mainService.isOnHomePage.value = true;
+              mainService.isOnHomePage.refresh();
+            } else {
+              mainService.isOnHomePage.value = false;
+              mainService.isOnHomePage.refresh();
+            }
+            dashboardService.pageController.value.animateToPage(
+              newIndex,
+              duration: Duration(milliseconds: 100),
+              curve: Curves.linear,
+            );
+            dashboardService.pageController.refresh();
+          },
         ),
         appBar: dashboardService.currentPage.value != 4 ? AppBar(
           leading: Image.asset("assets/images/video-logo.png"),
