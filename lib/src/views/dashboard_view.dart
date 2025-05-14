@@ -221,124 +221,64 @@ class _DashboardViewState extends State<DashboardView> {
           toolbarHeight: 59,
           backgroundColor: Colors.black,
           actions: [
-            Container(
-              width: Get.width * 0.15,
-              child: SvgPicture.asset("assets/icons/search.svg",
-                  width: 30, height: 30),
-            ),
-            badges.Badge(
-              badgeContent: Text(
-                authService.notificationsCount.value.toString(),
-                style: TextStyle(color: Colors.black),
-              ),
-              position: badges.BadgePosition.topEnd(top: -10, end: 0),
-              showBadge: false,
-              ignorePointer: false,
-              onTap: () {
-                Get.toNamed("/notifications");
-              },
-              badgeAnimation: badges.BadgeAnimation.rotation(
-                animationDuration: Duration(seconds: 1),
-                colorChangeAnimationDuration: Duration(seconds: 1),
-                loopAnimation: false,
-                curve: Curves.fastOutSlowIn,
-                colorChangeAnimationCurve: Curves.easeInCubic,
-              ),
-              badgeStyle: badges.BadgeStyle(
-                shape: badges.BadgeShape.circle,
-                badgeColor: Colors.red, // fallback if gradient fails
-                padding: EdgeInsets.all(2),
-                borderRadius: BorderRadius.circular(4),
-                borderSide: BorderSide(color: Colors.white, width: 2),
-                borderGradient: badges.BadgeGradient.linear(
-                  colors: [Color(0xFFDB4437), Color(0xFFDB4437)],
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Search Icon
+                IconButton(
+                  icon: SvgPicture.asset(
+                    "assets/icons/search.svg",
+                    width: 26,
+                    height: 26,
+                    color: Color(0xFFFFD700),
+                  ),
+                  onPressed: () {
+                    // Your search action
+                  },
                 ),
-                badgeGradient: badges.BadgeGradient.linear(
-                  colors: [Color(0xFFDB4437), Color(0xFFDB4437)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-                elevation: 0,
-              ),
-              child: Container(
-                width: Get.width * 0.15,
-                child: SvgPicture.asset(
-                  "assets/icons/notification.svg",
-                  width: 30,
-                  height: 30,
-                ),
-              ),
-            ),
-            badges.Badge(
-              badgeContent: Text(
-                dashboardService.unreadMessageCount.value.toString(),
-                style: TextStyle(
-                    color: Colors.black, fontSize: 6, letterSpacing: -0.3),
-              ),
-              onTap: () {
-                if (dashboardService.currentPage.value == 0) {
-                  dashboardController
-                      .stopController(dashboardService.pageIndex.value);
-                }
-                dashboardService.currentPage.value = 3;
-                dashboardService.currentPage.refresh();
-                mainService.isOnHomePage.value = false;
-                // dashboardController.checkPlayController = 0;
-                mainService.isOnHomePage.refresh();
-                dashboardService.bottomPadding.value = 0.0;
-                dashboardService.bottomPadding.refresh();
-
-                if (authService.currentUser.value.accessToken != '') {
-                  dashboardService.pageController.value.animateToPage(
-                      dashboardService.currentPage.value,
-                      duration: Duration(milliseconds: 100),
-                      curve: Curves.linear);
-                  dashboardService.pageController.refresh();
-                } else {
-                  Get.offNamed('/login');
-                }
-              },
-              position: badges.BadgePosition.topEnd(top: -10, end: 0),
-              showBadge: false,
-              ignorePointer: false,
-              badgeAnimation: badges.BadgeAnimation.rotation(
-                animationDuration: Duration(seconds: 1),
-                colorChangeAnimationDuration: Duration(seconds: 1),
-                loopAnimation: false,
-                curve: Curves.fastOutSlowIn,
-                colorChangeAnimationCurve: Curves.easeInCubic,
-              ),
-              badgeStyle: badges.BadgeStyle(
-                shape: badges.BadgeShape.circle,
-                badgeColor: Colors.red, // fallback if gradient fails
-                padding: EdgeInsets.all(2),
-                borderRadius: BorderRadius.circular(4),
-                borderSide: BorderSide(color: Colors.white, width: 2),
-                borderGradient: badges.BadgeGradient.linear(
-                  colors: [Color(0xFFDB4437), Color(0xFFDB4437)],
-                ),
-                badgeGradient: badges.BadgeGradient.linear(
-                  colors: [Color(0xFFDB4437), Color(0xFFDB4437)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-                elevation: 0,
-              ),
-              child: InkWell(
-                onTap: () {
-                  Get.toNamed("/chat");
-                },
-                child: Container(
-                  width: Get.width * 0.15,
-                  child: SvgPicture.asset(
-                    "assets/icons/chat.svg",
-                    // colorFilter: ColorFilter.mode(
-                    //     Colors.white, BlendMode.srcIn),
-                    width: 30,
-                    height: 30,
+                // Notification Badge
+                badges.Badge(
+                  badgeContent: Text(
+                    '15',
+                    style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
+                  ),
+                  position: badges.BadgePosition.topEnd(top: 2, end: 2),
+                  showBadge: true,
+                  child: IconButton(
+                    icon: SvgPicture.asset(
+                      "assets/icons/notification.svg",
+                      width: 26,
+                      height: 26,
+                      color: Color(0xFFFFD700),
+                    ),
+                    onPressed: () {
+                      Get.toNamed("/notifications");
+                    },
                   ),
                 ),
-              ),
+                // Message Badge
+                badges.Badge(
+                  badgeContent: Text(
+                    '12',
+                    style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
+                  ),
+                  position: badges.BadgePosition.topEnd(top: 2, end: 2),
+                  showBadge: true,
+                  child: IconButton(
+                    icon: SvgPicture.asset(
+                      "assets/icons/chat.svg",
+                      width: 26,
+                      height: 26,
+                      color: Color(0xFFFFD700),
+                    ),
+                    onPressed: () {
+                      Get.toNamed("/chat");
+                    },
+                  ),
+                ),
+                SizedBox(width: 8),
+              ],
             ),
           ],
         ),
