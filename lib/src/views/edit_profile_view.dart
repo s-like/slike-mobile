@@ -81,6 +81,17 @@ class _EditProfileViewState extends State<EditProfileView> {
       backgroundColor: Colors.transparent,
       key: userProfileController.scaffoldKey,
       resizeToAvoidBottomInset: true,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
+          onPressed: () => Get.back(),
+        ),
+        centerTitle: true,
+        title: Text('Edit Profile', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+      ),
       body: Stack(
         children: [
           // Background image
@@ -107,26 +118,6 @@ class _EditProfileViewState extends State<EditProfileView> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Back Arrow
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFFFFD700)),
-                          onPressed: () {
-                            Get.back();
-                          },
-                        ),
-                        Text(
-                          "Edit Profile",
-                          style: TextStyle(
-                            color: Color(0xFFFFD700),
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
                     const SizedBox(height: 16),
                     // Profile Photo
                     Stack(

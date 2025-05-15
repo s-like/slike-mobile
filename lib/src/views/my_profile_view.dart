@@ -73,7 +73,7 @@ class _MyProfileViewState extends State<MyProfileView> {
                     children: [
                       IconButton(
                         icon: Icon(Icons.settings, color: Colors.white, size: 28),
-                        onPressed: () => Get.toNamed("/settings"),
+                        onPressed: () => {},
                       ),
                       IconButton(
                         icon: Icon(Icons.edit, color: Colors.white, size: 28),

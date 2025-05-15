@@ -69,7 +69,7 @@ class CustomBottomNavBar extends StatelessWidget {
           }),
           _buildNavItem(3, 'assets/icons/market.svg', () {
             if (authService.currentUser.value.accessToken != '') {
-              onTap(3);
+              // onTap(3);
             } else {
               Get.offNamed('/login');
             }
