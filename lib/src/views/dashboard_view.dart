@@ -204,7 +204,7 @@ class _DashboardViewState extends State<DashboardView> {
             dashboardService.pageController.refresh();
           },
         ),
-        appBar: dashboardService.currentPage.value != 4 ? AppBar(
+        appBar: (dashboardService.currentPage.value != 4 && dashboardService.currentPage.value != 1) ? AppBar(
           leading: Image.asset("assets/images/video-logo.png"),
           leadingWidth: 189,
           toolbarHeight: 59,

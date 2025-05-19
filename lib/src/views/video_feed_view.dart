@@ -28,7 +28,6 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
   DashboardService dashboardService = Get.find();
   VideoRecorderService videoRecorderService = Get.find();
   PostService postService = Get.find();
-  late AnimationController musicAnimationController;
   DateTime currentBackPressTime = DateTime.now();
 
   double _tempAdPadding = 0;
@@ -37,12 +36,6 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
   void initState() {
     mainService.isOnHomePage.value = false;
     mainService.isOnHomePage.refresh();
-
-    musicAnimationController = new AnimationController(
-      vsync: this,
-      duration: new Duration(seconds: 10),
-    );
-    musicAnimationController.repeat();
     
     // Initialize video feed data
     dashboardController.getVideos();
@@ -51,7 +44,6 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
 
   @override
   void dispose() {
-    musicAnimationController.dispose();
     dashboardController.stopController(dashboardService.pageIndex.value);
     dashboardService.postIds = [];
     super.dispose();
@@ -400,95 +392,17 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
             ],
           ),
           SizedBox(height: 10),
-          (dashboardController.videoObj.value.soundId > 0)
-              ? _getMusicPlayerAction(index)
-              : SizedBox(height: 0),
-          (dashboardController.videoObj.value.soundId > 0)
-              ? Divider(
-                  color: Colors.transparent,
-                  height: 5.0,
-                )
-              : SizedBox(height: 0),
+          // Removing the music player action widget
+          // (dashboardController.videoObj.value.soundId > 0)
+          //     ? _getMusicPlayerAction(index)
+          //     : SizedBox(height: 0),
+          // (dashboardController.videoObj.value.soundId > 0)
+          //     ? Divider(
+          //         color: Colors.transparent,
+          //         height: 5.0,
+          //       )
+          //     : SizedBox(height: 0),
         ]),
-      ),
-    );
-  }
-
-  Widget _getMusicPlayerAction(index) {
-    return GestureDetector(
-      onTap: () async {
-        if (authService.currentUser.value.accessToken != '') {
-          if (!dashboardService.showFollowingPage.value) {
-            dashboardController.stopController(dashboardService.pageIndex.value);
-          }
-          dashboardController.soundShowLoader.value = true;
-          dashboardController.soundShowLoader.refresh();
-          SoundController soundController = Get.find();
-          SoundData sound = await soundController.getSound(dashboardController.videoObj.value.soundId);
-          await soundController.selectSound(sound);
-          dashboardController.soundShowLoader.value = false;
-          dashboardController.soundShowLoader.refresh();
-          videoRecorderService.isOnRecordingPage.value = true;
-          videoRecorderService.isOnRecordingPage.refresh();
-          dashboardService.postIds = [];
-          Get.put(VideoRecorderController(), permanent: true);
-          Get.offNamed("/video-recorder");
-        } else {
-          dashboardController.stopController(dashboardService.pageIndex.value);
-          Get.offNamed("/login");
-        }
-      },
-      child: RotationTransition(
-        turns: Tween(begin: 0.0, end: 1.0).animate(musicAnimationController),
-        child: Container(
-          margin: EdgeInsets.only(top: 10.0),
-          width: 50,
-          height: 50,
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.all(2),
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(50 / 2),
-                ),
-                child: Obx(() {
-                  return (!dashboardController.soundShowLoader.value)
-                      ? Container(
-                          height: 45.0,
-                          width: 45.0,
-                          decoration: BoxDecoration(
-                            color: Colors.white30,
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(50.0),
-                            child: dashboardController.videoObj.value.soundImageUrl != ""
-                                ? CachedNetworkImage(
-                                    imageUrl: dashboardController.videoObj.value.soundImageUrl,
-                                    memCacheHeight: 50,
-                                    memCacheWidth: 50,
-                                    errorWidget: (a, b, c) {
-                                      return Image.asset(
-                                        "assets/images/splash.png",
-                                        fit: BoxFit.cover,
-                                      );
-                                    },
-                                  )
-                                : Image.asset(
-                                    "assets/images/splash.png",
-                                    fit: BoxFit.cover,
-                                  ),
-                          ),
-                        )
-                      : CommonHelper.showLoaderSpinner(Colors.white);
-                }),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
