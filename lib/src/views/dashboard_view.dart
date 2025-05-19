@@ -7,6 +7,7 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart' as MBS;
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:badges/badges.dart' as badges;
 import '../core.dart';
+import 'video_feed_view.dart';
 
 class DashboardView extends StatefulWidget {
   const DashboardView({Key? key}) : super(key: key);
@@ -341,13 +342,10 @@ class _DashboardViewState extends State<DashboardView> {
                         physics: const NeverScrollableScrollPhysics(),
                         children: [
                           HomeView(),
+                          VideoFeedView(),
                           SearchView(),
-                          SearchView(),
-
-                          // EventView(),
                           ConversationsView(),
                           MyProfileView(),
-                          // NewMyProfileView(),
                         ],
                       ),
                     ),
