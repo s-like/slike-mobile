@@ -95,84 +95,150 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
   }
 
   Widget _buildVideoFeed() {
-    return (dashboardService.videosData.value.videos.isNotEmpty)
-        ? Obx(
-            () => PageView.builder(
-              allowImplicitScrolling: true,
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              controller: dashboardController.pageViewController.value,
-              onPageChanged: (index) {
-                dashboardController.videoObj.value = dashboardService.videosData.value.videos.elementAt(index);
-                dashboardService.pageIndex.value = index;
-                dashboardController.videoObj.refresh();
-                dashboardController.showProgress.value = false;
-                dashboardController.showProgress.refresh();
-                if (dashboardService.videosData.value.videos.length - index == 3) {
-                  dashboardController.listenForMoreVideos();
-                }
-              },
-              itemBuilder: (BuildContext context, int index) {
-                return GestureDetector(
-                  onTap: () {
-                    dashboardController.onTap.value = true;
-                    dashboardController.onTap.refresh();
-                    dashboardController.playOrPauseVideo();
-                  },
-                  child: Stack(
-                    fit: StackFit.passthrough,
-                    children: <Widget>[
-                      Container(
-                        height: Get.height,
-                        width: Get.width,
-                        child: Center(
-                          child: Container(
-                            color: Colors.black,
-                            child: VideoPlayerWidgetV2(videoObj: dashboardService.videosData.value.videos.elementAt(index)),
-                          ),
-                        ),
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Obx(
-                            () => Container(
-                              padding: new EdgeInsets.only(
-                                bottom: dashboardService.bottomPadding.value + Get.mediaQuery.viewPadding.bottom,
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: <Widget>[
-                                  VideoDescription(
-                                    dashboardService.videosData.value.videos.elementAt(index),
-                                    dashboardController.pc3,
-                                  ),
-                                  _buildSidebar(index)
-                                ],
-                              ),
+    return Obx(() {
+      if (dashboardController.isLoading.value) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+              SizedBox(height: 16),
+              Text(
+                "Loading videos...".tr,
+                style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        );
+      }
+      
+      if (!dashboardController.isVideoInitialized.value) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                Icons.videocam_off,
+                size: 48,
+                color: Colors.white.withOpacity(0.7),
+              ),
+              SizedBox(height: 16),
+              Text(
+                "No Videos yet".tr,
+                style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
+              ),
+              SizedBox(height: 8),
+              TextButton(
+                onPressed: () {
+                  dashboardController.getVideos();
+                },
+                child: Text(
+                  "Try Again".tr,
+                  style: TextStyle(color: Colors.white70),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
+      return (dashboardService.videosData.value.videos.isNotEmpty)
+          ? Obx(
+              () => PageView.builder(
+                allowImplicitScrolling: true,
+                clipBehavior: Clip.antiAliasWithSaveLayer,
+                controller: dashboardController.pageViewController.value,
+                onPageChanged: (index) {
+                  dashboardController.videoObj.value = dashboardService.videosData.value.videos.elementAt(index);
+                  dashboardService.pageIndex.value = index;
+                  dashboardController.videoObj.refresh();
+                  dashboardController.showProgress.value = false;
+                  dashboardController.showProgress.refresh();
+                  if (dashboardService.videosData.value.videos.length - index == 3) {
+                    dashboardController.listenForMoreVideos();
+                  }
+                },
+                itemBuilder: (BuildContext context, int index) {
+                  return GestureDetector(
+                    onTap: () {
+                      dashboardController.onTap.value = true;
+                      dashboardController.onTap.refresh();
+                      dashboardController.playOrPauseVideo();
+                    },
+                    child: Stack(
+                      fit: StackFit.passthrough,
+                      children: <Widget>[
+                        Container(
+                          height: Get.height,
+                          width: Get.width,
+                          child: Center(
+                            child: Container(
+                              color: Colors.black,
+                              child: VideoPlayerWidgetV2(videoObj: dashboardService.videosData.value.videos.elementAt(index)),
                             ),
                           ),
-                        ],
-                      ),
-                    ],
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            Obx(
+                              () => Container(
+                                padding: new EdgeInsets.only(
+                                  bottom: dashboardService.bottomPadding.value + Get.mediaQuery.viewPadding.bottom,
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: <Widget>[
+                                    VideoDescription(
+                                      dashboardService.videosData.value.videos.elementAt(index),
+                                      dashboardController.pc3,
+                                    ),
+                                    _buildSidebar(index)
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                itemCount: dashboardService.videosData.value.videos.length,
+                scrollDirection: Axis.vertical,
+              ),
+            )
+          : Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(
+                    Icons.videocam_off,
+                    size: 48,
+                    color: Colors.white.withOpacity(0.7),
                   ),
-                );
-              },
-              itemCount: dashboardService.videosData.value.videos.length,
-              scrollDirection: Axis.vertical,
-            ),
-          )
-        : Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  "No Videos yet".tr,
-                  style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-          );
+                  SizedBox(height: 16),
+                  Text(
+                    "No Videos yet".tr,
+                    style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
+                  ),
+                  SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () {
+                      dashboardController.getVideos();
+                    },
+                    child: Text(
+                      "Try Again".tr,
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                  ),
+                ],
+              ),
+            );
+    });
   }
 
   Widget _buildSidebar(int index) {

@@ -85,7 +85,22 @@ class _UsersProfileViewState extends State<UsersProfileView> {
                 mainService.fromUsersView.value = false;
                 Get.offNamed('/users');
               } else {
-                Get.offNamed('/home');
+                // Reset video feed state and reinitialize
+                dashboardService.pageIndex.value = 0;
+                dashboardService.videosData.value.videos = [];
+                dashboardService.videosData.refresh();
+                dashboardService.currentPage.value = 1; // Set to video feed page
+                dashboardService.currentPage.refresh();
+                dashboardService.pageController.value.animateToPage(
+                  dashboardService.currentPage.value,
+                  duration: Duration(milliseconds: 100),
+                  curve: Curves.linear,
+                );
+                dashboardService.pageController.refresh();
+                // Initialize video feed data
+                dashboardController.getVideos().whenComplete(() {
+                  Get.offNamed('/home');
+                });
               }
               return Future.value(false);
             },
@@ -125,7 +140,22 @@ class _UsersProfileViewState extends State<UsersProfileView> {
                                     mainService.fromUsersView.value = false;
                                     Get.offNamed('/users');
                                   } else {
-                                    Get.offNamed('/home');
+                                    // Reset video feed state and reinitialize
+                                    dashboardService.pageIndex.value = 0;
+                                    dashboardService.videosData.value.videos = [];
+                                    dashboardService.videosData.refresh();
+                                    dashboardService.currentPage.value = 1; // Set to video feed page
+                                    dashboardService.currentPage.refresh();
+                                    dashboardService.pageController.value.animateToPage(
+                                      dashboardService.currentPage.value,
+                                      duration: Duration(milliseconds: 100),
+                                      curve: Curves.linear,
+                                    );
+                                    dashboardService.pageController.refresh();
+                                    // Initialize video feed data
+                                    dashboardController.getVideos().whenComplete(() {
+                                      Get.offNamed('/home');
+                                    });
                                   }
                                 },
                                 child: Icon(
