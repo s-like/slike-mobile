@@ -14,6 +14,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../core.dart';
+import 'dashboard_view.dart';  // Add this import for CustomBottomNavBar
 
 class VideoFeedView extends StatefulWidget {
   VideoFeedView({Key? key}) : super(key: key);
@@ -29,21 +30,44 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
   VideoRecorderService videoRecorderService = Get.find();
   PostService postService = Get.find();
   DateTime currentBackPressTime = DateTime.now();
+  bool _isInitialized = false;
 
   @override
   void initState() {
+    super.initState();
+    // Initialize state
     mainService.isOnHomePage.value = false;
     mainService.isOnHomePage.refresh();
     
-    // Initialize video feed data
+    // Reset video feed state
+    dashboardService.pageIndex.value = 0;
+    dashboardService.videosData.value.videos = [];
+    dashboardService.videosData.refresh();
+    
+    // Schedule video initialization for after build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_isInitialized) {
+        _initializeVideoFeed();
+      }
+    });
+  }
+
+  void _initializeVideoFeed() {
+    if (!mounted) return;
+    setState(() {
+      _isInitialized = true;
+    });
     dashboardController.getVideos();
-    super.initState();
   }
 
   @override
   void dispose() {
     dashboardController.stopController(dashboardService.pageIndex.value);
     dashboardService.postIds = [];
+    // Reset video feed state when leaving
+    dashboardService.pageIndex.value = 0;
+    dashboardService.videosData.value.videos = [];
+    dashboardService.videosData.refresh();
     super.dispose();
   }
 
@@ -56,12 +80,13 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
           dashboardController.pc.close();
           return Future.value(false);
         }
-        if (now.difference(currentBackPressTime) > Duration(seconds: 2)) {
-          currentBackPressTime = now;
-          Fluttertoast.showToast(msg: "Tap again to exit an app".tr);
-          return Future.value(false);
-        }
-        SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        
+        // Navigate back to home view
+        dashboardService.currentPage.value = 0;
+        dashboardService.currentPage.refresh();
+        mainService.isOnHomePage.value = true;
+        mainService.isOnHomePage.refresh();
+        Get.offNamed('/home');
         return Future.value(false);
       },
       child: Scaffold(
@@ -70,14 +95,14 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
           () => Stack(
             children: [
               RefreshIndicator(
-                onRefresh: () {
+                onRefresh: () async {
                   if (dashboardService.randomString.value != "") {
                     dashboardService.randomString.value = CommonHelper.getRandomString(4, numeric: true);
                     dashboardService.randomString.refresh();
                   }
                   dashboardController.stopController(dashboardService.pageIndex.value);
                   dashboardService.postIds = [];
-                  return dashboardController.getVideos();
+                  await dashboardController.getVideos();
                 },
                 child: _buildVideoFeed(),
               ),
@@ -89,6 +114,50 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
                   : Container(),
             ],
           ),
+        ),
+        bottomNavigationBar: CustomBottomNavBar(
+          currentIndex: 1, // Set to 1 for video feed
+          onTap: (newIndex) {
+            if (newIndex != 1) { // If not clicking video icon
+              if (newIndex == 2) { // If clicking create video button
+                if (dashboardService.isUploading.value) {
+                  Fluttertoast.showToast(
+                    msg: 'Video is being uploaded kindly wait for the process to complete'.tr,
+                    textColor: Get.theme.primaryColor,
+                  );
+                } else {
+                  mainService.isOnHomePage.value = false;
+                  mainService.isOnHomePage.refresh();
+                  dashboardService.bottomPadding.value = 0.0;
+                  dashboardController.stopController(dashboardService.pageIndex.value);
+                  if (authService.currentUser.value.accessToken != '') {
+                    mainService.isOnRecordingPage.value = true;
+                    Get.put(VideoRecorderController(), permanent: true);
+                    Get.offNamed('/video-recorder');
+                  } else {
+                    // Reset navigation state before going to login
+                    dashboardService.currentPage.value = 1; // Keep video feed as current page
+                    dashboardService.currentPage.refresh();
+                    Get.offNamed('/login');
+                  }
+                }
+              } else {
+                dashboardService.currentPage.value = newIndex;
+                dashboardService.currentPage.refresh();
+                switch (newIndex) {
+                  case 0:
+                    Get.offNamed('/home');
+                    break;
+                  case 2:
+                    Get.offNamed('/conversations');
+                    break;
+                  case 3:
+                    Get.offNamed('/my-profile');
+                    break;
+                }
+              }
+            }
+          },
         ),
       ),
     );
