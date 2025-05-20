@@ -70,7 +70,6 @@ class _VideoRecorderState extends State<VideoRecorder> with TickerProviderStateM
 
   @override
   void initState() {
-    videoRecorderController.getTimeLimits();
     videoRecorderController.initCamera();
     if (soundService.currentSound.value.soundId > 0) {
       videoRecorderController.saveAudio(soundService.currentSound.value.url);
@@ -301,10 +300,11 @@ class _VideoRecorderState extends State<VideoRecorder> with TickerProviderStateM
                                   !videoRecorderController.mainCameraController!.value.isRecordingVideo) &&
                               !videoRecorderController.isCountDownTimerShown.value
                           ? Positioned(
-                              bottom: 110,
+                              top: 30,
                               child: Container(
                                 width: Get.width,
-                                child: Center(
+                                child: Align(
+                                  alignment: Alignment.bottomCenter,
                                   child: getTimerLimit(),
                                 ),
                               ),
@@ -327,7 +327,7 @@ class _VideoRecorderState extends State<VideoRecorder> with TickerProviderStateM
                     Obx(
                       () => (videoRecorderController.showProgressBar.value)
                           ? Positioned(
-                              top: 10,
+                              top: 30,
                               child: Obx(() {
                                 return LinearPercentIndicator(
                                   width: Get.width,
@@ -336,7 +336,6 @@ class _VideoRecorderState extends State<VideoRecorder> with TickerProviderStateM
                                   percent: videoRecorderService.videoProgressPercent.value,
                                   progressColor: Colors.pink,
                                   padding: EdgeInsets.symmetric(horizontal: 2),
-                                  // progressColor: Colors.black,
                                 );
                               }),
                             )
@@ -350,182 +349,39 @@ class _VideoRecorderState extends State<VideoRecorder> with TickerProviderStateM
                               !videoRecorderController.isCountDownTimerShown.value
                           ? Positioned(
                               top: 30,
+                              left: 10,
                               child: Container(
                                 width: Get.width,
                                 child: Align(
-                                  alignment: Alignment.bottomCenter,
-                                  child: GestureDetector(
-                                    child: SizedBox(
-                                      width: 140.0,
-                                      child: MarqueeWidget(
-                                        direction: Axis.horizontal,
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: <Widget>[
-                                            Text(
-                                              soundService.currentSound.value.title == "" ? "${'Select Sound'.tr} " : soundService.currentSound.value.title,
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                            Icon(
-                                              Icons.queue_music,
-                                              size: 22,
-                                              color: Colors.white,
-                                            ),
-                                          ],
+                                  alignment: Alignment.bottomLeft,
+                                  child: SizedBox(
+                                    width: 35,
+                                    child: Obx(() {
+                                      return InkWell(
+                                        child: SizedBox(
+                                          width: 35,
+                                          child: soundService.mic.value
+                                              ? Image.asset(
+                                                  "assets/icons/microphone.png",
+                                                  height: 30,
+                                                )
+                                              : Image.asset(
+                                                  "assets/icons/microphone-mute.png",
+                                                  height: 30,
+                                                ),
                                         ),
-                                      ),
-                                    ),
-                                    onTap: () {
-                                      Get.offNamed("/sound-list");
-                                      // Navigator.push(
-                                      //   context,
-                                      //   MaterialPageRoute(
-                                      //     builder: (context) => SoundList(),
-                                      //   ),
-                                      // );
-                                    },
+                                        onTap: () {
+                                          soundService.mic.value = !soundService.mic.value;
+                                          soundService.mic.refresh();
+                                          videoRecorderController.onCameraSwitched(videoRecorderController.cameras[videoRecorderController.selectedCameraIdx]).then((void v) {});
+                                        },
+                                      );
+                                    }),
                                   ),
                                 ),
                               ),
                             )
-                          : Container(),
-                    ),
-                    (videoRecorderController.mainCameraController != null &&
-                                videoRecorderController.mainCameraController!.value.isInitialized &&
-                                videoRecorderController.mainCameraController!.value.isRecordingVideo) &&
-                            !videoRecorderController.isCountDownTimerShown.value
-                        ? Positioned(
-                            bottom: 42,
-                            right: 90,
-                            child: Container(
-                              width: Get.width,
-                              child: Align(
-                                alignment: Alignment.bottomRight,
-                                child: SizedBox.fromSize(
-                                  size: Size(
-                                    30,
-                                    30,
-                                  ), // button width and height
-                                  child: ClipOval(
-                                    child: Container(
-                                      color: Colors.transparent,
-                                      child: Material(
-                                        color: Colors.transparent,
-                                        child: InkWell(
-                                          splashColor: Colors.pinkAccent, // splash color
-                                          onTap: () {
-                                            setState(() {
-                                              videoRecorderController.reverse = videoRecorderController.reverse;
-                                            });
-                                            if (!videoRecorderController.videoRecorded) {
-                                              videoRecorderController.onResumeButtonPressed(context);
-                                              videoRecorderController.animationController!.forward();
-                                            } else {
-                                              videoRecorderController.onPauseButtonPressed(context);
-                                              videoRecorderController.animationController!.stop();
-                                            }
-                                          },
-                                          child: Container(
-                                              color: Colors.white,
-                                              width: 30,
-                                              height: 30,
-                                              child: SvgPicture.asset(
-                                                !videoRecorderController.videoRecorded ? 'assets/icons/play.svg' : 'assets/icons/pause.svg',
-                                                width: 30,
-                                                height: 30,
-                                                colorFilter: ColorFilter.mode(Get.theme.highlightColor, BlendMode.srcIn),
-                                              ).centered()),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                        : Container(),
-                    /*(dashboardService.isUploading.value == true)
-                            ? Container(
-                                width: Get.width,
-                                height: Get.height,
-                                decoration: BoxDecoration(
-                                  color: Colors.black54,
-                                ),
-                                child: Center(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      color: Colors.black87,
-                                    ),
-                                    width: 200,
-                                    height: 170,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(20.0),
-                                      child: Column(
-                                        children: <Widget>[
-                                          Center(
-                                            child: CircularPercentIndicator(
-                                              progressColor: Colors.pink,
-                                              percent: dashboardService.uploadProgress.value,
-                                              radius: 120.0,
-                                              lineWidth: 8.0,
-                                              circularStrokeCap: CircularStrokeCap.round,
-                                              center: Text(
-                                                (dashboardService.uploadProgress.value * 100).toStringAsFixed(2) + "%",
-                                                style: TextStyle(color: Colors.white),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : Container(),*/
-                    Obx(() => videoRecorderController.cameraPreview.value &&
-                            videoRecorderController.mainCameraController != null &&
-                            videoRecorderController.mainCameraController!.value.isInitialized &&
-                            !videoRecorderController.mainCameraController!.value.isRecordingVideo &&
-                            !videoRecorderController.isCountDownTimerShown.value
-                        ? Positioned(
-                            top: 30,
-                            left: 10,
-                            child: Container(
-                              width: Get.width,
-                              child: Align(
-                                alignment: Alignment.bottomLeft,
-                                child: SizedBox(
-                                  width: 35,
-                                  child: Obx(() {
-                                    return InkWell(
-                                      child: SizedBox(
-                                        width: 35,
-                                        child: soundService.mic.value
-                                            ? Image.asset(
-                                                "assets/icons/microphone.png",
-                                                height: 30,
-                                              )
-                                            : Image.asset(
-                                                "assets/icons/microphone-mute.png",
-                                                height: 30,
-                                              ),
-                                      ),
-                                      onTap: () {
-                                        soundService.mic.value = !soundService.mic.value;
-                                        soundService.mic.refresh();
-                                        videoRecorderController.onCameraSwitched(videoRecorderController.cameras[videoRecorderController.selectedCameraIdx]).then((void v) {});
-                                      },
-                                    );
-                                  }),
-                                ),
-                              ),
-                            ),
-                          )
-                        : Container()),
+                          : Container()),
                     _thumbnailWidget(),
                     videoRecorderController.videoController == null
                         ? Positioned(
@@ -701,66 +557,7 @@ class _VideoRecorderState extends State<VideoRecorder> with TickerProviderStateM
   }
 
   Widget getTimerLimit() {
-    List<Widget> list = <Widget>[];
-    return Obx(() {
-      videoRecorderController.videoTimerLimit.length = videoRecorderController.videoTimerLimit.length > 5 ? 5 : videoRecorderController.videoTimerLimit.length;
-      list = <Widget>[];
-      if (videoRecorderController.videoTimerLimit.length > 0) {
-        for (var i = 0; i < videoRecorderController.videoTimerLimit.length; i++) {
-          list.add(
-            InkWell(
-              onTap: () {
-                if (videoRecorderService.selectedVideoLength.value != videoRecorderController.videoTimerLimit[i].toDouble()) {
-                  videoRecorderService.selectedVideoLength.value = videoRecorderController.videoTimerLimit[i] > 300 ? 300 : videoRecorderController.videoTimerLimit[i];
-                }
-              },
-              child: Container(
-                margin: EdgeInsets.symmetric(horizontal: 9),
-                height: 30,
-                constraints: BoxConstraints(
-                  minWidth: 30,
-                ),
-                padding: EdgeInsets.all(3),
-                decoration: BoxDecoration(
-                  color: (videoRecorderService.selectedVideoLength.value == videoRecorderController.videoTimerLimit[i]) ? Get.theme.highlightColor : Colors.white.withValues(alpha:0.6),
-                  borderRadius: BorderRadius.circular(6),
-                  border: (videoRecorderService.selectedVideoLength.value == videoRecorderController.videoTimerLimit[i])
-                      ? Border.all(color: Colors.white, width: 2)
-                      : Border.all(color: Colors.white70, width: 0),
-                ),
-                child: Center(
-                  child: Text(
-                    "${videoRecorderController.videoTimerLimit[i].toInt() > 300 ? 300 : videoRecorderController.videoTimerLimit[i].toInt()}s",
-                    style: TextStyle(
-                      color: (videoRecorderService.selectedVideoLength.value == videoRecorderController.videoTimerLimit[i]) ? mainService.setting.value.buttonTextColor : Colors.black,
-                      fontSize: 11,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        }
-        return Center(
-          child: Container(
-            width: Get.width,
-            height: 70,
-            child: videoRecorderController.videoTimerLimit.length > 0
-                ? list.length > 0
-                    ? Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: list,
-                      )
-                    : Container()
-                : Container(),
-          ),
-        );
-      } else {
-        list.add(Container());
-        return Container();
-      }
-    });
+    return Container(); // Return empty container since we're removing the timer limit button
   }
 
   Widget getStartTimer() {

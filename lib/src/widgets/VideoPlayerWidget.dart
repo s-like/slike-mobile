@@ -199,24 +199,40 @@ class _VideoPlayerWidgetV2State extends State<VideoPlayerWidgetV2> with SingleTi
               ),
             ),
           ),
+          // Positioned(
+          //   bottom: 0,
+          //   child: SliderTheme(
+          //     data: SliderThemeData(
+          //       overlayShape: SliderComponentShape.noOverlay,
+          //       disabledInactiveTrackColor: Get.theme.colorScheme.primary,
+          //       disabledThumbColor: Get.theme.colorScheme.primary,
+          //       trackHeight: 1,
+          //       thumbShape: RoundSliderThumbShape(enabledThumbRadius: 1.50),
+          //     ),
+          //     child: SmoothVideoProgress(
+          //       controller: _controller!,
+          //       builder: (context, position, duration, child) => Slider(
+          //         onChangeStart: (_) => _controller!.pause(),
+          //         onChangeEnd: (_) => _controller!.play(),
+          //         onChanged: (value) => _controller!.seekTo(Duration(milliseconds: value.toInt())),
+          //         value: position.inMilliseconds.toDouble(),
+          //         min: 0,
+          //         max: duration.inMilliseconds.toDouble(),
+          //         activeColor: mainService.setting.value.dashboardIconColor!,
+          //         inactiveColor: mainService.setting.value.dashboardIconColor!.withValues(alpha:0.2),
+          //       ),
+          //     ),
+          //   ),
+          // ),
           Positioned(
-            bottom: Get.mediaQuery.viewPadding.bottom + 50,
-            width: Get.width,
-            height: 10,
+            left: 0,
+            right: 0,
+            bottom: -1,
             child: SliderTheme(
               data: SliderThemeData(
                 overlayShape: SliderComponentShape.noOverlay,
-                // activeTrackColor: Get.theme.colorScheme.primary.withValues(alpha:0.1),
-                // disabledActiveTrackColor: Get.theme.colorScheme.primary.withValues(alpha:0.2),
-                // inactiveTrackColor: Get.theme.colorScheme.primary,
-                // inactiveTickMarkColor: Get.theme.colorScheme.primary,
-                // disabledActiveTickMarkColor: Get.theme.colorScheme.primary,
-                // disabledInactiveTickMarkColor: Get.theme.colorScheme.primary.withValues(alpha:0.2),
-                disabledInactiveTrackColor: Get.theme.colorScheme.primary,
-                disabledThumbColor: Get.theme.colorScheme.primary,
-                trackHeight: 1,
-
-                thumbShape: RoundSliderThumbShape(enabledThumbRadius: 1.50),
+                trackHeight: 2,
+                thumbShape: RoundSliderThumbShape(enabledThumbRadius: 4),
               ),
               child: SmoothVideoProgress(
                 controller: _controller!,

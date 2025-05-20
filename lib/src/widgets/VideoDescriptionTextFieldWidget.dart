@@ -60,36 +60,36 @@ class VideoDescriptionWidget extends StatelessWidget {
             ),
           ),
         ),
-        Positioned(
-          right: 5,
-          bottom: 5,
-          child: Bouncy(
-            duration: Duration(milliseconds: 2000),
-            lift: 15,
-            ratio: 0.25,
-            pause: 0.5,
-            child: OpenContainer(
-              transitionType: ContainerTransitionType.fade,
-              openBuilder: (BuildContext context, VoidCallback _) {
-                return AiDescriptionPromptWidget();
-              },
-              transitionDuration: Duration(seconds: 2),
-              closedElevation: 6.0,
-              closedShape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(15),
-                ),
-              ),
-              closedColor: Colors.black,
-              closedBuilder: (BuildContext context, VoidCallback openContainer) {
-                return Image.asset(
-                  "assets/icons/ai.gif",
-                  height: 30,
-                );
-              },
-            ),
-          ),
-        ),
+        // Positioned(
+        //   right: 5,
+        //   bottom: 5,
+        //   child: Bouncy(
+        //     duration: Duration(milliseconds: 2000),
+        //     lift: 15,
+        //     ratio: 0.25,
+        //     pause: 0.5,
+        //     child: OpenContainer(
+        //       transitionType: ContainerTransitionType.fade,
+        //       openBuilder: (BuildContext context, VoidCallback _) {
+        //         return AiDescriptionPromptWidget();
+        //       },
+        //       transitionDuration: Duration(seconds: 2),
+        //       closedElevation: 6.0,
+        //       closedShape: const RoundedRectangleBorder(
+        //         borderRadius: BorderRadius.all(
+        //           Radius.circular(15),
+        //         ),
+        //       ),
+        //       closedColor: Colors.black,
+        //       closedBuilder: (BuildContext context, VoidCallback openContainer) {
+        //         return Image.asset(
+        //           "assets/icons/ai.gif",
+        //           height: 30,
+        //         );
+        //       },
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }

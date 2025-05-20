@@ -63,7 +63,7 @@ class VideoRecorderController extends GetxController {
   String aiPrompt = "";
   var isCountDownTimerShown = false.obs;
   late Timer timer = Timer.periodic(new Duration(milliseconds: 100), (timer) {
-    videoRecorderService.videoProgressPercent.value += 1 / (videoRecorderService.selectedVideoLength.value * 10);
+    videoRecorderService.videoProgressPercent.value += 1 / (60 * 10); // Fixed 60 second limit
     videoRecorderService.videoProgressPercent.refresh();
     if (videoRecorderService.videoProgressPercent.value >= 1) {
       isProcessing.value = true;
@@ -151,8 +151,9 @@ class VideoRecorderController extends GetxController {
   ).obs;
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
+    videoRecorderService.selectedVideoLength.value = 60.0; // Set fixed 60 second limit
+    videoRecorderService.selectedVideoLength.refresh();
   }
 
   @override
@@ -721,11 +722,7 @@ class VideoRecorderController extends GetxController {
     var formData = {
       "privacy": privacy,
       "description": detectableTextVideoDescriptionController.value.text,
-      "sound_id": soundService.mic.value
-          ? 0
-          : soundService.currentSound.value.soundId > 0
-              ? soundService.currentSound.value.soundId
-              : audioId
+      "sound_id": soundService.mic.value ? 0 : 0
     };
     List<UploadFile> files = [];
     UploadFile video = UploadFile(fileName: videoFileName, filePath: videoFilePath, variableName: "video");
@@ -848,12 +845,7 @@ class VideoRecorderController extends GetxController {
     isVideoRecorded = true;
     videoRecorded = true;
     isRecordingPaused = false;
-    if (!soundService.mic.value && soundService.currentSound.value.soundId == 0) {
-      Fluttertoast.showToast(msg: "Please select a sound from sound listing first".tr);
-      isCountDownTimerShown.value = false;
-      isCountDownTimerShown.refresh();
-      return;
-    }
+    
     if (startTimerTiming.value > 0 && isCountDownTimerShown.value) {
       print("don't enter Recording");
       return;
@@ -872,8 +864,6 @@ class VideoRecorderController extends GetxController {
       startTimer(context);
       if (soundService.mic.value) {
         audioPlayer.setVolume(0.2);
-      } else {
-        audioPlayer.setVolume(0.6);
       }
       audioPlayer.play();
       cameraPreview.value = true;
@@ -991,125 +981,6 @@ class VideoRecorderController extends GetxController {
     }
   }
 
-/*
-  Future<String> stopVideoRecording() async {
-    audioPlayer.pause();
-    if (!mainCameraController!.value.isRecordingVideo) {
-      print("abc");
-      return "";
-    }
-    if (!videoRecorderService.isOnRecordingPage.value) {
-      print("abc1");
-      return "";
-    }
-    try {
-      XFile recordedFile = await mainCameraController!.stopVideoRecording();
-      videoPath = recordedFile.path;
-    } on CameraException catch (e, s) {
-      print("CameraException $e $s");
-      showCameraException(e, scaffoldKey.currentContext!);
-      return "";
-    }
-    Directory appDirectory;
-    if (!Platform.isAndroid) {
-      appDirectory = await getApplicationDocumentsDirectory();
-      print("appDirectory $appDirectory");
-    } else {
-      appDirectory = (await getExternalStorageDirectory())!;
-    }
-    // VideoPlayerController? _outputVideoController;
-    try {
-      // _outputVideoController = VideoPlayerController.file(File(videoPath));
-      // await _outputVideoController.initialize();
-    } on CameraException catch (e) {
-      EasyLoading.dismiss();
-      showCameraException("There's some error loading video $e" as CameraException, scaffoldKey.currentContext!);
-      return "";
-    }
-    final String outputDirectory = '${appDirectory.path}/outputVideos';
-    await Directory(outputDirectory).create(recursive: true);
-    final String currentTime = DateTime.now().millisecondsSinceEpoch.toString();
-    final String outputVideo = '$outputDirectory/$currentTime.mp4';
-    // final String thumbImg = '$outputDirectory/$currentTime.jpg';
-    // String responseVideo = "";
-    String audioFileArgs = '';
-    // String audioFileArgs2 = '';
-    String mergeAudioArgs = '';
-    String mergeAudioArgs2 = '';
-    String watermarkArgs = '';
-    String presetString = '';
-    if (watermark != '') {
-      // watermark = " -i $watermark";
-      // watermarkArgs = ",overlay=W-w-5:5";
-    }
-    if (soundService.mic.value && audioFile != '') {
-      audioFile = "";
-      presetString = '-preset ultrafast';
-    }
-    if (!soundService.mic.value && audioFile != '') {
-      audioFile = " -i $audioFile";
-      presetString = '-preset ultrafast -crf 23';
-      mergeAudioArgs2 = "-map 0:v:0 -map 1:a:0";
-      audioFileArgs = '-c:a aac -ac 2 -ar 22050 -shortest -b:a 64k';
-    }
-    try {
-      print('ffmpeg -i $videoPath $watermark $audioFile  -filter_complex "$mergeAudioArgs[0:v]scale=560:-2$watermarkArgs" -c libx265  $mergeAudioArgs2 $audioFileArgs  $presetString $outputVideo');
-      FFmpegKit.executeAsync(
-          // '-y -i $videoPath $audioFile  -filter_complex "$mergeAudioArgs[0:v]scale=560:-2$watermarkArgs" -c:v libx264 $mergeAudioArgs2 $audioFileArgs -preset ultrafast -crf 23  $outputVideo',
-          '-y -i $videoPath $audioFile  -filter_complex "$mergeAudioArgs[0:v]scale=560:-2,setpts=PTS-STARTPTS,setsar=1:1$watermarkArgs" -c:v libx264 $mergeAudioArgs2 $audioFileArgs -pix_fmt yuv420p -r 24 -preset superfast  $outputVideo',
-          (session) async {
-            EasyLoading.dismiss(animation: true);
-            print("FFmpegKit.executeAsync in Command");
-            // Unique session id created for this execution
-            final sessionId = session.getSessionId();
-            print("FFmpegKit.executeAsync sessionId $sessionId");
-            // Command arguments as a single string
-            final command = session.getCommand();
-            print("ffmpeg command $command");
-            // The list of logs generated for this execution
-            final logs = await session.getLogs();
-            print("ffmpegLogs $logs");
-            logs.forEach((element) {
-              print("::");
-              print(element.getMessage());
-            });
-            videoPath = outputVideo;
-            videoRecorderService.outputVideoPath.value = outputVideo;
-            videoRecorderService.outputVideoPath.refresh();
-            try {
-              mainCameraController!.dispose();
-              isProcessing.value = false;
-              isProcessing.refresh();
-              _firstStat = true;
-              EasyLoading.dismiss(animation: true);
-              videoEditorFile.value = File(videoPath);
-              Get.offNamed("/video-editor");
-            } catch (e, s) {
-              print("videoPath error : $e $s");
-            }
-          },
-          null,
-          (statics) {
-            // First statistics is always wrong so if first one skip it
-            if (_firstStat) {
-              _firstStat = false;
-            } else {
-              print("Processing Video ${statics.getTime()} / ${((videoRecorderService.outputVideoDurationInMilliSeconds.value) * 100).ceil()}%");
-              String stats = "${'Processing Video'.tr} ${((statics.getTime() / videoRecorderService.outputVideoDurationInMilliSeconds.value) * 100).ceil()}%";
-              EasyLoading.showProgress(
-                ((statics.getTime() / videoRecorderService.outputVideoDurationInMilliSeconds.value)),
-                status: stats,
-                maskType: EasyLoadingMaskType.black,
-              );
-            }
-          });
-    } catch (e) {
-      print("Error encoding video $e");
-      print(e.toString());
-    }
-    return outputVideo;
-  }
-*/
   Future<String> stopVideoRecording() async {
     audioPlayer.pause();
     if (!mainCameraController!.value.isRecordingVideo) {
@@ -1139,15 +1010,6 @@ class VideoRecorderController extends GetxController {
     } else {
       appDirectory = (await getExternalStorageDirectory())!;
     }
-    // VideoPlayerController? _outputVideoController;
-    try {
-      // _outputVideoController = VideoPlayerController.file(File(videoPath));
-      // await _outputVideoController.initialize();
-    } on CameraException catch (e) {
-      EasyLoading.dismiss();
-      showCameraException("There's some error loading video $e" as CameraException, scaffoldKey.currentContext!);
-      return "";
-    }
     final String outputDirectory = '${appDirectory.path}/outputVideos';
     await Directory(outputDirectory).create(recursive: true);
     final String currentTime = DateTime.now().millisecondsSinceEpoch.toString();
@@ -1157,47 +1019,27 @@ class VideoRecorderController extends GetxController {
     String mergeAudioArgs2 = '';
     String watermarkArgs = '';
     String presetString = '';
-    if (watermark != '') {
-      // watermark = " -i $watermark";
-      // watermarkArgs = ",overlay=W-w-5:5";
-    }
-    if (soundService.mic.value && audioFile != '') {
+    
+    if (soundService.mic.value) {
       audioFile = "";
       presetString = '-preset ultrafast';
+      audioFileArgs = '-c:a aac -ac 2 -ar 22050 -b:a 64k';
     }
-    if (!soundService.mic.value && audioFile != '') {
-      audioFile = " -i $audioFile";
-      presetString = '-preset ultrafast -crf 23';
-      mergeAudioArgs2 = "-map 0:v:0 -map 1:a:0";
-      audioFileArgs = '-c:a aac -ac 2 -ar 22050 -shortest -b:a 64k';
-    }
+
     String timeDurationVideo = CommonHelper.formatDuration(videoRecorderService.outputVideoDurationInMilliSeconds.value);
     presetString = '-t $timeDurationVideo -pix_fmt yuv420p -r 24 -preset ultrafast -movflags faststart';
-    if (soundService.mic.value && audioFile != '') {
-      audioFile = " -i $audioFile";
-      mergeAudioArgs = "[1:a:0]volume=0.5[a2];[0:a][a2]amerge=inputs=2[t],";
-      audioFileArgs = "-c:a aac -ac 2 -ar 22050 -map 0:v -map '[t]'";
-    }
-    if (!soundService.mic.value && audioFile != '') {
-      audioFile = " -i $audioFile";
-      mergeAudioArgs2 = "-map 0:v:0 -map 1:a:0";
-
-      audioFileArgs = '-c:a aac -ar 22050 -b:a 64k ';
-    }
+    
     try {
-      var command = '-y -i $videoPath $audioFile  -filter_complex "$mergeAudioArgs[0:v]scale=560:-2$watermarkArgs" -c:v libx264   $mergeAudioArgs2 $audioFileArgs $presetString $outputVideo';
+      var command = '-y -i $videoPath -filter_complex "[0:v]scale=560:-2$watermarkArgs" -c:v libx264 $audioFileArgs $presetString $outputVideo';
       FFmpegKit.executeAsync(
           command,
           (session) async {
             EasyLoading.dismiss(animation: true);
             print("FFmpegKit.executeAsync in Command");
-            // Unique session id created for this execution
             final sessionId = session.getSessionId();
             print("FFmpegKit.executeAsync sessionId $sessionId");
-            // Command arguments as a single string
             final command = session.getCommand();
             print("ffmpeg command $command");
-            // The list of logs generated for this execution
             final logs = await session.getLogs();
             print("ffmpegLogs $logs");
             logs.forEach((element) {
@@ -1221,7 +1063,6 @@ class VideoRecorderController extends GetxController {
           },
           null,
           (statics) {
-            // First statistics is always wrong so if first one skip it
             if (_firstStat) {
               _firstStat = false;
             } else {
@@ -1265,10 +1106,12 @@ class VideoRecorderController extends GetxController {
 
   startTimer(BuildContext context) {
     startTime = DateTime.now();
+    videoRecorderService.videoProgressPercent.value = 0; // Reset progress
+    videoRecorderService.videoProgressPercent.refresh();
 
     timer = Timer.periodic(new Duration(milliseconds: 100), (timer) {
       diff = DateTime.now().difference(startTime);
-      videoRecorderService.videoProgressPercent.value += 1 / (videoRecorderService.selectedVideoLength.value * 10);
+      videoRecorderService.videoProgressPercent.value += 1 / (60 * 10); // Fixed 60 second limit
       videoRecorderService.videoProgressPercent.refresh();
       videoRecorderService.outputVideoDurationInMilliSeconds.value = diff.inMilliseconds;
       videoRecorderService.outputVideoDurationInMilliSeconds.refresh();
@@ -1285,17 +1128,6 @@ class VideoRecorderController extends GetxController {
         onStopButtonPressed();
       }
     });
-  }
-
-  void getTimeLimits() {
-    videoTimerLimit.value = [];
-    mainService.setting.value.videoTimeLimits.forEach((element) {
-      videoTimerLimit.add(double.parse(element));
-    });
-    videoTimerLimit.refresh();
-    videoRecorderService.selectedVideoLength.value = videoTimerLimit.first;
-    videoRecorderService.selectedVideoLength.refresh();
-    print("videoRecorderService.selectedVideoLength.value ${videoRecorderService.selectedVideoLength.value}");
   }
 
   Future<void> processTextFilter(String uri, {bool skip = false}) async {

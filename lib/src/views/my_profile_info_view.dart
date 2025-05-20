@@ -27,258 +27,156 @@ class _MyProfileInfoViewState extends State<MyProfileInfoView> {
 
   @override
   Widget build(BuildContext context) {
+    final yellowColor = Color(0xFFFFC800);
     return Scaffold(
-      backgroundColor: Get.theme.primaryColor,
-      key: userController.myProfileScaffoldKey,
+      backgroundColor: Colors.black,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Get.theme.colorScheme.primary,
-        foregroundColor: Get.theme.indicatorColor,
-        leading: InkWell(
-          onTap: () {
-            Get.back();
-          },
-          child: Icon(
-            Icons.arrow_back_ios, //  arrow back
-            color: Get.theme.primaryColor,
-            size: 20,
-          ),
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
+          onPressed: () => Get.back(),
         ),
         centerTitle: true,
+        title: Text('Share QR code', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         actions: [
-          GestureDetector(
-            onTap: () async {
-              Get.toNamed('/scan-qr');
-            },
-            child: Padding(
-              padding: const EdgeInsetsDirectional.only(end: 15),
-              child: Icon(
-                Icons.qr_code_2_sharp,
-                color: Get.theme.primaryColor,
-                size: 25,
-              ),
-            ),
+          IconButton(
+            icon: Icon(Icons.qr_code_2_sharp, color: Colors.white, size: 25),
+            onPressed: () => Get.toNamed('/scan-qr'),
           ),
         ],
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Get.theme.highlightColor.withValues(alpha:0.5),
-                      Get.theme.highlightColor,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomLeft,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: 280,
+                  padding: EdgeInsets.only(top: 60, left: 20, right: 20, bottom: 30),
+                  decoration: BoxDecoration(
+                    color: yellowColor,
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  // / color: Get.theme.highlightColor,
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 55),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "${authService.currentUser.value.name}",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Get.theme.colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        authService.currentUser.value.isVerified == true
-                            ? Container(
-                                padding: EdgeInsets.only(left: 3),
-                                child: SvgPicture.asset(
-                                  'assets/icons/newverified.svg',
-                                  colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
-                                  width: 14,
-                                  height: 14,
-                                ))
-                            : Container(),
-                      ],
-                    ),
-                    SizedBox(height: 15),
-                    QrImageView(
-                      data: "${authService.currentUser.value.id}",
-                      version: QrVersions.auto,
-                      size: 170.0,
-                      eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square, color: Get.theme.colorScheme.primary),
-                      gapless: false,
-                    ),
-                    SizedBox(height: 20),
-                    Center(
-                      child: Text(
-                        "Let someone to scan your QR code to quickly add you as a friend".tr,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(height: 10),
+                      Text(
+                        "${authService.currentUser.value.name}",
                         style: TextStyle(
-                          fontSize: 13,
-                          color: Get.theme.colorScheme.primary,
+                          fontSize: 16,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
                         ),
                         textAlign: TextAlign.center,
                       ),
-                    ).pSymmetric(h: 20),
-                    SizedBox(height: 20),
-                    Image.asset('assets/images/login-logo.png', width: 100),
-                    SizedBox(height: 20),
-                  ],
+                      SizedBox(height: 18),
+                      Container(
+                        color: Colors.white,
+                        padding: EdgeInsets.all(8),
+                        child: QrImageView(
+                          data: "${authService.currentUser.value.id}",
+                          version: QrVersions.auto,
+                          size: 170.0,
+                          eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square, color: Colors.black),
+                          gapless: false,
+                        ),
+                      ),
+                      SizedBox(height: 18),
+                      Image.asset('assets/images/video-logo.png', width: 70),
+                    ],
+                  ),
                 ),
-              ),
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: Transform.translate(
-                  offset: Offset(0, -45),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                        return Scaffold(
-                            appBar: PreferredSize(
-                              preferredSize: Size.fromHeight(45.0),
-                              child: AppBar(
-                                leading: InkWell(
-                                  onTap: () {
-                                    Get.back();
-                                  },
-                                  child: Icon(
-                                    Icons.arrow_back_ios,
-                                    size: 20,
-                                    color: mainService.setting.value.iconColor,
-                                  ),
-                                ),
-                                title: Text(
-                                  "Profile Picture".tr,
-                                  style: TextStyle(
-                                    fontSize: 18.0,
-                                    color: mainService.setting.value.textColor,
-                                  ),
-                                ),
-                                centerTitle: true,
-                              ),
-                            ),
-                            body: Center(
-                              child: PhotoView(
-                                enableRotation: true,
-                                imageProvider: CachedNetworkImageProvider((authService.currentUser.value.largeProfilePic.toLowerCase().contains(".jpg") ||
-                                        authService.currentUser.value.largeProfilePic.toLowerCase().contains(".jpeg") ||
-                                        authService.currentUser.value.largeProfilePic.toLowerCase().contains(".png") ||
-                                        authService.currentUser.value.largeProfilePic.toLowerCase().contains(".gif") ||
-                                        authService.currentUser.value.largeProfilePic.toLowerCase().contains(".bmp") ||
-                                        authService.currentUser.value.largeProfilePic.toLowerCase().contains("fbsbx.com") ||
-                                        authService.currentUser.value.largeProfilePic.toLowerCase().contains("googleusercontent.com"))
-                                    ? authService.currentUser.value.largeProfilePic
-                                    : '$baseUrl' + "default/user-dummy-pic.png"),
-                              ),
-                            ));
-                      }));
-                    },
+                Positioned(
+                  top: -45,
+                  left: 0,
+                  right: 0,
+                  child: Center(
                     child: Container(
                       height: 90,
                       width: 90,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        color: Colors.white,
+                        shape: BoxShape.circle,
                         border: Border.all(color: Colors.white, width: 4),
+                        color: Colors.white,
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
+                      child: ClipOval(
                         child: authService.currentUser.value.smallProfilePic != ""
                             ? CachedNetworkImage(
                                 imageUrl: authService.currentUser.value.smallProfilePic,
-                                placeholder: (context, url) => CommonHelper.showLoaderSpinner(Colors.white),
-                                fit: BoxFit.fill,
-                                width: 100,
-                                height: 100,
-                                errorWidget: (context, url, error) {
-                                  return Image.asset('assets/images/default-user.png');
-                                },
+                                fit: BoxFit.cover,
+                                width: 90,
+                                height: 90,
+                                errorWidget: (context, url, error) => Image.asset('assets/images/default-user.png'),
                               )
                             : Image.asset('assets/images/default-user.png'),
-                      ).pLTRB(2, 2, 2, 2),
-                    ),
-                  ).centered(),
-                ),
-              ),
-            ],
-          ).centered(),
-          SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: InkWell(
-                  onTap: () {
-                    Share.share(baseUrl + 'profile/${authService.currentUser.value.id}');
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Get.theme.colorScheme.primary.withValues(alpha:0.5), Get.theme.colorScheme.primary],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomLeft,
                       ),
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          'assets/icons/share.png',
-                          color: Get.theme.primaryColor,
-                          width: 20,
-                        ).pOnly(bottom: 5),
-                        "Share Profile".tr.text.size(14).color(Get.theme.primaryColor).make(),
-                      ],
-                    ).pSymmetric(v: 15),
                   ),
                 ),
-              ),
-              SizedBox(width: 8),
-              Expanded(
-                child: InkWell(
-                  onTap: () async {
-                    await Clipboard.setData(ClipboardData(text: baseUrl + 'profile/${authService.currentUser.value.id}'));
-                    Fluttertoast.showToast(msg: "Link is copied.".tr);
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Get.theme.colorScheme.primary.withValues(alpha:0.5), Get.theme.colorScheme.primary],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomLeft,
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
+              ],
+            ),
+            SizedBox(height: 40),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: (280 / 2) - 12,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: yellowColor,
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      elevation: 0,
                     ),
+                    onPressed: () async {
+                      await Clipboard.setData(ClipboardData(text: baseUrl + 'profile/${authService.currentUser.value.id}'));
+                      Fluttertoast.showToast(msg: "Link is copied.".tr);
+                    },
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.link, color: Get.theme.primaryColor, size: 23).pOnly(bottom: 2),
-                        "Copy Link".tr.text.size(14).color(Get.theme.primaryColor).make(),
+                        Icon(Icons.link, color: Colors.black, size: 24),
+                        // SizedBox(height: 4),
+                        Text("Copy link", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                       ],
-                    ).pSymmetric(v: 15),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
-      ).centered().pSymmetric(h: 25),
+                SizedBox(width: 16),
+                SizedBox(
+                  width: (280 / 2) - 12,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: yellowColor,
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      elevation: 0,
+                    ),
+                    onPressed: () {
+                      Share.share(baseUrl + 'profile/${authService.currentUser.value.id}');
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.share, color: Colors.black, size: 24),
+                        // SizedBox(height: 4),
+                        Text("Share link", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

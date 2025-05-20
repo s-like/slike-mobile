@@ -7,6 +7,7 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart' as MBS;
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:badges/badges.dart' as badges;
 import '../core.dart';
+import 'video_feed_view.dart';
 
 class DashboardView extends StatefulWidget {
   const DashboardView({Key? key}) : super(key: key);
@@ -45,31 +46,9 @@ class CustomBottomNavBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildSvgNavItem(0, 'assets/icons/home.svg', () {
-            dashboardService.currentPage.value = 0;
-            dashboardService.currentPage.refresh();
-            mainService.isOnHomePage.value = true;
-            mainService.isOnHomePage.refresh();
-            dashboardService.pageController.value.animateToPage(
-              dashboardService.currentPage.value,
-              duration: Duration(milliseconds: 100),
-              curve: Curves.linear,
-            );
-            dashboardService.pageController.refresh();
-          }),
-          _buildSvgNavItem(1, 'assets/icons/video.svg', () {
-            dashboardService.currentPage.value = 1;
-            dashboardService.currentPage.refresh();
-            mainService.isOnHomePage.value = false;
-            mainService.isOnHomePage.refresh();
-            dashboardService.pageController.value.animateToPage(
-              dashboardService.currentPage.value,
-              duration: Duration(milliseconds: 100),
-              curve: Curves.linear,
-            );
-            dashboardService.pageController.refresh();
-          }),
-          _buildSvgNavItem(2, 'assets/icons/create-video.svg', () {
+          _buildNavItem(0, 'assets/icons/home.svg', () => onTap(0)),
+          _buildNavItem(1, 'assets/icons/video.svg', () => onTap(1)),
+          _buildNavItem(2, 'assets/icons/create-video.svg', () {
             if (dashboardService.isUploading.value) {
               Fluttertoast.showToast(
                 msg: 'Video is being uploaded kindly wait for the process to complete'.tr,
@@ -82,54 +61,72 @@ class CustomBottomNavBar extends StatelessWidget {
               dashboardController.stopController(dashboardService.pageIndex.value);
               if (authService.currentUser.value.accessToken != '') {
                 mainService.isOnRecordingPage.value = true;
+                Get.put(VideoRecorderController(), permanent: true);
+                Get.offNamed('/video-recorder');
               } else {
                 Get.offNamed('/login');
               }
             }
           }),
-          _buildSvgNavItem(3, 'assets/icons/market.svg', () {
-            dashboardService.currentPage.value = 3;
-            dashboardService.currentPage.refresh();
-            mainService.isOnHomePage.value = false;
-            mainService.isOnHomePage.refresh();
-            dashboardService.bottomPadding.value = 0.0;
-            dashboardService.bottomPadding.refresh();
+          _buildNavItem(3, 'assets/icons/market.svg', () {
             if (authService.currentUser.value.accessToken != '') {
-              dashboardService.pageController.value.animateToPage(
-                dashboardService.currentPage.value,
-                duration: Duration(milliseconds: 100),
-                curve: Curves.linear,
-              );
-              dashboardService.pageController.refresh();
+              // onTap(3);
             } else {
               Get.offNamed('/login');
             }
           }),
-          _buildIconNavItem(4, Icons.person, () {
-            dashboardService.currentPage.value = 4;
-            dashboardService.currentPage.refresh();
-            mainService.isOnHomePage.value = false;
-            mainService.isOnHomePage.refresh();
-            dashboardController.stopController(dashboardService.pageIndex.value);
-            dashboardService.bottomPadding.value = 0.0;
-            dashboardService.bottomPadding.refresh();
-            if (authService.currentUser.value.accessToken != '') {
-              dashboardService.pageController.value.animateToPage(
-                dashboardService.currentPage.value,
-                duration: Duration(milliseconds: 100),
-                curve: Curves.linear,
-              );
-              dashboardService.pageController.refresh();
-            } else {
-              Get.offNamed('/login');
-            }
+          Obx(() {
+            final bool isSelected = 4 == currentIndex;
+            final bool isAuthenticated = authService.currentUser.value.accessToken != '';
+            return GestureDetector(
+              onTap: () {
+                if (isAuthenticated) {
+                  onTap(4);
+                } else {
+                  Get.offNamed('/login');
+                }
+              },
+              child: Container(
+                width: 60,
+                height: 60,
+                alignment: Alignment.center,
+                decoration: isSelected
+                    ? BoxDecoration(
+                        color: Color(0XFFFFCD00),
+                        shape: BoxShape.circle,
+                      )
+                    : null,
+                child: isAuthenticated && authService.currentUser.value.userDP != ''
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(50.0),
+                        child: Image.network(
+                          authService.currentUser.value.userDP,
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => SvgPicture.asset(
+                            'assets/icons/person.svg',
+                            width: 24,
+                            height: 24,
+                            color: isSelected ? Colors.black : Colors.white,
+                          ),
+                        ),
+                      )
+                    : SvgPicture.asset(
+                        'assets/icons/person.svg',
+                        width: 24,
+                        height: 24,
+                        color: isSelected ? Colors.black : Colors.white,
+                      ),
+              ),
+            );
           }),
         ],
       ),
     );
   }
 
-  Widget _buildSvgNavItem(int index, String asset, VoidCallback onTap) {
+  Widget _buildNavItem(int index, String asset, VoidCallback onTap) {
     final bool isSelected = index == currentIndex;
     return GestureDetector(
       onTap: onTap,
@@ -147,29 +144,6 @@ class CustomBottomNavBar extends StatelessWidget {
           asset,
           width: 24,
           height: 24,
-          color: isSelected ? Colors.black : Colors.white,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildIconNavItem(int index, IconData icon, VoidCallback onTap) {
-    final bool isSelected = index == currentIndex;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 60,
-        height: 60,
-        alignment: Alignment.center,
-        decoration: isSelected
-            ? BoxDecoration(
-                color: Color(0XFFFFCD00),
-                shape: BoxShape.circle,
-              )
-            : null,
-        child: Icon(
-          icon,
-          size: 24,
           color: isSelected ? Colors.black : Colors.white,
         ),
       ),
@@ -206,142 +180,97 @@ class _DashboardViewState extends State<DashboardView> {
 
   // DateTime currentBackPressTime = DateTime.now();
   Widget build(BuildContext context) {
-    var currentIndex = 0;
     return Obx(() {
       return Scaffold(
         backgroundColor: Colors.black,
         resizeToAvoidBottomInset: false,
         bottomNavigationBar: CustomBottomNavBar(
-          currentIndex: currentIndex,
-          onTap: (newIndex) {},
+          currentIndex: dashboardService.currentPage.value,
+          onTap: (newIndex) {
+            dashboardService.currentPage.value = newIndex;
+            dashboardService.currentPage.refresh();
+            if (newIndex == 0) {
+              mainService.isOnHomePage.value = true;
+              mainService.isOnHomePage.refresh();
+            } else {
+              mainService.isOnHomePage.value = false;
+              mainService.isOnHomePage.refresh();
+            }
+            dashboardService.pageController.value.animateToPage(
+              newIndex,
+              duration: Duration(milliseconds: 100),
+              curve: Curves.linear,
+            );
+            dashboardService.pageController.refresh();
+          },
         ),
-        appBar: AppBar(
+        appBar: (dashboardService.currentPage.value != 4 && dashboardService.currentPage.value != 1) ? AppBar(
           leading: Image.asset("assets/images/video-logo.png"),
           leadingWidth: 189,
           toolbarHeight: 59,
           backgroundColor: Colors.black,
           actions: [
-            Container(
-              width: Get.width * 0.15,
-              child: SvgPicture.asset("assets/icons/search.svg",
-                  width: 30, height: 30),
-            ),
-            badges.Badge(
-              badgeContent: Text(
-                authService.notificationsCount.value.toString(),
-                style: TextStyle(color: Colors.black),
-              ),
-              position: badges.BadgePosition.topEnd(top: -10, end: 0),
-              showBadge: false,
-              ignorePointer: false,
-              onTap: () {
-                Get.toNamed("/notifications");
-              },
-              badgeAnimation: badges.BadgeAnimation.rotation(
-                animationDuration: Duration(seconds: 1),
-                colorChangeAnimationDuration: Duration(seconds: 1),
-                loopAnimation: false,
-                curve: Curves.fastOutSlowIn,
-                colorChangeAnimationCurve: Curves.easeInCubic,
-              ),
-              badgeStyle: badges.BadgeStyle(
-                shape: badges.BadgeShape.circle,
-                badgeColor: Colors.red, // fallback if gradient fails
-                padding: EdgeInsets.all(2),
-                borderRadius: BorderRadius.circular(4),
-                borderSide: BorderSide(color: Colors.white, width: 2),
-                borderGradient: badges.BadgeGradient.linear(
-                  colors: [Color(0xFFDB4437), Color(0xFFDB4437)],
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Search Icon
+                IconButton(
+                  icon: SvgPicture.asset(
+                    "assets/icons/search.svg",
+                    width: 26,
+                    height: 26,
+                    color: Color(0xFFFFD700),
+                  ),
+                  onPressed: () {
+                    // Your search action
+                  },
                 ),
-                badgeGradient: badges.BadgeGradient.linear(
-                  colors: [Color(0xFFDB4437), Color(0xFFDB4437)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-                elevation: 0,
-              ),
-              child: Container(
-                width: Get.width * 0.15,
-                child: SvgPicture.asset(
-                  "assets/icons/notification.svg",
-                  width: 30,
-                  height: 30,
-                ),
-              ),
-            ),
-            badges.Badge(
-              badgeContent: Text(
-                dashboardService.unreadMessageCount.value.toString(),
-                style: TextStyle(
-                    color: Colors.black, fontSize: 6, letterSpacing: -0.3),
-              ),
-              onTap: () {
-                if (dashboardService.currentPage.value == 0) {
-                  dashboardController
-                      .stopController(dashboardService.pageIndex.value);
-                }
-                dashboardService.currentPage.value = 3;
-                dashboardService.currentPage.refresh();
-                mainService.isOnHomePage.value = false;
-                // dashboardController.checkPlayController = 0;
-                mainService.isOnHomePage.refresh();
-                dashboardService.bottomPadding.value = 0.0;
-                dashboardService.bottomPadding.refresh();
-
-                if (authService.currentUser.value.accessToken != '') {
-                  dashboardService.pageController.value.animateToPage(
-                      dashboardService.currentPage.value,
-                      duration: Duration(milliseconds: 100),
-                      curve: Curves.linear);
-                  dashboardService.pageController.refresh();
-                } else {
-                  Get.offNamed('/login');
-                }
-              },
-              position: badges.BadgePosition.topEnd(top: -10, end: 0),
-              showBadge: false,
-              ignorePointer: false,
-              badgeAnimation: badges.BadgeAnimation.rotation(
-                animationDuration: Duration(seconds: 1),
-                colorChangeAnimationDuration: Duration(seconds: 1),
-                loopAnimation: false,
-                curve: Curves.fastOutSlowIn,
-                colorChangeAnimationCurve: Curves.easeInCubic,
-              ),
-              badgeStyle: badges.BadgeStyle(
-                shape: badges.BadgeShape.circle,
-                badgeColor: Colors.red, // fallback if gradient fails
-                padding: EdgeInsets.all(2),
-                borderRadius: BorderRadius.circular(4),
-                borderSide: BorderSide(color: Colors.white, width: 2),
-                borderGradient: badges.BadgeGradient.linear(
-                  colors: [Color(0xFFDB4437), Color(0xFFDB4437)],
-                ),
-                badgeGradient: badges.BadgeGradient.linear(
-                  colors: [Color(0xFFDB4437), Color(0xFFDB4437)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-                elevation: 0,
-              ),
-              child: InkWell(
-                onTap: () {
-                  Get.toNamed("/chat");
-                },
-                child: Container(
-                  width: Get.width * 0.15,
-                  child: SvgPicture.asset(
-                    "assets/icons/chat.svg",
-                    // colorFilter: ColorFilter.mode(
-                    //     Colors.white, BlendMode.srcIn),
-                    width: 30,
-                    height: 30,
+                // Notification Badge
+                badges.Badge(
+                  badgeContent: Text(
+                    '15',
+                    style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
+                  ),
+                  position: badges.BadgePosition.topEnd(top: 2, end: 2),
+                  showBadge: true,
+                  child: IconButton(
+                    icon: SvgPicture.asset(
+                      "assets/icons/notification.svg",
+                      width: 26,
+                      height: 26,
+                      color: Color(0xFFFFD700),
+                    ),
+                    onPressed: () {
+                      Get.toNamed("/notifications");
+                    },
                   ),
                 ),
-              ),
+                // Message Badge
+                badges.Badge(
+                  badgeContent: Text(
+                    '12',
+                    style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
+                  ),
+                  position: badges.BadgePosition.topEnd(top: 2, end: 2),
+                  showBadge: true,
+                  child: IconButton(
+                    icon: SvgPicture.asset(
+                      "assets/icons/chat.svg",
+                      width: 26,
+                      height: 26,
+                      color: Color(0xFFFFD700),
+                    ),
+                    onPressed: () {
+                      Get.toNamed("/chat");
+                    },
+                  ),
+                ),
+                SizedBox(width: 8),
+              ],
             ),
           ],
-        ),
+        ) : null,
         body: WillPopScope(
           onWillPop: () {
             if (EasyLoading.isShow) {
@@ -413,13 +342,10 @@ class _DashboardViewState extends State<DashboardView> {
                         physics: const NeverScrollableScrollPhysics(),
                         children: [
                           HomeView(),
+                          VideoFeedView(),
                           SearchView(),
-                          SearchView(),
-
-                          // EventView(),
                           ConversationsView(),
                           MyProfileView(),
-                          // NewMyProfileView(),
                         ],
                       ),
                     ),
@@ -699,32 +625,24 @@ class _DashboardViewState extends State<DashboardView> {
   //                             ),
   //                           ),
   //                           onPressed: () async {
-  //                             /*if (dashboardService.isUploading.value) {
-  //                                         Fluttertoast.showToast(msg: 'Video is being uploaded kindly wait for the process to complete'.tr, textColor: Get.theme.primaryColor);
-  //                                       } else {
-  //                                         mainService.isOnHomePage.value = false;
-  //                                         mainService.isOnHomePage.refresh();
-  //                                         setState(() {
-  //                                           dashboardService.paddingBottom.value = 0.0;
-  //                                         });
-  //                                         dashboardController.stopController(dashboardService.pageIndex.value);
-  //                                         if (authService.currentUser.value.accessToken != '') {
-  //                                           mainService.isOnRecordingPage.value = true;
-  //                                           Get.offNamed('/video-recorder');
-  //                                         } else {
-  //                                           Get.offNamed('/login');
-  //                                         }
-  //                                       }*/
-  //                             MBS.showCupertinoModalBottomSheet(
-  //                               // expand: true,
-  //                               context: context,
-  //                               backgroundColor: Colors.transparent,
-  //                               builder: (context) => SizedBox(
-  //                                 width: Get.mediaQuery.size.width,
-  //                                 height: 120,
-  //                                 child: BottomSheetAddButton(),
-  //                               ),
-  //                             );
+  //                             if (dashboardService.isUploading.value) {
+  //                               Fluttertoast.showToast(
+  //                                 msg: 'Video is being uploaded kindly wait for the process to complete'.tr,
+  //                                 textColor: Get.theme.primaryColor,
+  //                               );
+  //                             } else {
+  //                               mainService.isOnHomePage.value = false;
+  //                               mainService.isOnHomePage.refresh();
+  //                               dashboardService.bottomPadding.value = 0.0;
+  //                               dashboardController.stopController(dashboardService.pageIndex.value);
+  //                               if (authService.currentUser.value.accessToken != '') {
+  //                                 mainService.isOnRecordingPage.value = true;
+  //                                 Get.put(VideoRecorderController(), permanent: true);
+  //                                 Get.offNamed('/video-recorder');
+  //                               } else {
+  //                                 Get.offNamed('/login');
+  //                               }
+  //                             }
   //                           },
   //                         ),
   //                         Obx(
