@@ -184,145 +184,153 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
     dashboardController.encodedVideoId = stringToBase64.encode(dashboardController.encKey + dashboardController.videoObj.value.videoId.toString());
     return Obx(
       () => Container(
-        width: 70.0,
-        child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-          // Gift icon
-          Column(
-            children: [
-              if (mainService.enableGifts.value)
-                (authService.currentUser.value.id != dashboardController.videoObj.value.userId)
-                    ? InkWell(
-                        child: Image.asset(
-                          "assets/icons/gift.png",
-                          width: 25.0,
-                        ),
-                        onTap: () async {
-                          if (authService.currentUser.value.id > 0) {
-                            dashboardService.firstLoad.value = false;
-                            GiftController giftController = Get.find();
-                            giftController.openGiftsWidget(id: dashboardController.videoObj.value.videoId);
-                          } else {
-                            Fluttertoast.showToast(msg: "You must Login first to send gifts.");
-                            Get.toNamed("/login");
-                          }
-                        },
-                      )
-                    : Container(),
-              SizedBox(height: 10),
-            ],
-          ),
-          // Muscle (like) icon
-          Column(
-            children: [
-              IconButton(
-                icon: SvgPicture.asset(
-                  'assets/icons/muscle.svg',
-                  width: 25.0,
-                  colorFilter: ColorFilter.mode(
-                    dashboardController.videoObj.value.isLike ? Color(0xffee1d52) : Colors.white,
-                    BlendMode.srcIn,
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.4),
+          borderRadius: BorderRadius.circular(5),
+        ),
+        margin: EdgeInsets.only(right: 20, bottom: 20),
+        padding: EdgeInsets.symmetric(vertical: 10),
+        child: Container(
+          width: 50.0,
+          child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+            // Gift icon
+            Column(
+              children: [
+                if (mainService.enableGifts.value)
+                  (authService.currentUser.value.id != dashboardController.videoObj.value.userId)
+                      ? InkWell(
+                          child: Image.asset(
+                            "assets/icons/gift.png",
+                            width: 25.0,
+                          ),
+                          onTap: () async {
+                            if (authService.currentUser.value.id > 0) {
+                              dashboardService.firstLoad.value = false;
+                              GiftController giftController = Get.find();
+                              giftController.openGiftsWidget(id: dashboardController.videoObj.value.videoId);
+                            } else {
+                              Fluttertoast.showToast(msg: "You must Login first to send gifts.");
+                              Get.toNamed("/login");
+                            }
+                          },
+                        )
+                      : Container(),
+                SizedBox(height: 5),
+              ],
+            ),
+            // Muscle (like) icon
+            Column(
+              children: [
+                IconButton(
+                  icon: SvgPicture.asset(
+                    'assets/icons/muscle.svg',
+                    width: 25.0,
+                    colorFilter: ColorFilter.mode(
+                      dashboardController.videoObj.value.isLike ? Color(0xffee1d52) : Colors.white,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                  onPressed: () => dashboardController.onLikeButtonTapped(!dashboardController.videoObj.value.isLike),
+                ),
+                Text(
+                  CommonHelper.formatter(dashboardController.videoObj.value.totalLikes.toString()),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                onPressed: () => dashboardController.onLikeButtonTapped(!dashboardController.videoObj.value.isLike),
-              ),
-              Text(
-                CommonHelper.formatter(dashboardController.videoObj.value.totalLikes.toString()),
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 10),
-            ],
-          ),
-          // Chat icon
-          Column(
-            children: [
-              IconButton(
-                icon: SvgPicture.asset(
-                  'assets/icons/comment.svg',
-                  width: 25.0,
-                  colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                ),
-                onPressed: () {
-                  if (dashboardController.bannerShowOn.indexOf("1") > -1) {
-                    setState(() {
-                      dashboardService.bottomPadding.value = 0;
-                    });
-                  }
-                  dashboardController.hideBottomBar.value = true;
-                  dashboardController.hideBottomBar.refresh();
-                  dashboardController.videoIndex = index;
-                  dashboardController.showBannerAd.value = false;
-                  dashboardController.showBannerAd.refresh();
-                  dashboardController.pc.open();
-                  if (dashboardController.videoObj.value.totalComments > 0) {
-                    dashboardController.getComments(dashboardController.videoObj.value).whenComplete(
-                      () {
-                        Timer(Duration(seconds: 1), () => setState(() {}));
-                      },
-                    );
-                  }
-                },
-              ),
-              Text(
-                CommonHelper.formatter(dashboardController.videoObj.value.totalComments.toString()),
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 10),
-            ],
-          ),
-          // Share icon
-          Column(
-            children: [
-              Obx(() {
-                return (!dashboardController.shareShowLoader.value)
-                    ? IconButton(
-                        icon: SvgPicture.asset(
-                          'assets/icons/share.svg',
-                          width: 25.0,
-                          colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                        ),
-                        onPressed: () async {
-                          Codec<String, String> stringToBase64 = utf8.fuse(base64);
-                          String vId = stringToBase64.encode(dashboardController.videoObj.value.videoId.toString());
-                          Share.share('$baseUrl$vId');
+                // SizedBox(height: 5),
+              ],
+            ),
+            // Chat icon
+            Column(
+              children: [
+                IconButton(
+                  icon: SvgPicture.asset(
+                    'assets/icons/comment.svg',
+                    width: 25.0,
+                    colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                  ),
+                  onPressed: () {
+                    if (dashboardController.bannerShowOn.indexOf("1") > -1) {
+                      setState(() {
+                        dashboardService.bottomPadding.value = 0;
+                      });
+                    }
+                    dashboardController.hideBottomBar.value = true;
+                    dashboardController.hideBottomBar.refresh();
+                    dashboardController.videoIndex = index;
+                    dashboardController.showBannerAd.value = false;
+                    dashboardController.showBannerAd.refresh();
+                    dashboardController.pc.open();
+                    if (dashboardController.videoObj.value.totalComments > 0) {
+                      dashboardController.getComments(dashboardController.videoObj.value).whenComplete(
+                        () {
+                          Timer(Duration(seconds: 1), () => setState(() {}));
                         },
-                      )
-                    : CommonHelper.showLoaderSpinner(Colors.white);
-              }),
-              SizedBox(height: 10),
-            ],
-          ),
-          // Report icon
-          Column(
-            children: [
-              IconButton(
-                icon: SvgPicture.asset(
-                  'assets/icons/report.svg',
-                  width: 25.0,
-                  colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                      );
+                    }
+                  },
                 ),
-                onPressed: () async {
-                  if (authService.currentUser.value.accessToken != '') {
-                    dashboardController.showReportMsg.value = false;
-                    dashboardController.showReportMsg.refresh();
-                    reportLayout(context, dashboardController.videoObj.value);
-                  } else {
-                    dashboardController.stopController(dashboardService.pageIndex.value);
-                    Get.offNamed("/login");
-                  }
-                },
-              ),
-              SizedBox(height: 10),
-            ],
-          ),
-        ]),
+                Text(
+                  CommonHelper.formatter(dashboardController.videoObj.value.totalComments.toString()),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                // SizedBox(height: 5),
+              ],
+            ),
+            // Share icon
+            Column(
+              children: [
+                Obx(() {
+                  return (!dashboardController.shareShowLoader.value)
+                      ? IconButton(
+                          icon: SvgPicture.asset(
+                            'assets/icons/share.svg',
+                            width: 25.0,
+                            colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                          ),
+                          onPressed: () async {
+                            Codec<String, String> stringToBase64 = utf8.fuse(base64);
+                            String vId = stringToBase64.encode(dashboardController.videoObj.value.videoId.toString());
+                            Share.share('$baseUrl$vId');
+                          },
+                        )
+                      : CommonHelper.showLoaderSpinner(Colors.white);
+                }),
+                // SizedBox(height: 5),
+              ],
+            ),
+            // Report icon
+            Column(
+              children: [
+                IconButton(
+                  icon: SvgPicture.asset(
+                    'assets/icons/report.svg',
+                    width: 25.0,
+                    colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                  ),
+                  onPressed: () async {
+                    if (authService.currentUser.value.accessToken != '') {
+                      dashboardController.showReportMsg.value = false;
+                      dashboardController.showReportMsg.refresh();
+                      reportLayout(context, dashboardController.videoObj.value);
+                    } else {
+                      dashboardController.stopController(dashboardService.pageIndex.value);
+                      Get.offNamed("/login");
+                    }
+                  },
+                ),
+                // SizedBox(height: 10),
+              ],
+            ),
+          ]),
+        ),
       ),
     );
   }
