@@ -615,20 +615,28 @@ class _HomeViewState extends State<HomeView>
                 top: 0,
                 bottom: 0,
                 child: Container(
-                  width: 50,
+                  width: 38,
                   height: rowHeight,
-                  padding: EdgeInsets.only(top: 15),
+                  padding: EdgeInsets.only(
+                    top: 8,                    
+                  ),
                   decoration: BoxDecoration(
-                    border: Border.all(color: labelColor, width: 2),
-                    borderRadius: BorderRadius.circular(8),
+                    border: Border(
+                      left: BorderSide.none,
+                      right: BorderSide(color: labelColor, width: 2),
+                      top: BorderSide(color: labelColor, width: 2),
+                      bottom: BorderSide(color: labelColor, width: 2),
+                    ),
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(8),
+                      bottomRight: Radius.circular(8),
+                    ),
                     color: Color.fromRGBO(0, 0, 0, 0.6)
                   ),
                   child: RotatedBox(
                     quarterTurns: -1,
                     child: Container(
-                      alignment:
-                          Alignment.centerRight, // text at the top of the box
-                      padding: EdgeInsets.only(top: 8),
+                      alignment: Alignment.centerRight,
                       child: Text(
                         label,
                         style: TextStyle(

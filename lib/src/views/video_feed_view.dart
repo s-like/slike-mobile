@@ -74,23 +74,31 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () {
+      onWillPop: () async {
         DateTime now = DateTime.now();
         if (dashboardController.pc.isPanelOpen) {
           dashboardController.pc.close();
           return Future.value(false);
         }
         
-        // Navigate back to home view
+        // Navigate to home view with home icon active
         dashboardService.currentPage.value = 0;
         dashboardService.currentPage.refresh();
         mainService.isOnHomePage.value = true;
         mainService.isOnHomePage.refresh();
+        
+        // Reset video feed state
+        dashboardService.pageIndex.value = 0;
+        dashboardService.videosData.value.videos = [];
+        dashboardService.videosData.refresh();
+        
+        // Navigate to home
         Get.offNamed('/home');
         return Future.value(false);
       },
       child: Scaffold(
         backgroundColor: Colors.black,
+        resizeToAvoidBottomInset: false,  // Add this to prevent keyboard from pushing up nav bar
         body: Obx(
           () => Stack(
             children: [
@@ -115,10 +123,19 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
             ],
           ),
         ),
-        bottomNavigationBar: CustomBottomNavBar(
-          currentIndex: 1, // Set to 1 for video feed
-          onTap: (newIndex) {
-            if (newIndex != 1) { // If not clicking video icon
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: CustomBottomNavBar(
+            currentIndex: 1, // Set to 1 for video feed
+            onTap: (newIndex) {
+              if (newIndex == 1) return; // Ignore if clicking video icon
+              
               if (newIndex == 2) { // If clicking create video button
                 if (dashboardService.isUploading.value) {
                   Fluttertoast.showToast(
@@ -142,6 +159,7 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
                   }
                 }
               } else {
+                // Handle other navigation items (home, conversations, profile)
                 dashboardService.currentPage.value = newIndex;
                 dashboardService.currentPage.refresh();
                 switch (newIndex) {
@@ -151,13 +169,13 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
                   case 2:
                     Get.offNamed('/conversations');
                     break;
-                  case 3:
+                  case 4:
                     Get.offNamed('/my-profile');
                     break;
                 }
               }
-            }
-          },
+            },
+          ),
         ),
       ),
     );
