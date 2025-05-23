@@ -691,37 +691,38 @@ class _HomeViewState extends State<HomeView>
                             ),
                           ),
                           if (isExpanded && (expandedWidth == 200.0))
-                            Padding(
-                              padding: EdgeInsets.only(left: 4),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    width: 48,
-                                    height: 48,
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFFFFCC00),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(Icons.add, size: 32, color: Colors.white),
-                                  ),
-                                  SizedBox(height: 6),
-                                  SizedBox(
-                                    width: 90,
-                                    child: Text(
-                                      "No story, add new one",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontStyle: FontStyle.italic,
-                                        fontSize: 13,
+                            Expanded(
+                              child: Align(
+                                alignment: Alignment(0, -0.2),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SizedBox(
+                                      width: 160,
+                                      child: Text(
+                                        "No story, add new one",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontStyle: FontStyle.italic,
+                                          fontSize: 11,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.visible,
                                       ),
-                                      textAlign: TextAlign.left,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
                                     ),
-                                  ),
-                                ],
+                                    SizedBox(height: 6),
+                                    Container(
+                                      width: 48,
+                                      height: 48,
+                                      decoration: BoxDecoration(
+                                        color: Color(0xFFFFCC00),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(Icons.add, size: 32, color: Colors.white),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                         ],
