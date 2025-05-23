@@ -443,8 +443,8 @@ class _HomeViewState extends State<HomeView>
           filled: true,
           contentPadding: EdgeInsets.only(
               left: CommonHelper.isRtl ? 0 : 20,
-              right: CommonHelper.isRtl ? 20 : 0,
-              top: 0),
+              // right: CommonHelper.isRtl ? 20 : 0,
+              right: 10),
           errorStyle: TextStyle(
             color: Color(0xFF210ed5),
             fontSize: 16.0,
@@ -491,7 +491,7 @@ class _HomeViewState extends State<HomeView>
                 left: CommonHelper.isRtl ? 15 : 0,
                 top: 10,
                 bottom: 10,
-                right: CommonHelper.isRtl ? 0 : 15,
+                // right: CommonHelper.isRtl ? 0 : 15,
               ),
               child: SvgPicture.asset(
                 'assets/icons/send.svg',
@@ -510,58 +510,68 @@ class _HomeViewState extends State<HomeView>
 
   Widget homeWidget() {
     _keyboardVisible = View.of(context).viewInsets.bottom != 0;
-    return Container(
-      decoration: BoxDecoration(color: Colors.black87),
-      height: Get.height,
-      width: Get.width,
-      padding: EdgeInsets.symmetric(vertical: 5),
-      child: Column(
-        children: [
-          Expanded(
-            child: buildImageRow(
-              label: 'MY TEAM',
-              labelColor: Colors.white,
-              imagePaths: [
-                'assets/images/sample/first.jpg',
-                'assets/images/sample/third.jpg',
-                'assets/images/sample/fourth.jpg',
-                'assets/images/sample/first.jpg',
-              ],
-              isExpanded: isMyTeamExpanded,
-              onTabTap: () {
-                setState(() {
-                  isMyTeamExpanded = !isMyTeamExpanded;
-                });
-              },
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () {
+        if (isMyTeamExpanded) {
+          setState(() {
+            isMyTeamExpanded = false;
+          });
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(color: Colors.black87),
+        // height: 120,
+        // width: 38,
+        padding: EdgeInsets.symmetric(vertical: 5),
+        child: Column(
+          children: [
+            Expanded(
+              child: buildImageRow(
+                label: 'MY TEAM',
+                labelColor: Colors.white,
+                imagePaths: [
+                  'assets/images/sample/first.jpg',
+                  'assets/images/sample/third.jpg',
+                  'assets/images/sample/fourth.jpg',
+                  'assets/images/sample/first.jpg',
+                ],
+                isExpanded: isMyTeamExpanded,
+                onTabTap: () {
+                  setState(() {
+                    isMyTeamExpanded = !isMyTeamExpanded;
+                  });
+                },
+              ),
             ),
-          ),
-          SizedBox(height: 10),
-          Expanded(
-            child: buildImageRow(
-              label: 'NEWS',
-              labelColor: Color.fromRGBO(255, 204, 0, 1),
-              imagePaths: [
-                'assets/images/sample/third.jpg',
-                'assets/images/sample/fourth.jpg',
-                'assets/images/sample/first.jpg',
-                'assets/images/sample/third.jpg',
-              ],
+            SizedBox(height: 10),
+            Expanded(
+              child: buildImageRow(
+                label: 'NEWS',
+                labelColor: Color.fromRGBO(255, 204, 0, 1),
+                imagePaths: [
+                  'assets/images/sample/third.jpg',
+                  'assets/images/sample/fourth.jpg',
+                  'assets/images/sample/first.jpg',
+                  'assets/images/sample/third.jpg',
+                ],
+              ),
             ),
-          ),
-          SizedBox(height: 10),
-          Expanded(
-            child: buildImageRow(
-              label: '#SPORT',
-              labelColor: Color.fromRGBO(255, 204, 0, 1),
-              imagePaths: [
-                'assets/images/sample/fourth.jpg',
-                'assets/images/sample/first.jpg',
-                'assets/images/sample/third.jpg',
-                'assets/images/sample/fourth.jpg',
-              ],
+            SizedBox(height: 10),
+            Expanded(
+              child: buildImageRow(
+                label: '#SPORT',
+                labelColor: Color.fromRGBO(255, 204, 0, 1),
+                imagePaths: [
+                  'assets/images/sample/fourth.jpg',
+                  'assets/images/sample/first.jpg',
+                  'assets/images/sample/third.jpg',
+                  'assets/images/sample/fourth.jpg',
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -580,6 +590,7 @@ class _HomeViewState extends State<HomeView>
           return LayoutBuilder(
             builder: (context, constraints) {
               final rowHeight = constraints.maxHeight;
+              final expandedWidth = 200.0;
               return Stack(
                 children: [
                   // IMAGES (bottom layer)
@@ -621,80 +632,100 @@ class _HomeViewState extends State<HomeView>
                     },
                   ),
                   // OUTSIDE CONTAINER (top layer, overlays images)
-                  AnimatedContainer(
-                    duration: Duration(milliseconds: 300),
-                    width: isExpanded ? 140 : 60,
-                    height: rowHeight,
-                    decoration: BoxDecoration(
-                      border: Border(
-                        left: BorderSide.none,
-                        right: BorderSide(color: labelColor, width: 2),
-                        top: BorderSide(color: labelColor, width: 2),
-                        bottom: BorderSide(color: labelColor, width: 2),
+                  GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () {}, // Absorb tap, do nothing
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: 300),
+                      width: isExpanded ? expandedWidth : 32,
+                      height: rowHeight,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          left: BorderSide.none,
+                          right: BorderSide(color: labelColor, width: 2),
+                          top: BorderSide(color: labelColor, width: 2),
+                          bottom: BorderSide(color: labelColor, width: 2),
+                        ),
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(8),
+                          bottomRight: Radius.circular(8),
+                        ),
+                        color: Colors.black.withOpacity(0.6), // semi-transparent
                       ),
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(8),
-                        bottomRight: Radius.circular(8),
-                      ),
-                      color: Colors.black.withOpacity(0.4), // semi-transparent
-                    ),
-                    child: Row(
-                      children: [
-                        GestureDetector(
-                          onTap: onTabTap,
-                          child: Container(
-                            width: 38,
-                            height: rowHeight,
-                            child: RotatedBox(
-                              quarterTurns: -1,
-                              child: Container(
-                                alignment: Alignment.centerRight,
-                                child: Text(
-                                  label,
-                                  style: TextStyle(
-                                    fontFamily: 'ArimoHebrewSubsetItalic',
-                                    fontWeight: FontWeight.w700,
-                                    fontStyle: FontStyle.italic,
-                                    fontSize: 34,
-                                    height: 1.0,
-                                    letterSpacing: -0.3,
-                                    color: labelColor,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: 8),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: onTabTap,
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(8),
+                                  bottomRight: Radius.circular(8),
+                                ),
+                                child: Container(
+                                  width: 30,
+                                  height: double.infinity,
+                                  child: RotatedBox(
+                                    quarterTurns: -1,
+                                    child: Container(
+                                      alignment: Alignment.bottomRight,
+                                      child: Text(
+                                        label,
+                                        style: TextStyle(
+                                          fontFamily: 'ArimoHebrewSubsetItalic',
+                                          fontWeight: FontWeight.w700,
+                                          fontStyle: FontStyle.italic,
+                                          fontSize: 30,
+                                          height: 1.0,
+                                          letterSpacing: -0.3,
+                                          color: labelColor,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        if (isExpanded)
-                          Expanded(
-                            child: Center(
+                          if (isExpanded && (expandedWidth == 200.0))
+                            Padding(
+                              padding: EdgeInsets.only(left: 4),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Container(
-                                    width: 56,
-                                    height: 56,
+                                    width: 48,
+                                    height: 48,
                                     decoration: BoxDecoration(
                                       color: Color(0xFFFFCC00),
                                       shape: BoxShape.circle,
                                     ),
-                                    child: Icon(Icons.add, size: 40, color: Colors.white),
+                                    child: Icon(Icons.add, size: 32, color: Colors.white),
                                   ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    "No story, add new one",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontStyle: FontStyle.italic,
-                                      fontSize: 14,
+                                  SizedBox(height: 6),
+                                  SizedBox(
+                                    width: 90,
+                                    child: Text(
+                                      "No story, add new one",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontStyle: FontStyle.italic,
+                                        fontSize: 13,
+                                      ),
+                                      textAlign: TextAlign.left,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
                                     ),
-                                    textAlign: TextAlign.center,
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -750,10 +781,11 @@ class _HomeViewState extends State<HomeView>
                   top: 0,
                   bottom: 0,
                   child: Container(
-                    width: 38,
+                    width: 32,
                     height: rowHeight,
                     padding: EdgeInsets.only(
-                      top: 8,                    
+                      top: 8,   
+                      right: 8,                 
                     ),
                     decoration: BoxDecoration(
                       border: Border(
@@ -771,16 +803,15 @@ class _HomeViewState extends State<HomeView>
                     child: RotatedBox(
                       quarterTurns: -1,
                       child: Container(
-                        alignment: Alignment.centerRight,
+                        alignment: Alignment.bottomRight,
                         child: Text(
                           label,
                           style: TextStyle(
-                            fontFamily:
-                                'ArimoHebrewSubsetItalic', // ensure it's defined in pubspec.yaml
+                            fontFamily: 'ArimoHebrewSubsetItalic',
                             fontWeight: FontWeight.w700,
                             fontStyle: FontStyle.italic,
                             fontSize: 34,
-                            height: 1.0, // line-height: 100%
+                            height: 1.0,
                             letterSpacing: -0.3,
                             color: labelColor,
                           ),
@@ -797,442 +828,4 @@ class _HomeViewState extends State<HomeView>
     );
   }
 
-  Widget topSection() {
-    return SafeArea(
-      top: true,
-      maintainBottomViewPadding: false,
-      bottom: false,
-      child: Container(
-        color: Colors.black12,
-        height: 60,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 25.0, bottom: 0),
-          child: Stack(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  GestureDetector(
-                    child: Obx(() {
-                      return Text("Following".tr,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: dashboardService.showFollowingPage.value
-                                ? FontWeight.bold
-                                : FontWeight.w400,
-                            fontSize: 13.0,
-                          ));
-                    }),
-                    onTap: () async {
-                      dashboardController
-                          .stopController(dashboardService.pageIndex.value);
-                      dashboardService.showFollowingPage.value = true;
-                      dashboardService.showFollowingPage.refresh();
-                      dashboardService.postIds = [];
-                      Get.offNamed('/home');
-                      dashboardController.getVideos();
-                    },
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Container(
-                    height: 13,
-                    width: 1,
-                    color: Get.theme.primaryColor.withValues(alpha: 0.5),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  GestureDetector(
-                    child: Obx(() {
-                      return Text(
-                        "Featured".tr,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: dashboardService.showFollowingPage.value
-                              ? FontWeight.w400
-                              : FontWeight.bold,
-                          fontSize: 13.0,
-                        ),
-                      );
-                    }),
-                    onTap: () async {
-                      dashboardController
-                          .stopController(dashboardService.pageIndex.value);
-                      dashboardService.showFollowingPage.value = false;
-                      dashboardService.showFollowingPage.refresh();
-                      dashboardService.postIds = [];
-                      Get.offNamed('/home');
-                      dashboardController.getVideos();
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _getMusicPlayerAction(index) {
-    return GestureDetector(
-      onTap: () async {
-        if (authService.currentUser.value.accessToken != '') {
-          if (!dashboardService.showFollowingPage.value) {
-            dashboardController
-                .stopController(dashboardService.pageIndex.value);
-          } else {}
-          dashboardController.soundShowLoader.value = true;
-          dashboardController.soundShowLoader.refresh();
-          SoundController soundController = Get.find();
-          SoundData sound = await soundController
-              .getSound(dashboardController.videoObj.value.soundId);
-          await soundController.selectSound(sound);
-          dashboardController.soundShowLoader.value = false;
-          dashboardController.soundShowLoader.refresh();
-
-          dashboardService.postIds = [];
-        } else {
-          dashboardController.stopController(dashboardService.pageIndex.value);
-          Get.offNamed("/login");
-        }
-      },
-      child: RotationTransition(
-        turns: Tween(begin: 0.0, end: 1.0).animate(musicAnimationController),
-        child: Container(
-          margin: EdgeInsets.only(top: 10.0),
-          width: 50,
-          height: 50,
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.all(2),
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(50 / 2),
-                ),
-                child: Obx(() {
-                  return (!dashboardController.soundShowLoader.value)
-                      ? Container(
-                          height: 45.0,
-                          width: 45.0,
-                          decoration: BoxDecoration(
-                            color: Colors.white30,
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(50.0),
-                            child: dashboardController
-                                        .videoObj.value.soundImageUrl !=
-                                    ""
-                                ? CachedNetworkImage(
-                                    imageUrl: dashboardController
-                                        .videoObj.value.soundImageUrl,
-                                    memCacheHeight: 50,
-                                    memCacheWidth: 50,
-                                    errorWidget: (a, b, c) {
-                                      return Image.asset(
-                                        "assets/images/splash.png",
-                                        fit: BoxFit.cover,
-                                      );
-                                    },
-                                  )
-                                : Image.asset(
-                                    "assets/images/splash.png",
-                                    fit: BoxFit.cover,
-                                  ),
-                          ),
-                        )
-                      : CommonHelper.showLoaderSpinner(Colors.white);
-                }),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget sidebar(index) {
-    Codec<String, String> stringToBase64 = utf8.fuse(base64);
-    dashboardController.encodedVideoId = stringToBase64.encode(
-        dashboardController.encKey +
-            dashboardController.videoObj.value.videoId.toString());
-    return Obx(
-      () => Container(
-        // padding: new EdgeInsets.only(bottom: dashboardService.paddingBottom.value - 30 > 0 ? dashboardService.paddingBottom.value - 30 : 0),
-        width: 70.0,
-        child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-          Column(
-            children: [
-              LikeButton(
-                size: 25,
-                circleColor: CircleColor(
-                    start: Colors.transparent, end: Colors.transparent),
-                bubblesColor: BubblesColor(
-                  dotPrimaryColor: dashboardController.videoObj.value.isLike
-                      ? Color(0xffee1d52)
-                      : Color(0xffffffff),
-                  dotSecondaryColor: dashboardController.videoObj.value.isLike
-                      ? Color(0xffee1d52)
-                      : Color(0xffffffff),
-                ),
-                likeBuilder: (bool isLiked) {
-                  return SvgPicture.asset(
-                    'assets/icons/liked.svg',
-                    width: 25.0,
-                    colorFilter: ColorFilter.mode(
-                        dashboardController.videoObj.value.isLike
-                            ? Color(0xffee1d52)
-                            : Colors.white,
-                        BlendMode.srcIn),
-                  );
-                },
-                onTap: dashboardController.onLikeButtonTapped,
-              ),
-              Text(
-                CommonHelper.formatter(
-                    dashboardController.videoObj.value.totalLikes.toString()),
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              )
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Bouncy(
-            duration: Duration(milliseconds: 2000),
-            lift: 10,
-            ratio: 0.25,
-            pause: 0.5,
-            child: Obx(
-              () => Column(
-                children: [
-                  if (mainService.enableGifts.value)
-                    (authService.currentUser.value.id !=
-                            dashboardController.videoObj.value.userId)
-                        ? InkWell(
-                            child: Image.asset(
-                              "assets/icons/gift.png",
-                              width: 25.0,
-                            ),
-                            onTap: () async {
-                              AuthService authService = Get.find();
-                              print(33333);
-                              if (authService.currentUser.value.id > 0) {
-                                DashboardService dashboardService = Get.find();
-                                dashboardService.firstLoad.value = false;
-                                GiftController giftController = Get.find();
-                                giftController.openGiftsWidget(
-                                    id: dashboardController
-                                        .videoObj.value.videoId);
-                              } else {
-                                Fluttertoast.showToast(
-                                    msg: "You must Login first to send gifts.");
-                                Get.toNamed("/login");
-                              }
-                            },
-                          )
-                        : Container(),
-                  SizedBox(
-                    height: 10,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Column(
-                children: <Widget>[
-                  Container(
-                    height: 50.0,
-                    width: 50.0,
-                    child: IconButton(
-                      alignment: Alignment.bottomCenter,
-                      padding: EdgeInsets.only(
-                          top: 9, bottom: 6, left: 5.0, right: 5.0),
-                      icon: SvgPicture.asset(
-                        'assets/icons/comments.svg',
-                        width: 25.0,
-                        colorFilter:
-                            ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                      ),
-                      onPressed: () {
-                        if (dashboardController.bannerShowOn.indexOf("1") >
-                            -1) {
-                          setState(() {
-                            dashboardService.bottomPadding.value = 0;
-                          });
-                        }
-                        dashboardController.hideBottomBar.value = true;
-                        dashboardController.hideBottomBar.refresh();
-                        dashboardController.videoIndex = index;
-                        dashboardController.showBannerAd.value = false;
-                        dashboardController.showBannerAd.refresh();
-                        dashboardController.pc.open();
-                        if (dashboardController.videoObj.value.totalComments >
-                            0) {
-                          dashboardController
-                              .getComments(dashboardController.videoObj.value)
-                              .whenComplete(
-                            () {
-                              Timer(
-                                  Duration(seconds: 1), () => setState(() {}));
-                            },
-                          );
-                        }
-                      },
-                    ),
-                  ),
-                  Text(
-                    CommonHelper.formatter(dashboardController
-                        .videoObj.value.totalComments
-                        .toString()),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Column(
-                children: <Widget>[
-                  Container(
-                    height: 35.0,
-                    width: 50.0,
-                    child: IconButton(
-                      alignment: Alignment.bottomCenter,
-                      padding: EdgeInsets.only(
-                          top: 0, bottom: 0, left: 5.0, right: 5.0),
-                      icon: SvgPicture.asset(
-                        'assets/icons/views.svg',
-                        width: 25.0,
-                        colorFilter:
-                            ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                      ),
-                      onPressed: () {},
-                    ),
-                  ),
-                  Text(
-                    CommonHelper.formatter(dashboardController
-                        .videoObj.value.totalViews
-                        .toString()),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Container(
-                height: 50.0,
-                width: 50.0,
-                child: Obx(() {
-                  return (!dashboardController.shareShowLoader.value)
-                      ? IconButton(
-                          alignment: Alignment.topCenter,
-                          icon: SvgPicture.asset(
-                            'assets/icons/share.svg',
-                            width: 25.0,
-                            colorFilter:
-                                ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                          ),
-                          onPressed: () async {
-                            Codec<String, String> stringToBase64 =
-                                utf8.fuse(base64);
-                            String vId = stringToBase64.encode(
-                                dashboardController.videoObj.value.videoId
-                                    .toString());
-                            Share.share('$baseUrl$vId');
-                          },
-                        )
-                      : CommonHelper.showLoaderSpinner(Colors.white);
-                }),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Container(
-                height: 50.0,
-                width: 50.0,
-                child: IconButton(
-                  alignment: Alignment.topCenter,
-                  icon: SvgPicture.asset(
-                    'assets/icons/report.svg',
-                    width: 25.0,
-                    colorFilter:
-                        ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                  ),
-                  onPressed: () async {
-                    if (authService.currentUser.value.accessToken != '') {
-                      dashboardController.showReportMsg.value = false;
-                      dashboardController.showReportMsg.refresh();
-                      reportLayout(context, dashboardController.videoObj.value);
-                    } else {
-                      dashboardController
-                          .stopController(dashboardService.pageIndex.value);
-                      Get.offNamed("/login");
-                    }
-                  },
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          (dashboardController.videoObj.value.soundId > 0)
-              ? _getMusicPlayerAction(index)
-              : SizedBox(
-                  height: 0,
-                ),
-          (dashboardController.videoObj.value.soundId > 0)
-              ? Divider(
-                  color: Colors.transparent,
-                  height: 5.0,
-                )
-              : SizedBox(
-                  height: 0,
-                ),
-        ]),
-      ),
-    );
-  }
 }
