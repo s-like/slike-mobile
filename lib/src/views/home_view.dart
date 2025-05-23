@@ -32,6 +32,7 @@ class _HomeViewState extends State<HomeView>
   DateTime currentBackPressTime = DateTime.now();
 
   double _tempAdPadding = 0;
+  bool isMyTeamExpanded = false;
   @override
   Future<void> didChangeDependencies() async {
     print("|didChangeDependencies|");
@@ -526,6 +527,12 @@ class _HomeViewState extends State<HomeView>
                 'assets/images/sample/fourth.jpg',
                 'assets/images/sample/first.jpg',
               ],
+              isExpanded: isMyTeamExpanded,
+              onTabTap: () {
+                setState(() {
+                  isMyTeamExpanded = !isMyTeamExpanded;
+                });
+              },
             ),
           ),
           SizedBox(height: 10),
@@ -563,100 +570,229 @@ class _HomeViewState extends State<HomeView>
     required String label,
     required Color labelColor,
     required List<String> imagePaths,
+    bool isExpanded = false,
+    VoidCallback? onTabTap,
   }) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final rowHeight = constraints.maxHeight;
-        return SizedBox(
-          height: rowHeight,
-          child: Stack(
-            children: [
-              ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: imagePaths.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                    margin: EdgeInsets.only(right: 8),
-                    child: Stack(
+        if (label == 'MY TEAM') {
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final rowHeight = constraints.maxHeight;
+              return Stack(
+                children: [
+                  // IMAGES (bottom layer)
+                  ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: imagePaths.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        margin: EdgeInsets.only(right: 8),
+                        child: Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.asset(
+                                imagePaths[index],
+                                width: rowHeight * 0.75,
+                                height: rowHeight,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 8,
+                              right: 8,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.black54,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  '10,3K',
+                                  style: TextStyle(color: Colors.white, fontSize: 12),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  // OUTSIDE CONTAINER (top layer, overlays images)
+                  AnimatedContainer(
+                    duration: Duration(milliseconds: 300),
+                    width: isExpanded ? 140 : 60,
+                    height: rowHeight,
+                    decoration: BoxDecoration(
+                      border: Border(
+                        left: BorderSide.none,
+                        right: BorderSide(color: labelColor, width: 2),
+                        top: BorderSide(color: labelColor, width: 2),
+                        bottom: BorderSide(color: labelColor, width: 2),
+                      ),
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(8),
+                        bottomRight: Radius.circular(8),
+                      ),
+                      color: Colors.black.withOpacity(0.4), // semi-transparent
+                    ),
+                    child: Row(
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.asset(
-                            imagePaths[index],
-                            width: rowHeight * 0.75, // keep aspect ratio
-                            height: rowHeight,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 8,
-                          right: 8,
+                        GestureDetector(
+                          onTap: onTabTap,
                           child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: Colors.black54,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              '10,3K',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 12),
+                            width: 38,
+                            height: rowHeight,
+                            child: RotatedBox(
+                              quarterTurns: -1,
+                              child: Container(
+                                alignment: Alignment.centerRight,
+                                child: Text(
+                                  label,
+                                  style: TextStyle(
+                                    fontFamily: 'ArimoHebrewSubsetItalic',
+                                    fontWeight: FontWeight.w700,
+                                    fontStyle: FontStyle.italic,
+                                    fontSize: 34,
+                                    height: 1.0,
+                                    letterSpacing: -0.3,
+                                    color: labelColor,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
+                        if (isExpanded)
+                          Expanded(
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: 56,
+                                    height: 56,
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFFFFCC00),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(Icons.add, size: 40, color: Colors.white),
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    "No story, add new one",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontStyle: FontStyle.italic,
+                                      fontSize: 14,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                       ],
                     ),
-                  );
-                },
-              ),
-              Positioned(
-                left: 0,
-                top: 0,
-                bottom: 0,
-                child: Container(
-                  width: 38,
-                  height: rowHeight,
-                  padding: EdgeInsets.only(
-                    top: 8,                    
                   ),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      left: BorderSide.none,
-                      right: BorderSide(color: labelColor, width: 2),
-                      top: BorderSide(color: labelColor, width: 2),
-                      bottom: BorderSide(color: labelColor, width: 2),
+                ],
+              );
+            },
+          );
+        } else {
+          return SizedBox(
+            height: rowHeight,
+            child: Stack(
+              children: [
+                ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: imagePaths.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin: EdgeInsets.only(right: 8),
+                      child: Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.asset(
+                              imagePaths[index],
+                              width: rowHeight * 0.75, // keep aspect ratio
+                              height: rowHeight,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 8,
+                            right: 8,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.black54,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                '10,3K',
+                                style:
+                                    TextStyle(color: Colors.white, fontSize: 12),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                Positioned(
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  child: Container(
+                    width: 38,
+                    height: rowHeight,
+                    padding: EdgeInsets.only(
+                      top: 8,                    
                     ),
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(8),
-                      bottomRight: Radius.circular(8),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        left: BorderSide.none,
+                        right: BorderSide(color: labelColor, width: 2),
+                        top: BorderSide(color: labelColor, width: 2),
+                        bottom: BorderSide(color: labelColor, width: 2),
+                      ),
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(8),
+                        bottomRight: Radius.circular(8),
+                      ),
+                      color: Color.fromRGBO(0, 0, 0, 0.6)
                     ),
-                    color: Color.fromRGBO(0, 0, 0, 0.6)
-                  ),
-                  child: RotatedBox(
-                    quarterTurns: -1,
-                    child: Container(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        label,
-                        style: TextStyle(
-                          fontFamily:
-                              'ArimoHebrewSubsetItalic', // ensure it's defined in pubspec.yaml
-                          fontWeight: FontWeight.w700,
-                          fontStyle: FontStyle.italic,
-                          fontSize: 34,
-                          height: 1.0, // line-height: 100%
-                          letterSpacing: -0.3,
-                          color: labelColor,
+                    child: RotatedBox(
+                      quarterTurns: -1,
+                      child: Container(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          label,
+                          style: TextStyle(
+                            fontFamily:
+                                'ArimoHebrewSubsetItalic', // ensure it's defined in pubspec.yaml
+                            fontWeight: FontWeight.w700,
+                            fontStyle: FontStyle.italic,
+                            fontSize: 34,
+                            height: 1.0, // line-height: 100%
+                            letterSpacing: -0.3,
+                            color: labelColor,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        );
+              ],
+            ),
+          );
+        }
       },
     );
   }
