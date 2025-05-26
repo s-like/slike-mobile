@@ -33,6 +33,7 @@ class _HomeViewState extends State<HomeView>
 
   double _tempAdPadding = 0;
   bool isMyTeamExpanded = false;
+  bool isNewsExpanded = false;
   @override
   Future<void> didChangeDependencies() async {
     print("|didChangeDependencies|");
@@ -555,6 +556,12 @@ class _HomeViewState extends State<HomeView>
                   'assets/images/sample/first.jpg',
                   'assets/images/sample/third.jpg',
                 ],
+                isExpanded: isNewsExpanded,
+                onTabTap: () {
+                  setState(() {
+                    isNewsExpanded = !isNewsExpanded;
+                  });
+                },
               ),
             ),
             SizedBox(height: 10),
@@ -583,6 +590,7 @@ class _HomeViewState extends State<HomeView>
     bool isExpanded = false,
     VoidCallback? onTabTap,
   }) {
+    final expandedWidth = (label == 'NEWS') ? 380.0 : 200.0;
     return LayoutBuilder(
       builder: (context, constraints) {
         final rowHeight = constraints.maxHeight;
@@ -590,7 +598,6 @@ class _HomeViewState extends State<HomeView>
           return LayoutBuilder(
             builder: (context, constraints) {
               final rowHeight = constraints.maxHeight;
-              final expandedWidth = 200.0;
               return Stack(
                 children: [
                   // IMAGES (bottom layer)
@@ -650,7 +657,7 @@ class _HomeViewState extends State<HomeView>
                           topRight: Radius.circular(8),
                           bottomRight: Radius.circular(8),
                         ),
-                        color: Colors.black.withOpacity(0.6), // semi-transparent
+                        color: Colors.black.withOpacity(0.8), // semi-transparent
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -733,6 +740,136 @@ class _HomeViewState extends State<HomeView>
               );
             },
           );
+        } else if (label == 'NEWS') {
+          return Stack(
+            children: [
+              ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: imagePaths.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    margin: EdgeInsets.only(right: 8),
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.asset(
+                            imagePaths[index],
+                            width: rowHeight * 0.75,
+                            height: rowHeight,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+              AnimatedContainer(
+                duration: Duration(milliseconds: 300),
+                width: isExpanded ? expandedWidth : 32,
+                height: rowHeight,
+                decoration: BoxDecoration(
+                  border: Border(
+                    left: BorderSide.none,
+                    right: BorderSide(color: labelColor, width: 2),
+                    top: BorderSide(color: labelColor, width: 2),
+                    bottom: BorderSide(color: labelColor, width: 2),
+                  ),
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(8),
+                    bottomRight: Radius.circular(8),
+                  ),
+                  color: Colors.black.withOpacity(0.8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 8),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: onTabTap,
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(8),
+                            bottomRight: Radius.circular(8),
+                          ),
+                          child: Container(
+                            width: 30,
+                            height: double.infinity,
+                            child: RotatedBox(
+                              quarterTurns: -1,
+                              child: Container(
+                                alignment: Alignment.bottomRight,
+                                child: Text(
+                                  label,
+                                  style: TextStyle(
+                                    fontFamily: 'ArimoHebrewSubsetItalic',
+                                    fontWeight: FontWeight.w700,
+                                    fontStyle: FontStyle.italic,
+                                    fontSize: 34,
+                                    height: 1.0,
+                                    letterSpacing: -0.3,
+                                    color: labelColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (isExpanded && (expandedWidth == 380.0))
+                      Expanded(
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // COMING SOON banner
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFFFCC00),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.info_outline, color: Colors.black, size: 20),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      'COMING SOON',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 18),
+                              SizedBox(
+                                width: 220,
+                                child: Text(
+                                  'Here you will find News\nand  sports updates',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          );
         } else {
           return SizedBox(
             height: rowHeight,
@@ -799,7 +936,7 @@ class _HomeViewState extends State<HomeView>
                         topRight: Radius.circular(8),
                         bottomRight: Radius.circular(8),
                       ),
-                      color: Color.fromRGBO(0, 0, 0, 0.6)
+                      color: Color.fromRGBO(0, 0, 0, 0.8)
                     ),
                     child: RotatedBox(
                       quarterTurns: -1,
