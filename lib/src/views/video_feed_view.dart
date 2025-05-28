@@ -31,10 +31,13 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
   PostService postService = Get.find();
   DateTime currentBackPressTime = DateTime.now();
   bool _isInitialized = false;
+  int? initialVideoId;
 
   @override
   void initState() {
     super.initState();
+    // Get the videoId argument if present
+    initialVideoId = Get.arguments != null ? Get.arguments['videoId'] : null;
     // Initialize state
     mainService.isOnHomePage.value = false;
     mainService.isOnHomePage.refresh();
@@ -52,12 +55,20 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
     });
   }
 
-  void _initializeVideoFeed() {
+  void _initializeVideoFeed() async {
     if (!mounted) return;
     setState(() {
       _isInitialized = true;
     });
-    dashboardController.getVideos();
+    await dashboardController.getVideos();
+    if (initialVideoId != null) {
+      final videos = dashboardService.videosData.value.videos;
+      final idx = videos.indexWhere((v) => v.videoId == initialVideoId);
+      if (idx != -1) {
+        dashboardController.pageViewController.value.jumpToPage(idx);
+        dashboardService.pageIndex.value = idx;
+      }
+    }
   }
 
   @override
