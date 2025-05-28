@@ -611,7 +611,7 @@ class _HomeViewState extends State<HomeView>
     bool isExpanded = false,
     VoidCallback? onTabTap,
   }) {
-    final expandedWidth = (label == 'NEWS') ? 380.0 : 200.0;
+    final expandedWidth = (label == 'NEWS') ? 380.0 : 220.0;
     return LayoutBuilder(
       builder: (context, constraints) {
         final rowHeight = constraints.maxHeight;
@@ -711,7 +711,7 @@ class _HomeViewState extends State<HomeView>
                               ),
                             ),
                           ),
-                          if (isExpanded && (expandedWidth == 200.0))
+                          if (isExpanded && (expandedWidth == 220.0))
                             Expanded(
                               child: Align(
                                 alignment: Alignment(0, -0.2),

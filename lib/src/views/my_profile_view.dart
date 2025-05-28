@@ -61,10 +61,10 @@ class _MyProfileViewState extends State<MyProfileView> {
                 ),
                 // Top right controller buttons in a rounded rectangle
                 Positioned(
-                  top: 30,
+                  top: 50,
                   right: 10,
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 0),
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.5),
                       borderRadius: BorderRadius.circular(5),
@@ -257,7 +257,7 @@ class _MyProfileViewState extends State<MyProfileView> {
                       child: GridView.builder(
                         itemCount: videos.length,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
+                          crossAxisCount: 5,
                           crossAxisSpacing: 6,
                           mainAxisSpacing: 6,
                           childAspectRatio: 0.7,
