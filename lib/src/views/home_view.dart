@@ -34,6 +34,7 @@ class _HomeViewState extends State<HomeView>
   double _tempAdPadding = 0;
   bool isMyTeamExpanded = false;
   bool isNewsExpanded = false;
+  bool isSportExpanded = false;
   @override
   Future<void> didChangeDependencies() async {
     print("|didChangeDependencies|");
@@ -514,9 +515,11 @@ class _HomeViewState extends State<HomeView>
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () {
-        if (isMyTeamExpanded) {
+        if (isMyTeamExpanded || isNewsExpanded || isSportExpanded) {
           setState(() {
             isMyTeamExpanded = false;
+            isNewsExpanded = false;
+            isSportExpanded = false;
           });
         }
       },
@@ -541,6 +544,10 @@ class _HomeViewState extends State<HomeView>
                 onTabTap: () {
                   setState(() {
                     isMyTeamExpanded = !isMyTeamExpanded;
+                    if (isMyTeamExpanded) {
+                      isNewsExpanded = false;  // Collapse NEWS tab when MY TEAM is expanded
+                      isSportExpanded = false;
+                    }
                   });
                 },
               ),
@@ -560,6 +567,10 @@ class _HomeViewState extends State<HomeView>
                 onTabTap: () {
                   setState(() {
                     isNewsExpanded = !isNewsExpanded;
+                    if (isNewsExpanded) {
+                      isMyTeamExpanded = false;  // Collapse MY TEAM tab when NEWS is expanded
+                      isSportExpanded = false;
+                    }
                   });
                 },
               ),
@@ -567,7 +578,7 @@ class _HomeViewState extends State<HomeView>
             SizedBox(height: 10),
             Expanded(
               child: buildImageRow(
-                label: '#SPORT',
+                label: 'SPORT',
                 labelColor: Color.fromRGBO(255, 204, 0, 1),
                 imagePaths: [
                   'assets/images/sample/fourth.jpg',
@@ -575,6 +586,16 @@ class _HomeViewState extends State<HomeView>
                   'assets/images/sample/third.jpg',
                   'assets/images/sample/fourth.jpg',
                 ],
+                isExpanded: isSportExpanded,
+                onTabTap: () {
+                  setState(() {
+                    isSportExpanded = !isSportExpanded;
+                    if (isSportExpanded) {
+                      isMyTeamExpanded = false;
+                      isNewsExpanded = false;
+                    }
+                  });
+                },
               ),
             ),
           ],
@@ -644,7 +665,7 @@ class _HomeViewState extends State<HomeView>
                     onTap: () {}, // Absorb tap, do nothing
                     child: AnimatedContainer(
                       duration: Duration(milliseconds: 300),
-                      width: isExpanded ? expandedWidth : 32,
+                      width: isExpanded ? expandedWidth : 36,
                       height: rowHeight,
                       decoration: BoxDecoration(
                         border: Border(
@@ -663,33 +684,26 @@ class _HomeViewState extends State<HomeView>
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Padding(
-                            padding: EdgeInsets.only(top: 8),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: onTabTap,
-                                borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(8),
-                                  bottomRight: Radius.circular(8),
-                                ),
-                                child: Container(
-                                  width: 30,
-                                  height: double.infinity,
-                                  child: RotatedBox(
-                                    quarterTurns: -1,
-                                    child: Container(
-                                      alignment: Alignment.bottomRight,
-                                      child: Text(
-                                        label,
-                                        style: TextStyle(
-                                          fontFamily: 'ArimoHebrewSubsetItalic',
-                                          fontWeight: FontWeight.w700,
-                                          fontStyle: FontStyle.italic,
-                                          fontSize: 30,
-                                          height: 1.0,
-                                          letterSpacing: -0.3,
-                                          color: labelColor,
-                                        ),
+                            padding: EdgeInsets.only(top: 10),
+                            child: GestureDetector(
+                              onTap: onTabTap,
+                              child: Container(
+                                width: 32,
+                                height: double.infinity,
+                                child: RotatedBox(
+                                  quarterTurns: -1,
+                                  child: Container(
+                                    alignment: Alignment.bottomRight,
+                                    child: Text(
+                                      isExpanded && label == 'MY TEAM' ? 'MY STORY' : label,
+                                      style: TextStyle(
+                                        fontFamily: 'ArimoHebrewSubsetItalic',
+                                        fontWeight: FontWeight.w700,
+                                        fontStyle: FontStyle.italic,
+                                        fontSize: 30,
+                                        height: 1.0,
+                                        letterSpacing: -0.3,
+                                        color: labelColor,
                                       ),
                                     ),
                                   ),
@@ -710,12 +724,11 @@ class _HomeViewState extends State<HomeView>
                                         "No story, add new one",
                                         style: TextStyle(
                                           color: Colors.white,
-                                          fontStyle: FontStyle.italic,
-                                          fontSize: 11,
+                                          fontSize: 13,
                                         ),
                                         textAlign: TextAlign.center,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.visible,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                     SizedBox(height: 6),
@@ -767,7 +780,7 @@ class _HomeViewState extends State<HomeView>
               ),
               AnimatedContainer(
                 duration: Duration(milliseconds: 300),
-                width: isExpanded ? expandedWidth : 32,
+                width: isExpanded ? expandedWidth : 36,
                 height: rowHeight,
                 decoration: BoxDecoration(
                   border: Border(
@@ -786,33 +799,26 @@ class _HomeViewState extends State<HomeView>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: onTabTap,
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(8),
-                            bottomRight: Radius.circular(8),
-                          ),
-                          child: Container(
-                            width: 30,
-                            height: double.infinity,
-                            child: RotatedBox(
-                              quarterTurns: -1,
-                              child: Container(
-                                alignment: Alignment.bottomRight,
-                                child: Text(
-                                  label,
-                                  style: TextStyle(
-                                    fontFamily: 'ArimoHebrewSubsetItalic',
-                                    fontWeight: FontWeight.w700,
-                                    fontStyle: FontStyle.italic,
-                                    fontSize: 34,
-                                    height: 1.0,
-                                    letterSpacing: -0.3,
-                                    color: labelColor,
-                                  ),
+                      padding: EdgeInsets.only(top: 10),
+                      child: GestureDetector(
+                        onTap: onTabTap,
+                        child: Container(
+                          width: 32,
+                          height: double.infinity,
+                          child: RotatedBox(
+                            quarterTurns: -1,
+                            child: Container(
+                              alignment: Alignment.bottomRight,
+                              child: Text(
+                                label,
+                                style: TextStyle(
+                                  fontFamily: 'ArimoHebrewSubsetItalic',
+                                  fontWeight: FontWeight.w700,
+                                  fontStyle: FontStyle.italic,
+                                  fontSize: 30,
+                                  height: 1.0,
+                                  letterSpacing: -0.3,
+                                  color: labelColor,
                                 ),
                               ),
                             ),
@@ -829,34 +835,22 @@ class _HomeViewState extends State<HomeView>
                               // COMING SOON banner
                               Container(
                                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                decoration: BoxDecoration(
-                                  color: Color(0xFFFFCC00),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.info_outline, color: Colors.black, size: 20),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      'COMING SOON',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                      ),
-                                    ),
-                                  ],
+                                child: Center(
+                                  child: Image.asset(
+                                    'assets/images/coming-soon.png',
+                                    height: 100,  // Increased height for prominence
+                                    fit: BoxFit.contain,
+                                  ),
                                 ),
                               ),
-                              SizedBox(height: 18),
+                              // SizedBox(height: 18),
                               SizedBox(
                                 width: 220,
                                 child: Text(
                                   'Here you will find News\nand  sports updates',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 14,
+                                    fontSize: 13,
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
@@ -914,48 +908,206 @@ class _HomeViewState extends State<HomeView>
                     );
                   },
                 ),
-                Positioned(
-                  left: 0,
-                  top: 0,
-                  bottom: 0,
-                  child: Container(
-                    width: 32,
-                    height: rowHeight,
-                    padding: EdgeInsets.only(
-                      top: 8,   
-                      right: 8,                 
+                AnimatedContainer(
+                  duration: Duration(milliseconds: 300),
+                  width: isExpanded && label == 'SPORT' ? 380.0 : isExpanded ? 380.0 : 36, // Increased collapsed width to prevent overflow
+                  height: rowHeight,
+                  decoration: BoxDecoration(
+                    border: Border(
+                      left: BorderSide.none,
+                      right: BorderSide(color: labelColor, width: 2),
+                      top: BorderSide(color: labelColor, width: 2),
+                      bottom: BorderSide(color: labelColor, width: 2),
                     ),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        left: BorderSide.none,
-                        right: BorderSide(color: labelColor, width: 2),
-                        top: BorderSide(color: labelColor, width: 2),
-                        bottom: BorderSide(color: labelColor, width: 2),
-                      ),
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(8),
-                        bottomRight: Radius.circular(8),
-                      ),
-                      color: Color.fromRGBO(0, 0, 0, 0.8)
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(8),
+                      bottomRight: Radius.circular(8),
                     ),
-                    child: RotatedBox(
-                      quarterTurns: -1,
-                      child: Container(
-                        alignment: Alignment.bottomRight,
-                        child: Text(
-                          label,
-                          style: TextStyle(
-                            fontFamily: 'ArimoHebrewSubsetItalic',
-                            fontWeight: FontWeight.w700,
-                            fontStyle: FontStyle.italic,
-                            fontSize: 34,
-                            height: 1.0,
-                            letterSpacing: -0.3,
-                            color: labelColor,
+                    color: Colors.black.withOpacity(0.8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(top: 10), // Match NEWS tab
+                        child: GestureDetector(
+                          onTap: onTabTap,
+                          child: Container(
+                            width: 32, // Match NEWS tab
+                            height: double.infinity,
+                            child: RotatedBox(
+                              quarterTurns: -1,
+                              child: Container(
+                                alignment: Alignment.bottomRight,
+                                child: Text(
+                                  label,
+                                  style: TextStyle(
+                                    fontFamily: 'ArimoHebrewSubsetItalic',
+                                    fontWeight: FontWeight.w700,
+                                    fontStyle: FontStyle.italic,
+                                    fontSize: 30,
+                                    height: 1.0,
+                                    letterSpacing: -0.3,
+                                    color: labelColor,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                      if (isExpanded && (label == 'SPORT'))
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12), // Reduce horizontal padding
+                          child: Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // Search bar
+                                Container(
+                                  width: 260,
+                                  height: 36,
+                                  margin: EdgeInsets.only(bottom: 12),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Color(0xFFFFCC00), width: 2),
+                                    borderRadius: BorderRadius.circular(8),
+                                    color: Colors.transparent,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(width: 8),
+                                      Expanded(
+                                        child: TextField(
+                                          style: TextStyle(color: Colors.white, fontSize: 14),
+                                          decoration: InputDecoration(
+                                            border: InputBorder.none,
+                                            hintText: 'Search',
+                                            hintStyle: TextStyle(color: Colors.white70),
+                                            isDense: true,
+                                            contentPadding: EdgeInsets.symmetric(vertical: 8),
+                                          ),
+                                        ),
+                                      ),
+                                      Icon(Icons.search, color: Color(0xFFFFCC00)),
+                                      SizedBox(width: 8),
+                                    ],
+                                  ),
+                                ),
+                                // First row of buttons
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      // Musculation (yellow)
+                                      Container(
+                                        margin: EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+                                        child: ElevatedButton.icon(
+                                          onPressed: () {},
+                                          icon: Text('💪', style: TextStyle(fontSize: 16)),
+                                          label: Text('Musculation'),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Color(0xFFFFCC00),
+                                            foregroundColor: Colors.black,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                            ),
+                                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                            textStyle: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ),
+                                      // Football (dark)
+                                      Container(
+                                        margin: EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+                                        child: OutlinedButton.icon(
+                                          onPressed: () {},
+                                          icon: Text('⚽', style: TextStyle(fontSize: 16)),
+                                          label: Text('Football'),
+                                          style: OutlinedButton.styleFrom(
+                                            foregroundColor: Colors.white,
+                                            side: BorderSide(color: Color(0xFFFFCC00), width: 2),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                            ),
+                                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                            textStyle: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ),
+                                      // Boxe (yellow)
+                                      Container(
+                                        margin: EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+                                        child: ElevatedButton.icon(
+                                          onPressed: () {},
+                                          icon: Text('🥊', style: TextStyle(fontSize: 16)),
+                                          label: Text('Boxe'),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Color(0xFFFFCC00),
+                                            foregroundColor: Colors.black,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                            ),
+                                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                            textStyle: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                // Second row of buttons
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      // Fitness (dark)
+                                      Container(
+                                        margin: EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+                                        child: OutlinedButton.icon(
+                                          onPressed: () {},
+                                          icon: Text('🏋️', style: TextStyle(fontSize: 16)),
+                                          label: Text('Fitness'),
+                                          style: OutlinedButton.styleFrom(
+                                            foregroundColor: Colors.white,
+                                            side: BorderSide(color: Color(0xFFFFCC00), width: 2),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                            ),
+                                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                            textStyle: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ),
+                                      // Crossfit (dark)
+                                      Container(
+                                        margin: EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+                                        child: OutlinedButton.icon(
+                                          onPressed: () {},
+                                          icon: Text('🏆', style: TextStyle(fontSize: 16)),
+                                          label: Text('Crossfit'),
+                                          style: OutlinedButton.styleFrom(
+                                            foregroundColor: Colors.white,
+                                            side: BorderSide(color: Color(0xFFFFCC00), width: 2),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(14),
+                                            ),
+                                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                            textStyle: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               ],
