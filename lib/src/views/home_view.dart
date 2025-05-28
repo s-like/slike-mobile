@@ -739,7 +739,29 @@ class _HomeViewState extends State<HomeView>
                                         color: Color(0xFFFFCC00),
                                         shape: BoxShape.circle,
                                       ),
-                                      child: Icon(Icons.add, size: 32, color: Colors.white),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          if (dashboardService.isUploading.value) {
+                                            Fluttertoast.showToast(
+                                              msg: 'Video is being uploaded kindly wait for the process to complete'.tr,
+                                              textColor: Get.theme.primaryColor,
+                                            );
+                                          } else {
+                                            mainService.isOnHomePage.value = false;
+                                            mainService.isOnHomePage.refresh();
+                                            dashboardService.bottomPadding.value = 0.0;
+                                            dashboardController.stopController(dashboardService.pageIndex.value);
+                                            if (authService.currentUser.value.accessToken != '') {
+                                              mainService.isOnRecordingPage.value = true;
+                                              Get.put(VideoRecorderController(), permanent: true);
+                                              Get.offNamed('/video-recorder');
+                                            } else {
+                                              Get.offNamed('/login');
+                                            }
+                                          }
+                                        },
+                                        child: Icon(Icons.add, size: 32, color: Colors.white),
+                                      ),
                                     ),
                                   ],
                                 ),
