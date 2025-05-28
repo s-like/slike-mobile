@@ -51,7 +51,7 @@ class _MyProfileViewState extends State<MyProfileView> {
                 // Background image
                 Container(
                   width: double.infinity,
-                  height: 260,
+                  height: 340,
                   child: authService.currentUser.value.largeProfilePic != ''
                       ? CachedNetworkImage(
                           imageUrl: authService.currentUser.value.largeProfilePic,
@@ -59,58 +59,55 @@ class _MyProfileViewState extends State<MyProfileView> {
                         )
                       : Image.asset('assets/images/default-user.png', fit: BoxFit.cover),
                 ),
-                // Overlay
-                Container(
-                  width: double.infinity,
-                  height: 260,
-                  color: Colors.black.withOpacity(0.6),
-                ),
-                // Top right icons
+                // Top right controller buttons in a rounded rectangle
                 Positioned(
                   top: 30,
-                  right: 20,
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.settings, color: Colors.white, size: 28),
-                        onPressed: () => {},
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.edit, color: Colors.white, size: 28),
-                        onPressed: () async {
-                          await userProfileController.fetchLoggedInUserInformation();
-                          Get.toNamed('/edit-profile');
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.qr_code_2, color: Colors.white, size: 28),
-                        onPressed: () => Get.toNamed("/my-profile-info"),
-                      ),
-                    ],
+                  right: 10,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: SvgPicture.asset('assets/icons/setting.svg', width: 32, colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn)),
+                          onPressed: () => {},
+                          splashRadius: 20,
+                        ),
+                        IconButton(
+                          icon: SvgPicture.asset('assets/icons/edit.svg', width: 32, colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn)),
+                          onPressed: () async {
+                            await userProfileController.fetchLoggedInUserInformation();
+                            Get.toNamed('/edit-profile');
+                          },
+                          splashRadius: 20,
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.qr_code_2, color: Colors.white, size: 32),
+                          onPressed: () => Get.toNamed("/my-profile-info"),
+                          splashRadius: 20,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                // Centered profile photo and username
+                // Bold rectangular label at the bottom center
                 Positioned(
                   left: 0,
                   right: 0,
-                  top: 80,
-                  child: Column(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 4),
-                        ),
-                        child: CircleAvatar(
-                          radius: 48,
-                          backgroundImage: authService.currentUser.value.smallProfilePic != ''
-                              ? CachedNetworkImageProvider(authService.currentUser.value.smallProfilePic)
-                              : AssetImage('assets/images/default-user.png') as ImageProvider,
-                        ),
+                  bottom: 16,
+                  child: Center(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 28, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(100),
                       ),
-                      SizedBox(height: 12),
-                      Text(
-                        '@${authService.currentUser.value.username}',
+                      child: Text(
+                        authService.currentUser.value.name ?? '',
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -118,7 +115,7 @@ class _MyProfileViewState extends State<MyProfileView> {
                           letterSpacing: 1.2,
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ],
