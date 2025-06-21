@@ -979,150 +979,32 @@ class _HomeViewState extends State<HomeView>
                         ),
                       ),
                       if (isExpanded && (label == 'SPORT'))
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 12), // Reduce horizontal padding
+                        Expanded(
                           child: Center(
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                // Search bar
+                                // COMING SOON banner
                                 Container(
-                                  width: 260,
-                                  height: 36,
-                                  margin: EdgeInsets.only(bottom: 12),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Color(0xFFFFCC00), width: 2),
-                                    borderRadius: BorderRadius.circular(8),
-                                    color: Colors.transparent,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      SizedBox(width: 8),
-                                      Expanded(
-                                        child: TextField(
-                                          style: TextStyle(color: Colors.white, fontSize: 14),
-                                          decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                            hintText: 'Search',
-                                            hintStyle: TextStyle(color: Colors.white70),
-                                            isDense: true,
-                                            contentPadding: EdgeInsets.symmetric(vertical: 8),
-                                          ),
-                                        ),
-                                      ),
-                                      Icon(Icons.search, color: Color(0xFFFFCC00)),
-                                      SizedBox(width: 8),
-                                    ],
+                                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  child: Center(
+                                    child: Image.asset(
+                                      'assets/images/coming-soon.png',
+                                      height: 100,  // Increased height for prominence
+                                      fit: BoxFit.contain,
+                                    ),
                                   ),
                                 ),
-                                // First row of buttons
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      // Musculation (yellow)
-                                      Container(
-                                        margin: EdgeInsets.symmetric(horizontal: 2, vertical: 4),
-                                        child: ElevatedButton.icon(
-                                          onPressed: () {},
-                                          icon: Text('💪', style: TextStyle(fontSize: 16)),
-                                          label: Text('Musculation'),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Color(0xFFFFCC00),
-                                            foregroundColor: Colors.black,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(14),
-                                            ),
-                                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                                            textStyle: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                      ),
-                                      // Football (dark)
-                                      Container(
-                                        margin: EdgeInsets.symmetric(horizontal: 2, vertical: 4),
-                                        child: OutlinedButton.icon(
-                                          onPressed: () {},
-                                          icon: Text('⚽', style: TextStyle(fontSize: 16)),
-                                          label: Text('Football'),
-                                          style: OutlinedButton.styleFrom(
-                                            foregroundColor: Colors.white,
-                                            side: BorderSide(color: Color(0xFFFFCC00), width: 2),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(14),
-                                            ),
-                                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                                            textStyle: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                      ),
-                                      // Boxe (yellow)
-                                      Container(
-                                        margin: EdgeInsets.symmetric(horizontal: 2, vertical: 4),
-                                        child: ElevatedButton.icon(
-                                          onPressed: () {},
-                                          icon: Text('🥊', style: TextStyle(fontSize: 16)),
-                                          label: Text('Boxe'),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Color(0xFFFFCC00),
-                                            foregroundColor: Colors.black,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(14),
-                                            ),
-                                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                                            textStyle: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                // Second row of buttons
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      // Fitness (dark)
-                                      Container(
-                                        margin: EdgeInsets.symmetric(horizontal: 2, vertical: 4),
-                                        child: OutlinedButton.icon(
-                                          onPressed: () {},
-                                          icon: Text('🏋️', style: TextStyle(fontSize: 16)),
-                                          label: Text('Fitness'),
-                                          style: OutlinedButton.styleFrom(
-                                            foregroundColor: Colors.white,
-                                            side: BorderSide(color: Color(0xFFFFCC00), width: 2),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(14),
-                                            ),
-                                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                                            textStyle: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                      ),
-                                      // Crossfit (dark)
-                                      Container(
-                                        margin: EdgeInsets.symmetric(horizontal: 2, vertical: 4),
-                                        child: OutlinedButton.icon(
-                                          onPressed: () {},
-                                          icon: Text('🏆', style: TextStyle(fontSize: 16)),
-                                          label: Text('Crossfit'),
-                                          style: OutlinedButton.styleFrom(
-                                            foregroundColor: Colors.white,
-                                            side: BorderSide(color: Color(0xFFFFCC00), width: 2),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(14),
-                                            ),
-                                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                                            textStyle: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                // SizedBox(height: 18),
+                                SizedBox(
+                                  width: 220,
+                                  child: Text(
+                                    'Here you will find sports',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 13,
+                                    ),
+                                    textAlign: TextAlign.center,
                                   ),
                                 ),
                               ],
