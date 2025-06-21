@@ -74,7 +74,7 @@ class _MyProfileViewState extends State<MyProfileView> {
                       children: [
                         IconButton(
                           icon: SvgPicture.asset('assets/icons/setting.svg', width: 32, colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn)),
-                          onPressed: () => {},
+                          onPressed: () => Get.toNamed('/settings'),
                           splashRadius: 20,
                         ),
                         IconButton(

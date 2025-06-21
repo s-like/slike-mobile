@@ -98,35 +98,35 @@ class _SettingUsersState extends State<SettingUsers> {
                       Get.toNamed('/change-password');
                     },
                   ),
-                  Divider(color: Get.theme.indicatorColor, thickness: 0.3),
-                  // profile Verification
-                  InkWell(
-                    child: ListTile(
-                      leading: Icon(Icons.verified_outlined, color: Get.theme.indicatorColor, size: 16),
-                      title: Text(
-                        "Profile Verification".tr,
-                        style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
-                      ),
-                      //   trailing: Icon(Icons.arrow_forward_ios),
-                    ),
-                    onTap: () {
-                      Get.toNamed("/verify-badges-users");
-                    },
-                  ),
-                  Divider(color: Get.theme.indicatorColor, thickness: 0.3),
-                  // Tools header
-                  Container(
-                    padding: EdgeInsetsDirectional.only(
-                      start: 20,
-                      top: 20,
-                      bottom: 20,
-                    ),
-                    child: Row(
-                      children: [
-                        Text("Application Tools".tr, style: TextStyle(fontSize: 16, color: Get.theme.highlightColor)),
-                      ],
-                    ),
-                  ),
+                  // Divider(color: Get.theme.indicatorColor, thickness: 0.3),
+                  // // profile Verification
+                  // InkWell(
+                  //   child: ListTile(
+                  //     leading: Icon(Icons.verified_outlined, color: Get.theme.indicatorColor, size: 16),
+                  //     title: Text(
+                  //       "Profile Verification".tr,
+                  //       style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
+                  //     ),
+                  //     //   trailing: Icon(Icons.arrow_forward_ios),
+                  //   ),
+                  //   onTap: () {
+                  //     Get.toNamed("/verify-badges-users");
+                  //   },
+                  // ),
+                  // Divider(color: Get.theme.indicatorColor, thickness: 0.3),
+                  // // Tools header
+                  // Container(
+                  //   padding: EdgeInsetsDirectional.only(
+                  //     start: 20,
+                  //     top: 20,
+                  //     bottom: 20,
+                  //   ),
+                  //   child: Row(
+                  //     children: [
+                  //       Text("Application Tools".tr, style: TextStyle(fontSize: 16, color: Get.theme.highlightColor)),
+                  //     ],
+                  //   ),
+                  // ),
                   /*InkWell(
                     child: Card(
                       color: Get.theme.indicatorColor!.withValues(alpha:0.5),
@@ -149,148 +149,148 @@ class _SettingUsersState extends State<SettingUsers> {
                     },
                   ),*/
                   // blocked user
-                  InkWell(
-                    child: ListTile(
-                      leading: Icon(Icons.block_rounded, color: mainService.setting.value.iconColor, size: 16),
-                      title: Text(
-                        "Blocked Users".tr,
-                        style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
-                      ),
-                      //  trailing: Icon(Icons.arrow_forward_ios),
-                    ),
-                    onTap: () {
-                      UserService userService = Get.find();
-                      userService.blockedUsersData = BlockedModel().obs;
-                      userService.blockedUsersData.refresh();
-                      userProfileController.getBlockedUsers(1);
-                      Get.toNamed("/blocked-users");
-                    },
-                  ),
-                  Divider(color: Get.theme.indicatorColor, thickness: 0.3),
-                  // profile Info and Qrcode
-                  InkWell(
-                    child: ListTile(
-                      leading: Icon(Icons.qr_code_outlined, color: mainService.setting.value.iconColor, size: 16),
-                      title: Text(
-                        "My QR Code".tr,
-                        style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
-                      ),
-                      // trailing: Icon(Icons.arrow_forward_ios),
-                    ),
-                    onTap: () {
-                      Get.toNamed("/my-profile-info");
-                    },
-                  ),
-                  Divider(color: Get.theme.indicatorColor, thickness: 0.3),
-                  // explore people
-                  InkWell(
-                    child: ListTile(
-                      leading: Icon(Icons.search_outlined, size: 18, color: mainService.setting.value.iconColor),
-                      title: Text(
-                        "Discover People".tr,
-                        style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
-                      ),
-                      // trailing: Icon(Icons.arrow_forward_ios),
-                    ),
-                    onTap: () {
-                      Get.toNamed("/users");
-                    },
-                  ),
-                  Divider(color: Get.theme.indicatorColor, thickness: 0.3),
-                  InkWell(
-                    child: ListTile(
-                      leading: Icon(Icons.card_giftcard, color: mainService.setting.value.iconColor, size: 16),
-                      title: Text(
-                        "My Gifts".tr,
-                        style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
-                      ),
-                      //  trailing: Icon(Icons.arrow_forward_ios),
-                    ),
-                    onTap: () {
-                      GiftController giftController = Get.find();
-                      giftController.myGiftsPage = 1;
-                      giftController.fetchMyGiftsList(showLoader: true);
-                      Get.toNamed("/my-gifts");
-                    },
-                  ),
-                  Divider(color: Get.theme.indicatorColor, thickness: 0.3),
-                  // Setting header
-                  Container(
-                    padding: EdgeInsetsDirectional.only(
-                      start: 20,
-                      top: 20,
-                      bottom: 20,
-                    ),
-                    child: Row(
-                      children: [
-                        Text("Application Settings".tr, style: TextStyle(fontSize: 16, color: Get.theme.highlightColor)),
-                      ],
-                    ),
-                  ),
+                  // InkWell(
+                  //   child: ListTile(
+                  //     leading: Icon(Icons.block_rounded, color: mainService.setting.value.iconColor, size: 16),
+                  //     title: Text(
+                  //       "Blocked Users".tr,
+                  //       style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
+                  //     ),
+                  //     //  trailing: Icon(Icons.arrow_forward_ios),
+                  //   ),
+                  //   onTap: () {
+                  //     UserService userService = Get.find();
+                  //     userService.blockedUsersData = BlockedModel().obs;
+                  //     userService.blockedUsersData.refresh();
+                  //     userProfileController.getBlockedUsers(1);
+                  //     Get.toNamed("/blocked-users");
+                  //   },
+                  // ),
+                  // Divider(color: Get.theme.indicatorColor, thickness: 0.3),
+                  // // profile Info and Qrcode
+                  // InkWell(
+                  //   child: ListTile(
+                  //     leading: Icon(Icons.qr_code_outlined, color: mainService.setting.value.iconColor, size: 16),
+                  //     title: Text(
+                  //       "My QR Code".tr,
+                  //       style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
+                  //     ),
+                  //     // trailing: Icon(Icons.arrow_forward_ios),
+                  //   ),
+                  //   onTap: () {
+                  //     Get.toNamed("/my-profile-info");
+                  //   },
+                  // ),
+                  // Divider(color: Get.theme.indicatorColor, thickness: 0.3),
+                  // // explore people
+                  // InkWell(
+                  //   child: ListTile(
+                  //     leading: Icon(Icons.search_outlined, size: 18, color: mainService.setting.value.iconColor),
+                  //     title: Text(
+                  //       "Discover People".tr,
+                  //       style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
+                  //     ),
+                  //     // trailing: Icon(Icons.arrow_forward_ios),
+                  //   ),
+                  //   onTap: () {
+                  //     Get.toNamed("/users");
+                  //   },
+                  // ),
+                  // Divider(color: Get.theme.indicatorColor, thickness: 0.3),
+                  // InkWell(
+                  //   child: ListTile(
+                  //     leading: Icon(Icons.card_giftcard, color: mainService.setting.value.iconColor, size: 16),
+                  //     title: Text(
+                  //       "My Gifts".tr,
+                  //       style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
+                  //     ),
+                  //     //  trailing: Icon(Icons.arrow_forward_ios),
+                  //   ),
+                  //   onTap: () {
+                  //     GiftController giftController = Get.find();
+                  //     giftController.myGiftsPage = 1;
+                  //     giftController.fetchMyGiftsList(showLoader: true);
+                  //     Get.toNamed("/my-gifts");
+                  //   },
+                  // ),
+                  // Divider(color: Get.theme.indicatorColor, thickness: 0.3),
+                  // // Setting header
+                  // Container(
+                  //   padding: EdgeInsetsDirectional.only(
+                  //     start: 20,
+                  //     top: 20,
+                  //     bottom: 20,
+                  //   ),
+                  //   child: Row(
+                  //     children: [
+                  //       Text("Application Settings".tr, style: TextStyle(fontSize: 16, color: Get.theme.highlightColor)),
+                  //     ],
+                  //   ),
+                  // ),
                   // notification settings
-                  InkWell(
-                    child: ListTile(
-                      leading: Icon(Icons.notifications_none_outlined, color: mainService.setting.value.iconColor, size: 16),
-                      title: Text(
-                        "Notifications".tr,
-                        style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
-                      ),
-                      //  trailing: Icon(Icons.arrow_forward_ios),
-                    ),
-                    onTap: () {
-                      Get.toNamed("/notification-settings");
-                    },
-                  ),
-                  Divider(color: Get.theme.indicatorColor, thickness: 0.3),
-                  // chat settings
-                  InkWell(
-                    child: ListTile(
-                      leading: Icon(Icons.chat_outlined, color: mainService.setting.value.iconColor, size: 16),
-                      title: Text(
-                        "Chat Settings".tr,
-                        style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
-                      ),
-                      // trailing: Icon(Icons.arrow_forward_ios),
-                    ),
-                    onTap: () {
-                      Get.toNamed("/chat-settings");
-                    },
-                  ),
-                  Divider(color: Get.theme.indicatorColor, thickness: 0.3),
-                  // language settings
-                  InkWell(
-                    child: ListTile(
-                      leading: Icon(Icons.language_outlined, color: mainService.setting.value.iconColor, size: 16),
-                      title: Text(
-                        "App Language".tr,
-                        style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
-                      ),
-                      // trailing: Icon(Icons.arrow_forward_ios),
-                    ),
-                    onTap: () {
-                      Get.toNamed("/languages");
-                    },
-                  ),
-                  Divider(color: Get.theme.indicatorColor, thickness: 0.3),
-                  // update application
-                  InkWell(
-                    child: ListTile(
-                      leading: Icon(Icons.update_outlined, color: mainService.setting.value.iconColor, size: 16),
-                      title: Text(
-                        "Update Application".tr,
-                        style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
-                      ),
-                      //  trailing: Icon(Icons.arrow_forward_ios),
-                    ),
-                    onTap: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => UpdateosUsers(),
-                      //   ),
-                      // );
-                    },
-                  ),
+                  // InkWell(
+                  //   child: ListTile(
+                  //     leading: Icon(Icons.notifications_none_outlined, color: mainService.setting.value.iconColor, size: 16),
+                  //     title: Text(
+                  //       "Notifications".tr,
+                  //       style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
+                  //     ),
+                  //     //  trailing: Icon(Icons.arrow_forward_ios),
+                  //   ),
+                  //   onTap: () {
+                  //     Get.toNamed("/notification-settings");
+                  //   },
+                  // ),
+                  // Divider(color: Get.theme.indicatorColor, thickness: 0.3),
+                  // // chat settings
+                  // InkWell(
+                  //   child: ListTile(
+                  //     leading: Icon(Icons.chat_outlined, color: mainService.setting.value.iconColor, size: 16),
+                  //     title: Text(
+                  //       "Chat Settings".tr,
+                  //       style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
+                  //     ),
+                  //     // trailing: Icon(Icons.arrow_forward_ios),
+                  //   ),
+                  //   onTap: () {
+                  //     Get.toNamed("/chat-settings");
+                  //   },
+                  // ),
+                  // Divider(color: Get.theme.indicatorColor, thickness: 0.3),
+                  // // language settings
+                  // InkWell(
+                  //   child: ListTile(
+                  //     leading: Icon(Icons.language_outlined, color: mainService.setting.value.iconColor, size: 16),
+                  //     title: Text(
+                  //       "App Language".tr,
+                  //       style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
+                  //     ),
+                  //     // trailing: Icon(Icons.arrow_forward_ios),
+                  //   ),
+                  //   onTap: () {
+                  //     Get.toNamed("/languages");
+                  //   },
+                  // ),
+                  // Divider(color: Get.theme.indicatorColor, thickness: 0.3),
+                  // // update application
+                  // InkWell(
+                  //   child: ListTile(
+                  //     leading: Icon(Icons.update_outlined, color: mainService.setting.value.iconColor, size: 16),
+                  //     title: Text(
+                  //       "Update Application".tr,
+                  //       style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
+                  //     ),
+                  //     //  trailing: Icon(Icons.arrow_forward_ios),
+                  //   ),
+                  //   onTap: () {
+                  //     // Navigator.push(
+                  //     //   context,
+                  //     //   MaterialPageRoute(
+                  //     //     builder: (context) => UpdateosUsers(),
+                  //     //   ),
+                  //     // );
+                  //   },
+                  // ),
                   Divider(color: Get.theme.indicatorColor, thickness: 0.3),
                   // Setting header
                   Container(
@@ -322,31 +322,31 @@ class _SettingUsersState extends State<SettingUsers> {
                           subject: "Hey, enjoy me on Slike...open this link and download the app".tr);
                     },
                   ),
-                  Divider(color: Get.theme.indicatorColor, thickness: 0.3),
-                  // Rate our app
-                  Platform.isAndroid
-                      ? InkWell(
-                          child: ListTile(
-                            leading: Icon(Icons.label_important_outline_rounded, color: mainService.setting.value.iconColor, size: 16),
-                            title: Text(
-                              "Review Our App".tr,
-                              style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
-                            ),
-                            // trailing: Icon(Icons.arrow_forward_ios),
-                          ),
-                          onTap: () => launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=com.slike.apps')))
-                      : Container(),
-                  /*InkWell(
-                          child: ListTile(
-                            leading: Icon(Icons.label_important_outline_rounded, color: mainService.setting.value.iconColor, size: 16),
-                            title: Text(
-                              "Review Our App".tr,
-                              style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
-                            ),
-                            // trailing: Icon(Icons.arrow_forward_ios),
-                          ),
-                          onTap: () => launchUrl(Uri.parse('https://apps.apple.com/us/app/')),
-                        ),*/
+                  // Divider(color: Get.theme.indicatorColor, thickness: 0.3),
+                  // // Rate our app
+                  // Platform.isAndroid
+                  //     ? InkWell(
+                  //         child: ListTile(
+                  //           leading: Icon(Icons.label_important_outline_rounded, color: mainService.setting.value.iconColor, size: 16),
+                  //           title: Text(
+                  //             "Review Our App".tr,
+                  //             style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
+                  //           ),
+                  //           // trailing: Icon(Icons.arrow_forward_ios),
+                  //         ),
+                  //         onTap: () => launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=com.slike.apps')))
+                  //     : Container(),
+                  // /*InkWell(
+                  //         child: ListTile(
+                  //           leading: Icon(Icons.label_important_outline_rounded, color: mainService.setting.value.iconColor, size: 16),
+                  //           title: Text(
+                  //             "Review Our App".tr,
+                  //             style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
+                  //           ),
+                  //           // trailing: Icon(Icons.arrow_forward_ios),
+                  //         ),
+                  //         onTap: () => launchUrl(Uri.parse('https://apps.apple.com/us/app/')),
+                  //       ),*/
                   Divider(color: Get.theme.indicatorColor, thickness: 0.3),
                   // Privacy policy
                   InkWell(
@@ -377,21 +377,21 @@ class _SettingUsersState extends State<SettingUsers> {
                       launchUrl(Uri.parse((baseUrl + "terms")));
                     },
                   ),
-                  Divider(color: Get.theme.indicatorColor, thickness: 0.3),
-                  // community guideline end
-                  InkWell(
-                    child: ListTile(
-                      leading: Icon(Icons.delete_outline, color: mainService.setting.value.iconColor, size: 16),
-                      title: Text(
-                        "Data Deletion".tr,
-                        style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
-                      ),
-                      //    trailing: Icon(Icons.arrow_forward_ios),
-                    ),
-                    onTap: () {
-                      Get.toNamed("/delete-user-profile");
-                    },
-                  ),
+                  // Divider(color: Get.theme.indicatorColor, thickness: 0.3),
+                  // // community guideline end
+                  // InkWell(
+                  //   child: ListTile(
+                  //     leading: Icon(Icons.delete_outline, color: mainService.setting.value.iconColor, size: 16),
+                  //     title: Text(
+                  //       "Data Deletion".tr,
+                  //       style: TextStyle(fontSize: 15, color: Get.theme.indicatorColor),
+                  //     ),
+                  //     //    trailing: Icon(Icons.arrow_forward_ios),
+                  //   ),
+                  //   onTap: () {
+                  //     Get.toNamed("/delete-user-profile");
+                  //   },
+                  // ),
                   Divider(color: Get.theme.indicatorColor, thickness: 0.3),
                   // Logout
                   InkWell(
