@@ -500,211 +500,167 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
   }
 
   void reportLayout(context, Video videoObj) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: mainService.setting.value.bgShade,
-          title: dashboardController.showReportMsg.value
-              ? Text("REPORT SUBMITTED!".tr,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
-                  ))
-              : Text("REPORT".tr,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  )),
-          insetPadding: EdgeInsets.zero,
-          content: Obx(
-            () => Form(
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              key: dashboardController.formKey,
-              child: !dashboardController.showReportMsg.value
-                  ? Column(
+        return Obx(
+          () => Container(
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            decoration: BoxDecoration(
+              color: Color(0xff2a3a49),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: dashboardController.showReportMsg.value
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+                    child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Container(
-                          child: Theme(
-                            data: Theme.of(context).copyWith(
-                              canvasColor: Get.theme.highlightColor,
+                      children: [
+                        Text(
+                          "REPORT SUBMITTED!".tr,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                          ),
+                        ),
+                        SizedBox(height: 20 + MediaQuery.of(context).padding.bottom),
+                      ],
+                    ),
+                  )
+                : StatefulBuilder(
+                    builder: (BuildContext context, StateSetter setState) {
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          SizedBox(height: 12),
+                          Container(
+                            width: 40,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[600],
+                              borderRadius: BorderRadius.circular(2),
                             ),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButtonFormField(
-                                isExpanded: true,
-                                hint: new Text(
-                                  "Select Type".tr,
+                          ),
+                          SizedBox(height: 20),
+                          Stack(
+                            children: [
+                              Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "Report".tr,
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                                iconEnabledColor: Get.theme.iconTheme.color,
-                                style: new TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15.0,
+                              ),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 16.0),
+                                  child: InkWell(
+                                    onTap: () => Get.back(),
+                                    child: Icon(
+                                      Icons.close,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                                 ),
-                                value: dashboardController.selectedType,
+                              )
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          ...dashboardController.reportType.map((String val) {
+                            return Theme(
+                              data: ThemeData(
+                                unselectedWidgetColor: Colors.grey,
+                                splashColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                              ),
+                              child: RadioListTile(
+                                title: Text(
+                                  val,
+                                  style: TextStyle(color: Colors.white, fontSize: 14),
+                                ),
+                                value: val,
+                                groupValue: dashboardController.selectedType,
                                 onChanged: (String? newValue) {
                                   setState(() {
                                     dashboardController.selectedType = newValue!;
                                   });
                                 },
-                                validator: (value) => value == null ? 'This field is required!'.tr : null,
-                                items: dashboardController.reportType.map((String val) {
-                                  return new DropdownMenuItem(
-                                    value: val,
-                                    child: new Text(
-                                      val,
-                                      style: new TextStyle(color: Colors.white),
-                                    ),
-                                  );
-                                }).toList(),
+                                activeColor: Color(0xffFFC107),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 20),
                               ),
-                            ),
-                          ),
-                        ),
-                        TextFormField(
-                          maxLines: 4,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15.0,
-                          ),
-                          decoration: InputDecoration(
-                            labelText: 'Description'.tr,
-                            labelStyle: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.8),
-                              fontSize: 15.0,
-                            ),
-                          ),
-                          onChanged: (String val) {
-                            setState(() {
-                              dashboardService.videoReportDescription = val;
-                            });
-                          },
-                        ),
-                        SizedBox(height: 20),
-                        SizedBox(
-                          width: Get.width - 100,
-                          height: 30,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 6,
-                                child: Row(
-                                  children: [
-                                    "Block".tr.text.color(Colors.white).size(16).make(),
-                                  ],
-                                ),
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: Transform.scale(
-                                  scale: 0.6,
-                                  child: CupertinoSwitch(
-                                    activeTrackColor: Get.theme.highlightColor,
-                                    value: dashboardService.videoReportBlocked.value,
-                                    onChanged: (value) {
-                                      dashboardService.videoReportBlocked.value = !dashboardService.videoReportBlocked.value;
-                                      dashboardService.videoReportBlocked.refresh();
+                            );
+                          }).toList(),
+                          SizedBox(height: 20),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Get.back();
                                     },
+                                    child: Text('cancel'.tr, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.grey[800],
+                                      padding: EdgeInsets.symmetric(vertical: 15),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                WidgetsBinding.instance.addPostFrameCallback((_) async {
-                                  setState(() {
-                                    if (!dashboardController.showReportLoader.value) {
-                                      validateForm(videoObj, context);
-                                    }
-                                  });
-                                });
-                              },
-                              child: Container(
-                                height: 30,
-                                width: 60,
-                                decoration: BoxDecoration(color: Get.theme.highlightColor),
-                                child: Obx(
-                                  () => Center(
-                                    child: (!dashboardController.showReportLoader.value)
-                                        ? Text(
-                                            "Submit".tr,
-                                            style: TextStyle(
-                                              color: mainService.setting.value.buttonTextColor,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 11,
-                                              fontFamily: 'RockWellStd',
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      if (!dashboardController.showReportLoader.value) {
+                                        dashboardController.submitReport(videoObj, context);
+                                      }
+                                    },
+                                    child: Obx(() => dashboardController.showReportLoader.value
+                                        ? SizedBox(
+                                            height: 20,
+                                            width: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
                                             ),
                                           )
-                                        : CommonHelper.showLoaderSpinner(Colors.white),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            GestureDetector(
-                              onTap: () {
-                                dashboardController.playController(dashboardService.pageIndex.value);
-                                Get.back();
-                              },
-                              child: Container(
-                                height: 30,
-                                width: 60,
-                                decoration: BoxDecoration(color: Get.theme.highlightColor),
-                                child: Center(
-                                  child: Text(
-                                    "Cancel".tr,
-                                    style: TextStyle(
-                                      color: mainService.setting.value.buttonTextColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 11,
-                                      fontFamily: 'RockWellStd',
+                                        : Text(
+                                            'Report'.tr,
+                                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                                          )),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Color(0xffFFC107),
+                                      padding: EdgeInsets.symmetric(vertical: 15),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
-                    )
-                  : Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: Get.width - 100,
-                          child: Center(
-                            child: Text(
-                              "Thanks for reporting. If we find this content to be in violation of our Guidelines, we will remove it".tr,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
+                              ],
                             ),
                           ),
-                        )
-                      ],
-                    ),
-            ),
+                          SizedBox(height: 20 + MediaQuery.of(context).padding.bottom),
+                        ],
+                      );
+                    },
+                  ),
           ),
         );
       },
     );
-  }
-
-  validateForm(Video videoObj, context) {
-    if (dashboardController.formKey.currentState!.validate()) {
-      dashboardController.formKey.currentState!.save();
-      dashboardController.submitReport(videoObj, context);
-    }
   }
 } 

@@ -13,6 +13,7 @@ import 'package:sliding_up_panel2/sliding_up_panel2.dart';
 import 'package:video_player/video_player.dart';
 
 import '../core.dart';
+import '../widgets/report_submitted_toast.dart';
 
 class DashboardController extends GetxController {
   MainService mainService = Get.find();
@@ -86,11 +87,17 @@ class DashboardController extends GetxController {
   var isLoading = false.obs;
   var showFollowLoader = false.obs;
   String encodedVideoId = '';
-  String selectedType = "It's spam";
+  String selectedType = "No Sport content";
   String encKey = 'yfmtythd84n4h';
   String mainServicertDescription = "";
   int chkVideo = 0;
-  List<String> reportType = ["It's spam", "It's inappropriate", "I don't like it"];
+  List<String> reportType = [
+    "No Sport content",
+    "Sexual content",
+    "Hate Speech / Harassment",
+    "Dangerous or Harmful content",
+    "Copyright violation"
+  ];
   bool videoStarted = true;
   bool initializePage = true;
   bool showNavigateLoader = false;
@@ -599,21 +606,26 @@ class DashboardController extends GetxController {
     showReportLoader.refresh();
     await CommonHelper.sendRequestToServer(
       endPoint: 'submit-report',
-      requestData: {"video_id": videoObj.videoId.toString(), "type": selectedType, "description": mainService.rtDescription, "blocked": mainService.rtBlocked.value ? 1 : 0},
+      requestData: {
+        "video_id": videoObj.videoId.toString(),
+        "type": selectedType,
+        "description": mainService.rtDescription,
+        "blocked": mainService.rtBlocked.value ? 1 : 0
+      },
       method: "post",
     );
     showReportLoader.value = false;
     showReportLoader.refresh();
-    selectedType = "It's spam";
+    selectedType = "No Sport content";
     mainServicertDescription = '';
-    showReportMsg.value = true;
-    showReportMsg.refresh();
-    Timer(Duration(seconds: 5), () {
+    Get.back(); // Close the bottom sheet.
+    showReportSubmittedToast(context);
+    Timer(Duration(seconds: 4), () {
       if (!dashboardService.showFollowingPage.value) {
-        dashboardService.videosData.value.videos.removeWhere((element) => element.videoId == videoObj.videoId);
+        dashboardService.videosData.value.videos
+            .removeWhere((element) => element.videoId == videoObj.videoId);
         dashboardService.videosData.refresh();
       }
-      Get.back();
     });
   }
 
