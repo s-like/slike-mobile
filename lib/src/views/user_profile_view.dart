@@ -149,7 +149,8 @@ class _UsersProfileViewState extends State<UsersProfileView> {
     return Container(
       color: Colors.black,
       child: TabBar(
-        isScrollable: false,
+        isScrollable: true,
+        tabAlignment: TabAlignment.center,
         indicatorColor: Color(0xFFFFD600),
         indicatorWeight: 4,
         labelColor: Color(0xFFFFD600),
@@ -283,12 +284,12 @@ class _UsersProfileViewState extends State<UsersProfileView> {
           return false;
         },
         child: GridView.builder(
-          padding: EdgeInsets.all(2.0),
+          padding: EdgeInsets.all(4.0),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 2,
-            mainAxisSpacing: 2,
-            childAspectRatio: 2 / 3,
+            crossAxisCount: 5,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: 3 / 4,
           ),
           itemCount: videos.length,
           itemBuilder: (BuildContext context, int index) {
@@ -305,29 +306,52 @@ class _UsersProfileViewState extends State<UsersProfileView> {
                   Get.offAllNamed('/home');
                 });
               },
-              child: Stack(
-                fit: StackFit.expand,
+              child: Column(
                 children: [
-                  item.videoThumbnail.isNotEmpty
-                      ? CachedNetworkImage(
-                          imageUrl: item.videoThumbnail,
-                          placeholder: (context, url) => Center(child: CircularProgressIndicator(color: Color(0xFFFFD600))),
-                          fit: BoxFit.cover,
-                        )
-                      : Image.asset('assets/images/noVideo.jpg', fit: BoxFit.cover),
-                  Positioned(
-                    bottom: 8,
-                    left: 8,
-                    child: Row(
-                      children: [
-                        Icon(Icons.play_arrow, color: Colors.white, size: 16),
-                        SizedBox(width: 4),
-                        Text(
-                          CommonHelper.formatter(item.totalViews.toString()),
-                          style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                        ),
-                      ],
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          item.videoThumbnail.isNotEmpty
+                              ? CachedNetworkImage(
+                                  imageUrl: item.videoThumbnail,
+                                  placeholder: (context, url) => Center(child: CircularProgressIndicator(color: Color(0xFFFFD600))),
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.asset('assets/images/noVideo.jpg', fit: BoxFit.cover),
+                          Positioned(
+                            bottom: 4,
+                            right: 4,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.6),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    CommonHelper.formatter(item.totalViews.toString()),
+                                    style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(width: 2),
+                                  Icon(Icons.article_outlined, color: Colors.white, size: 12),
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    "WORKOUT", // Placeholder for title
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   )
                 ],
               ),
