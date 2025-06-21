@@ -136,48 +136,16 @@ class SplashScreenState extends State<SplashScreen> {
         child: Container(
           height: Get.height,
           width: Get.width,
-          child: Stack(
-            children: [
-              // Video background
-              if (_isVideoInitialized)
-                Center(
-                  child: AspectRatio(
+          child: Center(
+            child: _isVideoInitialized
+                ? AspectRatio(
                     aspectRatio: _videoController.value.aspectRatio,
                     child: VideoPlayer(_videoController),
+                  )
+                : Container(
+                    // Empty container while video loads - no loading indicator
+                    color: Colors.black,
                   ),
-                )
-              else
-                // Fallback to loading indicator while video loads
-                Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                ),
-              
-              // Loading percentage overlay
-              Positioned(
-                bottom: Get.height * 0.1,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Obx(() => Text(
-                    '${splashScreenController.loadingPercent.value.toInt()}%',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      shadows: [
-                        Shadow(
-                          offset: Offset(1, 1),
-                          blurRadius: 3,
-                          color: Colors.black,
-                        ),
-                      ],
-                    ),
-                  )),
-                ),
-              ),
-            ],
           ),
         ),
       ),
