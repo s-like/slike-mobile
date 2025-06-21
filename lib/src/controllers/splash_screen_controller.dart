@@ -33,6 +33,11 @@ class SplashScreenController extends GetxController {
   DashboardService dashboardService = Get.find();
   DashboardController dashboardController = Get.find();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+  
+  // Flag to prevent multiple getVideos calls during splash
+  bool _isInitializing = false;
+  bool videosLoaded = false;
+
   @override
   void onInit() async {
     // initializing();
@@ -42,6 +47,14 @@ class SplashScreenController extends GetxController {
 
   onClose() {
     _connectivitySubscription.cancel();
+    _isInitializing = false;
+    videosLoaded = false;
+  }
+
+  // Method to reset initialization flags (useful for testing or re-initialization)
+  void resetInitializationFlags() {
+    _isInitializing = false;
+    videosLoaded = false;
   }
 
   pushNotifications() {
@@ -220,21 +233,70 @@ class SplashScreenController extends GetxController {
   }
 
   initializing() async {
-    await initConnectivity();
-    // if (isInternetOn) {
-    //   loadData();
-    timer = Timer.periodic(Duration(milliseconds: 200), (_) {
-      print('Percent Update');
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        loadingPercent.value += 1;
-        if (loadingPercent.value >= 100) {
-          timer.cancel();
-          loadingPercent.value = 100;
-        }
-        loadingPercent.refresh();
+    if (_isInitializing) return; // Prevent multiple calls
+    
+    try {
+      await initConnectivity();
+      
+      // Start loading timer with faster updates for video splash
+      timer = Timer.periodic(Duration(milliseconds: 100), (_) {
+        print('Percent Update');
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          loadingPercent.value += 2; // Faster progress for video
+          if (loadingPercent.value >= 100) {
+            timer.cancel();
+            loadingPercent.value = 100;
+          }
+          loadingPercent.refresh();
+        });
       });
-    });
-    // }
+      
+      // Load data if internet is available
+      if (isInternetOn) {
+        await loadData();
+      } else {
+        // If no internet, still complete the loading
+        await Future.delayed(Duration(seconds: 2));
+        loadingPercent.value = 100;
+        loadingPercent.refresh();
+        timer.cancel();
+        
+        // Load videos only once
+        if (!videosLoaded) {
+          try {
+            await dashboardController.getVideos(showErrorMessages: false);
+            videosLoaded = true;
+          } catch (e) {
+            print('Error loading videos during splash: $e');
+            // Don't show error toast during splash screen
+          }
+        }
+        
+        Get.offNamed('/home');
+      }
+    } catch (e) {
+      print('Error in splash screen initialization: $e');
+      // Ensure we still navigate to home even if there's an error
+      loadingPercent.value = 100;
+      loadingPercent.refresh();
+      if (timer.isActive) {
+        timer.cancel();
+      }
+      await Future.delayed(Duration(milliseconds: 1));
+      
+      // Load videos only once
+      if (!videosLoaded) {
+        try {
+          await dashboardController.getVideos(showErrorMessages: false);
+          videosLoaded = true;
+        } catch (e) {
+          print('Error loading videos during splash: $e');
+          // Don't show error toast during splash screen
+        }
+      }
+      
+      Get.offNamed('/home');
+    }
   }
 
   Future<void> initConnectivity() async {
@@ -242,9 +304,10 @@ class SplashScreenController extends GetxController {
     try {
       result = await _connectivity.checkConnectivity();
       _updateConnectionStatus(result);
-      isInternetOn = false;
     } on PlatformException catch (e) {
       print(e.toString());
+      // Default to internet available if we can't check
+      isInternetOn = true;
     }
   }
 
@@ -293,7 +356,11 @@ class SplashScreenController extends GetxController {
       if (id != "" && id != null && redirection.value == true) {
         mainService.userVideoObj.value.videoId = int.parse(id);
         mainService.userVideoObj.refresh();
-        await dashboardController.getVideos();
+        try {
+          await dashboardController.getVideos(showErrorMessages: false);
+        } catch (e) {
+          print('Error loading videos in uniLinks: $e');
+        }
         Get.offNamed('/home', arguments: 0);
       }
     }, onError: (err) {});
@@ -314,16 +381,28 @@ class SplashScreenController extends GetxController {
             mainService.userVideoObj.value.videoId = int.parse(id);
             mainService.userVideoObj.refresh();
 
-            await dashboardController.getVideos();
+            try {
+              await dashboardController.getVideos(showErrorMessages: false);
+            } catch (e) {
+              print('Error loading videos in uniLinks: $e');
+            }
             Get.offNamed('/home');
           } else {
-            await dashboardController.getVideos();
+            try {
+              await dashboardController.getVideos(showErrorMessages: false);
+            } catch (e) {
+              print('Error loading videos in uniLinks: $e');
+            }
             Get.offNamed('/home');
           }
         } else {
           dashboardService.showFollowingPage.value = false;
           dashboardService.showFollowingPage.refresh();
-          await dashboardController.getVideos();
+          try {
+            await dashboardController.getVideos(showErrorMessages: false);
+          } catch (e) {
+            print('Error loading videos in uniLinks: $e');
+          }
           Get.offNamed('/home');
         }
       } on PlatformException {
@@ -362,6 +441,9 @@ class SplashScreenController extends GetxController {
   }
 
   Future<void> loadData() async {
+    if (_isInitializing) return; // Prevent multiple calls
+    _isInitializing = true;
+    
     print("mainService.setting.value.fetched ${mainService.setting.value.fetched}");
     if (!mainService.setting.value.fetched) {
       UserController userController = Get.find();
@@ -386,11 +468,50 @@ class SplashScreenController extends GetxController {
       pushNotifications();
       initUniLinks();
       unawaited(dashboardController.preCacheVideoThumbs());
+      
+      // Complete loading
       loadingPercent.value = 100;
       loadingPercent.refresh();
-      timer.cancel();
+      if (timer.isActive) {
+        timer.cancel();
+      }
 
-      // }
+      // Wait a bit for video to complete if needed
+      await Future.delayed(Duration(milliseconds: 300));
+      
+      // Load videos only once
+      if (!videosLoaded) {
+        try {
+          await dashboardController.getVideos(showErrorMessages: false);
+          videosLoaded = true;
+        } catch (e) {
+          print('Error loading videos during splash: $e');
+          // Don't show error toast during splash screen
+        }
+      }
+      
+      Get.offNamed('/home');
+    } else {
+      // If settings are already fetched, just navigate to home
+      loadingPercent.value = 100;
+      loadingPercent.refresh();
+      if (timer.isActive) {
+        timer.cancel();
+      }
+      await Future.delayed(Duration(milliseconds: 300));
+      
+      // Load videos only once
+      if (!videosLoaded) {
+        try {
+          await dashboardController.getVideos(showErrorMessages: false);
+          videosLoaded = true;
+        } catch (e) {
+          print('Error loading videos during splash: $e');
+          // Don't show error toast during splash screen
+        }
+      }
+      
+      Get.offNamed('/home');
     }
   }
 

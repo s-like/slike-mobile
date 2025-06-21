@@ -374,7 +374,9 @@ class DashboardController extends GetxController {
     return true;
   }
 
-  Future<void> getVideos() async {
+  Future<void> getVideos({bool showErrorMessages = true}) async {
+    if (isLoading.value) return; // Prevent multiple simultaneous calls
+    
     try {
       dashboardService.pageIndex.value = 0;
       isLoading.value = true;
@@ -450,7 +452,7 @@ class DashboardController extends GetxController {
               // If no videos, generate a new random string and try again
               dashboardService.randomString.value = CommonHelper.getRandomString(4, numeric: true);
               dashboardService.randomString.refresh();
-              await getVideos();
+              await getVideos(showErrorMessages: showErrorMessages);
               return;
             }
           }
@@ -458,20 +460,26 @@ class DashboardController extends GetxController {
           isVideoInitialized.value = true;
           isVideoInitialized.refresh();
         } else {
-          Fluttertoast.showToast(msg: jsonData['msg'] ?? "Error while fetching data".tr);
+          if (showErrorMessages) {
+            Fluttertoast.showToast(msg: jsonData['msg'] ?? "Error while fetching data".tr);
+          }
           // Reset random string on error to try different videos
           dashboardService.randomString.value = CommonHelper.getRandomString(4, numeric: true);
           dashboardService.randomString.refresh();
         }
       } else {
-        Fluttertoast.showToast(msg: "Server error occurred".tr);
+        if (showErrorMessages) {
+          Fluttertoast.showToast(msg: "Server error occurred".tr);
+        }
         // Reset random string on error to try different videos
         dashboardService.randomString.value = CommonHelper.getRandomString(4, numeric: true);
         dashboardService.randomString.refresh();
       }
     } catch (e) {
       print("Error in getVideos: $e");
-      Fluttertoast.showToast(msg: "Error occurred while loading videos".tr);
+      if (showErrorMessages) {
+        Fluttertoast.showToast(msg: "Error occurred while loading videos".tr);
+      }
       // Reset random string on error to try different videos
       dashboardService.randomString.value = CommonHelper.getRandomString(4, numeric: true);
       dashboardService.randomString.refresh();

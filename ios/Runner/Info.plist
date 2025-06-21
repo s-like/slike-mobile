@@ -317,6 +317,6 @@
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>Nous avons besoin d'accéder à votre bibliothèque pour sélectionner des images.</string>
 		<key>UIStatusBarHidden</key>
-		<true/>
+		<false/>
 	</dict>
 </plist>

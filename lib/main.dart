@@ -76,7 +76,14 @@ Future<void> main() async {
     );
   }
   HttpOverrides.global = new MyHttpOverrides();
-  FlutterNativeSplash.remove();
+  
+  // Remove the native splash screen after all initialization is complete
+  try {
+    FlutterNativeSplash.remove();
+  } catch (e) {
+    print('Error removing native splash: $e');
+  }
+  
   runApp(MyApp());
 }
 

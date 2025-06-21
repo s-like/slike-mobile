@@ -1,10 +1,8 @@
 import 'dart:async';
 
-import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
 import 'package:video_player/video_player.dart';
 
 import '../core.dart';
@@ -17,23 +15,107 @@ class SplashScreen extends StatefulWidget {
 }
 
 class SplashScreenState extends State<SplashScreen> {
-  // late VideoPlayerController _controller;
-
   String dataShared = "No Data";
   SplashScreenController splashScreenController = Get.find();
   MainService mainService = Get.find();
   late BuildContext context;
   DateTime currentBackPressTime = DateTime.now();
+  late VideoPlayerController _videoController;
+  bool _isVideoInitialized = false;
+  bool _videoCompleted = false;
+  bool _appInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    // _controller = VideoPlayerController.asset('assets/videos/loading-video.mp4');
+    _initializeVideo();
+    // Start initialization after a short delay
+    Timer(Duration(milliseconds: 500), () {
+      _initializeApp();
+    });
+    
+    // Fallback timer to ensure app doesn't get stuck
+    Timer(Duration(seconds: 10), () {
+      if (!_appInitialized || !_videoCompleted) {
+        print('Fallback timer triggered - navigating to home');
+        _navigateToHome();
+      }
+    });
+  }
 
-    // _controller.setLooping(false);
-    // _controller.initialize().then((_) => setState(() {}));
-    // _controller.play();
-    // super.initState();
+  Future<void> _initializeVideo() async {
+    try {
+      _videoController = VideoPlayerController.asset('assets/animations/splashvideo.mp4');
+      await _videoController.initialize();
+      _videoController.setLooping(false);
+      _videoController.play();
+      setState(() {
+        _isVideoInitialized = true;
+      });
+      
+      // Listen for video completion
+      _videoController.addListener(() {
+        if (_videoController.value.position >= _videoController.value.duration) {
+          // Video finished, check if app initialization is also complete
+          _checkAndNavigate();
+        }
+      });
+    } catch (e) {
+      print('Error initializing video: $e');
+      setState(() {
+        _isVideoInitialized = false;
+      });
+      // If video fails, mark as completed and rely on app initialization
+      _videoCompleted = true;
+      _checkAndNavigate();
+    }
+  }
+
+  void _checkAndNavigate() {
+    _videoCompleted = true;
+    if (_appInitialized && _videoCompleted) {
+      _navigateToHome();
+    }
+  }
+
+  Future<void> _initializeApp() async {
+    try {
+      await splashScreenController.initializing();
+      _appInitialized = true;
+      _checkAndNavigate();
+    } catch (e) {
+      print('Error in splash screen initialization: $e');
+      // Fallback navigation
+      await Future.delayed(Duration(seconds: 1));
+      _navigateToHome();
+    }
+  }
+
+  Future<void> _navigateToHome() async {
+    try {
+      // Only call getVideos if not already loaded
+      if (!splashScreenController.videosLoaded) {
+        await splashScreenController.dashboardController.getVideos(showErrorMessages: false);
+        splashScreenController.videosLoaded = true;
+      }
+      Get.offNamed('/home');
+    } catch (e) {
+      print('Error navigating to home: $e');
+      // Don't show error toast during splash screen
+      Get.offNamed('/home');
+    }
+  }
+
+  @override
+  void dispose() {
+    try {
+      if (_videoController != null) {
+        _videoController.dispose();
+      }
+    } catch (e) {
+      print('Error disposing video controller: $e');
+    }
+    super.dispose();
   }
 
   @override
@@ -43,7 +125,6 @@ class SplashScreenState extends State<SplashScreen> {
       body: WillPopScope(
         onWillPop: () {
           DateTime now = DateTime.now();
-          // Get.back();
           if (now.difference(currentBackPressTime) > Duration(seconds: 2)) {
             currentBackPressTime = now;
             Fluttertoast.showToast(msg: "Tap again to exit an app.".tr);
@@ -55,27 +136,48 @@ class SplashScreenState extends State<SplashScreen> {
         child: Container(
           height: Get.height,
           width: Get.width,
-          child: FlutterSplashScreen(
-            useImmersiveMode: true,
-            // duration: const Duration(milliseconds: 2000),
-            backgroundColor: Colors.black,
-            asyncNavigationCallback: () async {
-              await splashScreenController.initializing();
-            },
-            splashScreenBody: Center(
-              child: Lottie.asset(
-                "assets/animations/loading-lottie.json",
-                repeat: false,
+          child: Stack(
+            children: [
+              // Video background
+              if (_isVideoInitialized)
+                Center(
+                  child: AspectRatio(
+                    aspectRatio: _videoController.value.aspectRatio,
+                    child: VideoPlayer(_videoController),
+                  ),
+                )
+              else
+                // Fallback to loading indicator while video loads
+                Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ),
+              
+              // Loading percentage overlay
+              Positioned(
+                bottom: Get.height * 0.1,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Obx(() => Text(
+                    '${splashScreenController.loadingPercent.value.toInt()}%',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          offset: Offset(1, 1),
+                          blurRadius: 3,
+                          color: Colors.black,
+                        ),
+                      ],
+                    ),
+                  )),
+                ),
               ),
-            ), /*FlutterSplashScreen.gif(
-              useImmersiveMode: true,
-              gifPath: 'assets/images/loading.gif',
-              gifWidth: Get.width * 0.8,
-              gifHeight: Get.width * 0.8,
-              asyncNavigationCallback: () async {
-                await splashScreenController.initializing();
-              },
-            ),*/
+            ],
           ),
         ),
       ),
