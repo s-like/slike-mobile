@@ -75,6 +75,104 @@ class _EditProfileViewState extends State<EditProfileView> {
     );
   }
 
+  void _showGenderModal(BuildContext context) {
+    showModalBottomSheet<void>(
+      backgroundColor: Colors.black,
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            border: Border.all(color: Color(0xFFFFD700), width: 1),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle bar
+              Container(
+                margin: EdgeInsets.only(top: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Color(0xFFFFD700),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              // Title
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Select Gender',
+                  style: TextStyle(
+                    color: Color(0xFFFFD700),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              // Gender options
+              Container(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.4,
+                ),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: userProfileController.genders.length,
+                  itemBuilder: (context, index) {
+                    final item = userProfileController.genders.elementAt(index);
+                    final isSelected = userProfileController.selectedGender.value == item.value;
+                    
+                    return Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Colors.white.withOpacity(0.1),
+                            width: 0.5,
+                          ),
+                        ),
+                      ),
+                      child: ListTile(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                        title: Text(
+                          item.name,
+                          style: TextStyle(
+                            color: isSelected ? Color(0xFFFFD700) : Colors.white,
+                            fontSize: 16,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          ),
+                        ),
+                        trailing: isSelected 
+                          ? Icon(
+                              Icons.check_circle,
+                              color: Color(0xFFFFD700),
+                              size: 24,
+                            )
+                          : null,
+                        onTap: () {
+                          userService.userProfile.value.gender = item.value;
+                          setState(() {
+                            userProfileController.selectedGender = item;
+                          });
+                          Navigator.pop(context);
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+              SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -452,6 +550,10 @@ class _EditProfileViewState extends State<EditProfileView> {
                                   Icons.calendar_today_outlined,
                                   color: Color(0xFFFFD700),
                                 ),
+                                suffixIcon: Icon(
+                                  Icons.arrow_drop_down,
+                                  color: Color(0xFFFFD700),
+                                ),
                                 border: InputBorder.none,
                                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
                               ),
@@ -459,41 +561,42 @@ class _EditProfileViewState extends State<EditProfileView> {
                           ),
                           const SizedBox(height: 16),
                           // Gender
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 4.0, bottom: 4.0),
-                              child: Text("Gender", style: TextStyle(color: Color(0xFFFFD700), fontSize: 16)),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Color(0xFFFFD700),
+                                width: 2,
+                              ),
                             ),
-                          ),
-                          ListView.builder(
-                            padding: EdgeInsets.zero,
-                            physics: NeverScrollableScrollPhysics(),
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            itemCount: userProfileController.genders.length,
-                            itemBuilder: (context, index) {
-                              final item = userProfileController.genders.elementAt(index);
-                              return ListTile(
-                                dense: true,
-                                contentPadding: EdgeInsets.zero,
-                                title: Text(
-                                  item.name,
-                                  style: TextStyle(color: Colors.white),
+                            child: TextFormField(
+                              readOnly: true,
+                              controller: TextEditingController(
+                                text: userProfileController.selectedGender.name == 'Select' 
+                                  ? 'Select Gender' 
+                                  : userProfileController.selectedGender.name
+                              ),
+                              style: const TextStyle(color: Colors.white),
+                              onTap: () {
+                                FocusScope.of(context).unfocus();
+                                _showGenderModal(context);
+                              },
+                              decoration: InputDecoration(
+                                hintText: "Select Gender",
+                                hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                                prefixIcon: Icon(
+                                  Icons.person_outline,
+                                  color: Color(0xFFFFD700),
                                 ),
-                                leading: Radio<Gender>(
-                                  activeColor: Color(0xFFFFD700),
-                                  value: item,
-                                  groupValue: userProfileController.selectedGender,
-                                  onChanged: (Gender? value) {
-                                    userService.userProfile.value.gender = value!.value;
-                                    setState(() {
-                                      userProfileController.selectedGender = value;
-                                    });
-                                  },
+                                suffixIcon: Icon(
+                                  Icons.arrow_drop_down,
+                                  color: Color(0xFFFFD700),
                                 ),
-                              );
-                            },
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                              ),
+                            ),
                           ),
                           const SizedBox(height: 16),
                           // Mobile
