@@ -2250,11 +2250,11 @@ class UserController extends GetxController {
     await GetStorage().remove('current_user');
     await GetStorage().remove('EULA_agree');
 
-    page = 0;
-    activeTab.value = 1;
-    authService.currentUser.value = User();
-    authService.currentUser.refresh();
-    Get.back();
+    // page = 0;
+    // activeTab.value = 1;
+    // authService.currentUser.value = User();
+    // authService.currentUser.refresh();
+    // Get.back();
     dashboardController.getVideos();
     dashboardService.currentPage.value = 0;
     dashboardService.currentPage.refresh();
