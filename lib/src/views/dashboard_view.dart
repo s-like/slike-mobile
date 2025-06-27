@@ -168,6 +168,12 @@ class _DashboardViewState extends State<DashboardView> {
     );
     CommonHelper.isRTL();
 
+    // Ensure home page is active by default
+    dashboardService.currentPage.value = 0;
+    dashboardService.currentPage.refresh();
+    mainService.isOnHomePage.value = true;
+    mainService.isOnHomePage.refresh();
+
     // TODO: implement initState
     super.initState();
   }
@@ -232,73 +238,6 @@ class _DashboardViewState extends State<DashboardView> {
               dashboardService.pageController.refresh();
             },
           ),
-          appBar: (dashboardService.currentPage.value != 4 && dashboardService.currentPage.value != 1) ? AppBar(
-            leading: Image.asset("assets/images/video-logo.png"),
-            leadingWidth: 189,
-            toolbarHeight: 59,
-            backgroundColor: Colors.black,
-            actions: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Search Icon
-                  IconButton(
-                    icon: SvgPicture.asset(
-                      "assets/icons/search.svg",
-                      width: 26,
-                      height: 26,
-                      color: Color(0xFFFFD700),
-                    ),
-                    onPressed: () {
-                      // Your search action
-                    },
-                  ),
-                  // Notification Badge
-                  badges.Badge(
-                    badgeContent: Text(
-                      '15',
-                      style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
-                    ),
-                    position: badges.BadgePosition.topEnd(top: 2, end: 2),
-                    showBadge: true,
-                    child: IconButton(
-                      icon: SvgPicture.asset(
-                        "assets/icons/notification.svg",
-                        width: 26,
-                        height: 26,
-                        color: Color(0xFFFFD700),
-                      ),
-                      onPressed: () {
-                        Get.toNamed("/notifications");
-                      },
-                    ),
-                  ),
-                  // Message Badge
-                  badges.Badge(
-                    badgeContent: Text(
-                      '12',
-                      style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
-                    ),
-                    position: badges.BadgePosition.topEnd(top: 2, end: 2),
-                    showBadge: true,
-                    child: IconButton(
-                      icon: SvgPicture.asset(
-                        "assets/icons/chat.svg",
-                        width: 26,
-                        height: 26,
-                        color: Color(0xFFFFD700),
-                      ),
-                      onPressed: () {
-                        Get.toNamed("/chat");
-                      },
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                ],
-              ),
-            ],
-          ) : null,
           body: Stack(
             alignment: AlignmentDirectional.center,
             children: [
