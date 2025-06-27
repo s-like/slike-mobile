@@ -11,19 +11,27 @@ class VideoModel {
   VideoModel.fromJSON(Map<String, dynamic> jsonMap) {
     print("jsonMap: $jsonMap ${jsonMap.runtimeType}");
 
-    if (jsonMap != {}) {
-      print("jsonMap['data']");
-      print("${jsonMap['data']} + ${jsonMap['total']}");
-      // try {
-      if (jsonMap.containsKey("total")) totalVideos = jsonMap['total'] != null ? jsonMap['total'] : 0;
-      if (jsonMap.containsKey("data")) videos = jsonMap['data'] != null ? parseVideos(jsonMap['data']) : [];
-      /*} catch (e) {
-        print("videomodel from $e ");
+    try {
+      if (jsonMap.isNotEmpty) {
+        print("jsonMap['data']");
+        print("${jsonMap['data']} + ${jsonMap['total']}");
+        
+        if (jsonMap.containsKey("total")) {
+          totalVideos = jsonMap['total'] != null ? jsonMap['total'] : 0;
+        }
+        
+        if (jsonMap.containsKey("data")) {
+          videos = jsonMap['data'] != null ? parseVideos(jsonMap['data']) : [];
+        }
+      } else {
+        print("Empty jsonMap received");
         totalVideos = 0;
         videos = [];
-      }*/
-    } else {
-      print("aasdasddfsdf");
+      }
+    } catch (e) {
+      print("Error parsing VideoModel: $e");
+      totalVideos = 0;
+      videos = [];
     }
   }
 

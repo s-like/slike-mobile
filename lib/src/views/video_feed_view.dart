@@ -32,6 +32,8 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
   DateTime currentBackPressTime = DateTime.now();
   bool _isInitialized = false;
   int? initialVideoId;
+  int _retryCount = 0;
+  Timer? _autoRetryTimer;
 
   @override
   void initState() {
@@ -71,8 +73,45 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
     }
   }
 
+  void _retryVideoFetch() async {
+    print("Retrying video fetch...");
+    await dashboardController.getVideos();
+  }
+
+  void _startAutoRetry() {
+    // Cancel any existing timer
+    _autoRetryTimer?.cancel();
+    
+    // Auto retry every 5 seconds if no videos, max 10 attempts
+    _autoRetryTimer = Timer.periodic(Duration(seconds: 5), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      
+      if (dashboardService.videosData.value.videos.isNotEmpty || 
+          dashboardController.isLoading.value) {
+        timer.cancel();
+        _retryCount = 0; // Reset counter on success
+        return;
+      }
+      
+      _retryCount++;
+      print("Auto retrying video fetch... Attempt $_retryCount");
+      
+      if (_retryCount >= 10) {
+        print("Max retry attempts reached, stopping auto-retry");
+        timer.cancel();
+        return;
+      }
+      
+      _retryVideoFetch();
+    });
+  }
+
   @override
   void dispose() {
+    _autoRetryTimer?.cancel();
     dashboardController.stopController(dashboardService.pageIndex.value);
     dashboardService.postIds = [];
     // Reset video feed state when leaving
@@ -115,10 +154,8 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
             children: [
               RefreshIndicator(
                 onRefresh: () async {
-                  if (dashboardService.randomString.value != "") {
-                    dashboardService.randomString.value = CommonHelper.getRandomString(4, numeric: true);
-                    dashboardService.randomString.refresh();
-                  }
+                  _retryCount = 0; // Reset retry counter on manual refresh
+                  _autoRetryTimer?.cancel(); // Cancel auto-retry
                   dashboardController.stopController(dashboardService.pageIndex.value);
                   dashboardService.postIds = [];
                   await dashboardController.getVideos();
@@ -140,6 +177,13 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
 
   Widget _buildVideoFeed() {
     return Obx(() {
+      print("=== VIDEO FEED DEBUG ===");
+      print("isLoading: ${dashboardController.isLoading.value}");
+      print("isVideoInitialized: ${dashboardController.isVideoInitialized.value}");
+      print("videos count: ${dashboardService.videosData.value.videos.length}");
+      print("videos data: ${dashboardService.videosData.value.videos}");
+      print("=== END VIDEO FEED DEBUG ===");
+      
       if (dashboardController.isLoading.value) {
         return Center(
           child: Column(
@@ -158,7 +202,14 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
         );
       }
       
-      if (!dashboardController.isVideoInitialized.value) {
+      if (!dashboardController.isVideoInitialized.value || dashboardService.videosData.value.videos.isEmpty) {
+        // Start auto retry if not already started and under max attempts
+        if (_retryCount < 10) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _startAutoRetry();
+          });
+        }
+        
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -174,22 +225,71 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
                 style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
               ),
               SizedBox(height: 8),
-              TextButton(
-                onPressed: () {
-                  dashboardController.getVideos();
-                },
-                child: Text(
-                  "Try Again".tr,
-                  style: TextStyle(color: Colors.white70),
+              if (_retryCount < 10) ...[
+                Text(
+                  "Retrying automatically... (Attempt $_retryCount/10)".tr,
+                  style: TextStyle(color: Colors.white70, fontSize: 12),
                 ),
+              ] else ...[
+                Text(
+                  "Unable to load videos after 10 attempts".tr,
+                  style: TextStyle(color: Colors.orange, fontSize: 12),
+                ),
+              ],
+              SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      _retryCount = 0; // Reset counter
+                      _retryVideoFetch();
+                    },
+                    icon: Icon(Icons.refresh, color: Colors.white),
+                    label: Text(
+                      "Retry Now".tr,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFFFC107),
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      // Reset and try with fresh data
+                      _retryCount = 0; // Reset counter
+                      dashboardService.postIds = [];
+                      dashboardService.pageIndex.value = 0;
+                      dashboardService.videosData.value.videos = [];
+                      dashboardService.videosData.refresh();
+                      _retryVideoFetch();
+                    },
+                    icon: Icon(Icons.restart_alt, color: Colors.white),
+                    label: Text(
+                      "Reset".tr,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey[700],
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
         );
       }
 
-      return (dashboardService.videosData.value.videos.isNotEmpty)
-          ? Obx(
+      return Obx(
               () => PageView.builder(
                 allowImplicitScrolling: true,
                 clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -253,33 +353,6 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
                 },
                 itemCount: dashboardService.videosData.value.videos.length,
                 scrollDirection: Axis.vertical,
-              ),
-            )
-          : Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(
-                    Icons.videocam_off,
-                    size: 48,
-                    color: Colors.white.withOpacity(0.7),
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    "No Videos yet".tr,
-                    style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
-                  ),
-                  SizedBox(height: 8),
-                  TextButton(
-                    onPressed: () {
-                      dashboardController.getVideos();
-                    },
-                    child: Text(
-                      "Try Again".tr,
-                      style: TextStyle(color: Colors.white70),
-                    ),
-                  ),
-                ],
               ),
             );
     });

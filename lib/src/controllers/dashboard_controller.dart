@@ -384,6 +384,14 @@ class DashboardController extends GetxController {
   Future<void> getVideos({bool showErrorMessages = true}) async {
     if (isLoading.value) return; // Prevent multiple simultaneous calls
     
+    // Check network connectivity
+    if (!CommonHelper.returnFromApiIfInternetIsOff()) {
+      if (showErrorMessages) {
+        Fluttertoast.showToast(msg: "No internet connection. Please check your network.".tr);
+      }
+      return;
+    }
+    
     try {
       dashboardService.pageIndex.value = 0;
       isLoading.value = true;
@@ -408,16 +416,9 @@ class DashboardController extends GetxController {
       if (mainService.userVideoObj.value.hashTag != "") {
         obj['hashtag'] = mainService.userVideoObj.value.hashTag;
       }
-      
-      // Reset random string if it's empty or if we're refreshing
-      if (dashboardService.randomString.value.isEmpty) {
-        dashboardService.randomString.value = CommonHelper.getRandomString(4, numeric: true);
-        dashboardService.randomString.refresh();
-      }
 
       Map<String, String> requestData = {
         "page_size": '10',
-        "random": dashboardService.randomString.value,
         "page": page.toString(),
         "user_id": (obj['userId'] == null) ? '0' : obj['userId'].toString(),
         "video_id": (obj['videoId'] == null) ? '0' : obj['videoId'].toString(),
@@ -438,7 +439,11 @@ class DashboardController extends GetxController {
 
       if (response.statusCode == 200) {
         var jsonData = json.decode(response.body);
+        print("=== VIDEO LOADING DEBUG ===");
+        print("Response body: ${response.body}");
         print("jsonData get videos ${jsonData['messagesCount']} ${json.decode(response.body)['data']}");
+        print("Request data: $requestData");
+        print("Response status: ${jsonData['status']}");
         
         if (jsonData['status'] == 'success') {
           mainService.firstTimeLoad.value = false;
@@ -447,49 +452,46 @@ class DashboardController extends GetxController {
           
           if (page > 1) {
             var newVideos = VideoModel.fromJSON(json.decode(response.body)['data']).videos;
+            print("Page > 1, new videos count: ${newVideos.length}");
             if (newVideos.isNotEmpty) {
               dashboardService.videosData.value.videos.addAll(newVideos);
             }
           } else {
             var videoModel = VideoModel.fromJSON(json.decode(response.body)['data']);
+            print("Page = 1, videos count: ${videoModel.videos.length}, total: ${videoModel.totalVideos}");
+            print("VideoModel data: ${videoModel.videos}");
+            dashboardService.videosData.value = videoModel;
             if (videoModel.videos.isNotEmpty) {
-              dashboardService.videosData.value = videoModel;
               videoObj.value = videoModel.videos.first;
+              isVideoInitialized.value = true;
+              isVideoInitialized.refresh();
+              print("Videos loaded successfully, isVideoInitialized set to true");
             } else {
-              // If no videos, generate a new random string and try again
-              dashboardService.randomString.value = CommonHelper.getRandomString(4, numeric: true);
-              dashboardService.randomString.refresh();
-              await getVideos(showErrorMessages: showErrorMessages);
-              return;
+              // No videos returned
+              isVideoInitialized.value = false;
+              isVideoInitialized.refresh();
+              print("No videos returned, isVideoInitialized set to false");
             }
           }
           dashboardService.videosData.refresh();
-          isVideoInitialized.value = true;
-          isVideoInitialized.refresh();
         } else {
+          print("API returned error status: ${jsonData['msg']}");
           if (showErrorMessages) {
             Fluttertoast.showToast(msg: jsonData['msg'] ?? "Error while fetching data".tr);
           }
-          // Reset random string on error to try different videos
-          dashboardService.randomString.value = CommonHelper.getRandomString(4, numeric: true);
-          dashboardService.randomString.refresh();
         }
+        print("=== END VIDEO LOADING DEBUG ===");
       } else {
+        print("HTTP error: ${response.statusCode} - ${response.body}");
         if (showErrorMessages) {
           Fluttertoast.showToast(msg: "Server error occurred".tr);
         }
-        // Reset random string on error to try different videos
-        dashboardService.randomString.value = CommonHelper.getRandomString(4, numeric: true);
-        dashboardService.randomString.refresh();
       }
     } catch (e) {
       print("Error in getVideos: $e");
       if (showErrorMessages) {
         Fluttertoast.showToast(msg: "Error occurred while loading videos".tr);
       }
-      // Reset random string on error to try different videos
-      dashboardService.randomString.value = CommonHelper.getRandomString(4, numeric: true);
-      dashboardService.randomString.refresh();
     } finally {
       isLoading.value = false;
       isLoading.refresh();
@@ -509,7 +511,6 @@ class DashboardController extends GetxController {
     }
     Map<String, String> requestData = {
       "page_size": '10',
-      "random": dashboardService.randomString.value,
       "page": page.toString(),
       "user_id": (obj['userId'] == null) ? '0' : obj['userId'].toString(),
       "video_id": (obj['videoId'] == null) ? '0' : obj['videoId'].toString(),

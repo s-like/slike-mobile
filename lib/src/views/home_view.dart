@@ -375,11 +375,6 @@ class _HomeViewState extends State<HomeView>
             children: [
               RefreshIndicator(
                 onRefresh: () {
-                  if (dashboardService.randomString.value != "") {
-                    dashboardService.randomString.value =
-                        CommonHelper.getRandomString(4, numeric: true);
-                    dashboardService.randomString.refresh();
-                  }
                   dashboardController
                       .stopController(dashboardService.pageIndex.value);
                   Get.offNamed('/home');
