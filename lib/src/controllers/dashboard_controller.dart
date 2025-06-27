@@ -13,6 +13,7 @@ import 'package:sliding_up_panel2/sliding_up_panel2.dart';
 import 'package:video_player/video_player.dart';
 
 import '../core.dart';
+import '../widgets/report_submitted_toast.dart';
 
 class DashboardController extends GetxController {
   MainService mainService = Get.find();
@@ -86,11 +87,17 @@ class DashboardController extends GetxController {
   var isLoading = false.obs;
   var showFollowLoader = false.obs;
   String encodedVideoId = '';
-  String selectedType = "It's spam";
+  String selectedType = "No Sport content";
   String encKey = 'yfmtythd84n4h';
   String mainServicertDescription = "";
   int chkVideo = 0;
-  List<String> reportType = ["It's spam", "It's inappropriate", "I don't like it"];
+  List<String> reportType = [
+    "No Sport content",
+    "Sexual content",
+    "Hate Speech / Harassment",
+    "Dangerous or Harmful content",
+    "Copyright violation"
+  ];
   bool videoStarted = true;
   bool initializePage = true;
   bool showNavigateLoader = false;
@@ -374,71 +381,118 @@ class DashboardController extends GetxController {
     return true;
   }
 
-  Future<void> getVideos() async {
-    dashboardService.pageIndex.value = 0;
-    isLoading.value = true;
-    isLoading.refresh();
-    isVideoInitialized.value = false;
-    isVideoInitialized.refresh();
-    dashboardService.pageIndex.value = 0;
-    dashboardService.videosData.value.videos = [];
-    dashboardService.videosData.refresh();
-    page = 1;
-    formKey = GlobalKey();
-    getAds();
-    Map obj = {'userId': 0, 'videoId': 0};
+  Future<void> getVideos({bool showErrorMessages = true}) async {
+    if (isLoading.value) return; // Prevent multiple simultaneous calls
+    
+    try {
+      dashboardService.pageIndex.value = 0;
+      isLoading.value = true;
+      isLoading.refresh();
+      isVideoInitialized.value = false;
+      isVideoInitialized.refresh();
+      dashboardService.pageIndex.value = 0;
+      dashboardService.videosData.value.videos = [];
+      dashboardService.videosData.refresh();
+      page = 1;
+      formKey = GlobalKey();
+      getAds();
+      Map obj = {'userId': 0, 'videoId': 0};
 
-    if (mainService.userVideoObj.value.userId > 0) {
-      obj['userId'] = mainService.userVideoObj.value.userId;
-      obj['videoId'] = mainService.userVideoObj.value.videoId;
-    } else if (mainService.userVideoObj.value.videoId > 0) {
-      obj['videoId'] = mainService.userVideoObj.value.videoId;
-      obj['search_type'] = mainService.userVideoObj.value.searchType;
-    }
-    if (mainService.userVideoObj.value.hashTag != "") {
-      obj['hashtag'] = mainService.userVideoObj.value.hashTag;
-    }
-    if (dashboardService.randomString.value == "") {
-      dashboardService.randomString.value = CommonHelper.getRandomString(4, numeric: true);
-    }
-    Map<String, String> requestData = {
-      "page_size": '10',
-      "random": dashboardService.randomString.value,
-      "page": page.toString(),
-      "user_id": (obj['userId'] == null) ? '0' : obj['userId'].toString(),
-      "video_id": (obj['videoId'] == null) ? '0' : obj['videoId'].toString(),
-      "hashtag": (obj['hashtag'] == null) ? '' : obj['hashtag'].toString(),
-      "search_type": (obj['search_type'] == null) ? '' : obj['search_type'].toString(),
-      "following": dashboardService.showFollowingPage.value ? '1' : '0',
-    };
-    var distinctIds = dashboardService.postIds.toSet().toList();
-    if (distinctIds.isNotEmpty) {
-      requestData['post_ids'] = distinctIds.join(",");
-    }
-    HTTP.Response response = await CommonHelper.sendRequestToServer(
-      endPoint: "get-videos",
-      requestData: requestData,
-      method: "post",
-    );
-    isLoading.value = false;
-    isLoading.refresh();
-    if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
-      print("jsonData get videos ${jsonData['messagesCount']} ${json.decode(response.body)['data']}");
-      if (jsonData['status'] == 'success') {
-        mainService.firstTimeLoad.value = false;
-        dashboardService.unreadMessageCount.value = jsonData['messagesCount'] ?? 0;
-        dashboardService.unreadMessageCount.refresh();
-        if (page > 1) {
-          dashboardService.videosData.value.videos.addAll(VideoModel.fromJSON(json.decode(response.body)['data']).videos);
-        } else {
-          dashboardService.videosData.value = VideoModel.fromJSON(json.decode(response.body)['data']);
-          videoObj.value = dashboardService.videosData.value.videos.elementAt(0);
-        }
-        dashboardService.videosData.refresh();
-      } else {
-        Fluttertoast.showToast(msg: "Error while fetching data".tr);
+      if (mainService.userVideoObj.value.userId > 0) {
+        obj['userId'] = mainService.userVideoObj.value.userId;
+        obj['videoId'] = mainService.userVideoObj.value.videoId;
+      } else if (mainService.userVideoObj.value.videoId > 0) {
+        obj['videoId'] = mainService.userVideoObj.value.videoId;
+        obj['search_type'] = mainService.userVideoObj.value.searchType;
       }
+      if (mainService.userVideoObj.value.hashTag != "") {
+        obj['hashtag'] = mainService.userVideoObj.value.hashTag;
+      }
+      
+      // Reset random string if it's empty or if we're refreshing
+      if (dashboardService.randomString.value.isEmpty) {
+        dashboardService.randomString.value = CommonHelper.getRandomString(4, numeric: true);
+        dashboardService.randomString.refresh();
+      }
+
+      Map<String, String> requestData = {
+        "page_size": '10',
+        "random": dashboardService.randomString.value,
+        "page": page.toString(),
+        "user_id": (obj['userId'] == null) ? '0' : obj['userId'].toString(),
+        "video_id": (obj['videoId'] == null) ? '0' : obj['videoId'].toString(),
+        "hashtag": (obj['hashtag'] == null) ? '' : obj['hashtag'].toString(),
+        "search_type": (obj['search_type'] == null) ? '' : obj['search_type'].toString(),
+        "following": dashboardService.showFollowingPage.value ? '1' : '0',
+      };
+      var distinctIds = dashboardService.postIds.toSet().toList();
+      if (distinctIds.isNotEmpty) {
+        requestData['post_ids'] = distinctIds.join(",");
+      }
+
+      HTTP.Response response = await CommonHelper.sendRequestToServer(
+        endPoint: "get-videos",
+        requestData: requestData,
+        method: "post",
+      );
+
+      if (response.statusCode == 200) {
+        var jsonData = json.decode(response.body);
+        print("jsonData get videos ${jsonData['messagesCount']} ${json.decode(response.body)['data']}");
+        
+        if (jsonData['status'] == 'success') {
+          mainService.firstTimeLoad.value = false;
+          dashboardService.unreadMessageCount.value = jsonData['messagesCount'] ?? 0;
+          dashboardService.unreadMessageCount.refresh();
+          
+          if (page > 1) {
+            var newVideos = VideoModel.fromJSON(json.decode(response.body)['data']).videos;
+            if (newVideos.isNotEmpty) {
+              dashboardService.videosData.value.videos.addAll(newVideos);
+            }
+          } else {
+            var videoModel = VideoModel.fromJSON(json.decode(response.body)['data']);
+            if (videoModel.videos.isNotEmpty) {
+              dashboardService.videosData.value = videoModel;
+              videoObj.value = videoModel.videos.first;
+            } else {
+              // If no videos, generate a new random string and try again
+              dashboardService.randomString.value = CommonHelper.getRandomString(4, numeric: true);
+              dashboardService.randomString.refresh();
+              await getVideos(showErrorMessages: showErrorMessages);
+              return;
+            }
+          }
+          dashboardService.videosData.refresh();
+          isVideoInitialized.value = true;
+          isVideoInitialized.refresh();
+        } else {
+          if (showErrorMessages) {
+            Fluttertoast.showToast(msg: jsonData['msg'] ?? "Error while fetching data".tr);
+          }
+          // Reset random string on error to try different videos
+          dashboardService.randomString.value = CommonHelper.getRandomString(4, numeric: true);
+          dashboardService.randomString.refresh();
+        }
+      } else {
+        if (showErrorMessages) {
+          Fluttertoast.showToast(msg: "Server error occurred".tr);
+        }
+        // Reset random string on error to try different videos
+        dashboardService.randomString.value = CommonHelper.getRandomString(4, numeric: true);
+        dashboardService.randomString.refresh();
+      }
+    } catch (e) {
+      print("Error in getVideos: $e");
+      if (showErrorMessages) {
+        Fluttertoast.showToast(msg: "Error occurred while loading videos".tr);
+      }
+      // Reset random string on error to try different videos
+      dashboardService.randomString.value = CommonHelper.getRandomString(4, numeric: true);
+      dashboardService.randomString.refresh();
+    } finally {
+      isLoading.value = false;
+      isLoading.refresh();
     }
   }
 
@@ -552,21 +606,26 @@ class DashboardController extends GetxController {
     showReportLoader.refresh();
     await CommonHelper.sendRequestToServer(
       endPoint: 'submit-report',
-      requestData: {"video_id": videoObj.videoId.toString(), "type": selectedType, "description": mainService.rtDescription, "blocked": mainService.rtBlocked.value ? 1 : 0},
+      requestData: {
+        "video_id": videoObj.videoId.toString(),
+        "type": selectedType,
+        "description": mainService.rtDescription,
+        "blocked": mainService.rtBlocked.value ? 1 : 0
+      },
       method: "post",
     );
     showReportLoader.value = false;
     showReportLoader.refresh();
-    selectedType = "It's spam";
+    selectedType = "No Sport content";
     mainServicertDescription = '';
-    showReportMsg.value = true;
-    showReportMsg.refresh();
-    Timer(Duration(seconds: 5), () {
+    Get.back(); // Close the bottom sheet.
+    showReportSubmittedToast(context);
+    Timer(Duration(seconds: 4), () {
       if (!dashboardService.showFollowingPage.value) {
-        dashboardService.videosData.value.videos.removeWhere((element) => element.videoId == videoObj.videoId);
+        dashboardService.videosData.value.videos
+            .removeWhere((element) => element.videoId == videoObj.videoId);
         dashboardService.videosData.refresh();
       }
-      Get.back();
     });
   }
 

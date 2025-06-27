@@ -1620,14 +1620,32 @@ class VideoRecorderController extends GetxController {
     );
   }
 
-  void submitUploadVideo() {
+  void submitUploadVideo() async {
     if (dashboardService.isUploading.value == false) {
       FocusManager.instance.primaryFocus!.unfocus();
       if (key.currentState!.validate() && detectableTextVideoDescriptionController.value.text != "") {
-        uploadVideo(
+        // Show loading dialog
+        Get.dialog(
+          Center(child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text(
+                'Video is being uploaded kindly wait for the process to complete',
+                style: TextStyle(color: Get.theme.primaryColor, fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          )),
+          barrierDismissible: false,
+        );
+        bool uploadSuccess = await uploadVideo(
           videoRecorderService.outputVideoPath.value,
           videoRecorderService.thumbImageUri.value,
-        ).whenComplete(() {
+        );
+        Get.back(); // Dismiss loading dialog
+        if (uploadSuccess) {
           print("Video Uploaded successfully");
           Get.delete<VideoRecorderController>(force: true);
           AuthService authService = Get.find();
@@ -1635,8 +1653,25 @@ class VideoRecorderController extends GetxController {
           authService.currentUser.value.userVideos = [];
           authService.currentUser.refresh();
           userController.getMyProfile();
-        });
-        Get.offAllNamed('/home');
+          final uploadedVideoId = videoId;
+          // Create a Video object for the uploaded video and insert at the top of the feed
+          final uploadedVideo = Video()
+            ..videoId = uploadedVideoId
+            ..url = videoRecorderService.outputVideoPath.value
+            ..videoThumbnail = videoRecorderService.thumbImageUri.value
+            ..description = detectableTextVideoDescriptionController.value.text
+            ..userId = authService.currentUser.value.id
+            ..username = authService.currentUser.value.username ?? ''
+            ..createdAt = DateTime.now().toIso8601String();
+          dashboardService.videosData.value.videos.insert(0, uploadedVideo);
+          dashboardService.videosData.refresh();
+          Get.offAllNamed('/home');
+        } else {
+          Fluttertoast.showToast(
+            msg: "Video upload failed. Please try again.",
+            textColor: Get.theme.primaryColor,
+          );
+        }
       } else {
         Fluttertoast.showToast(msg: "Enter Video Description".tr, textColor: Get.theme.primaryColor);
       }

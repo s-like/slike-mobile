@@ -11,7 +11,7 @@ class LoginView extends GetView<UserController> {
   LoginView({Key? key}) : super(key: key);
   final MainService mainService = Get.find();
   final AuthService authService = Get.find();
-  final DashboardController dashboardController = Get.find();
+  final DashboardService dashboardService = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,16 @@ class LoginView extends GetView<UserController> {
       builder: (logic) {
         return WillPopScope(
           onWillPop: () {
-            dashboardController.getVideos();
+            // Reset navigation state before going back
+            dashboardService.currentPage.value = 0; // Set to home page
+            dashboardService.currentPage.refresh();
+            mainService.isOnHomePage.value = true;
+            mainService.isOnHomePage.refresh();
+            // Reset video feed state
+            dashboardService.pageIndex.value = 0;
+            dashboardService.videosData.value.videos = [];
+            dashboardService.videosData.refresh();
+            // Navigate back to home
             Get.offNamed('/home');
             return Future.value(false);
           },

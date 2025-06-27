@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 
 import 'core.dart';
+import 'views/video_feed_view.dart';
+import 'views/setting_menu_view.dart';
 
 class Routes {
   static final route = [
@@ -12,6 +14,12 @@ class Routes {
     GetPage(
       name: '/home',
       page: () => DashboardView(),
+      // binding: MainBinding(),
+      // middlewares: [AuthMiddleware()],
+    ),
+    GetPage(
+      name: '/video-feed',
+      page: () => VideoFeedView(),
       // binding: MainBinding(),
       // middlewares: [AuthMiddleware()],
     ),
@@ -203,6 +211,10 @@ class Routes {
     GetPage(
       name: '/wallet-history',
       page: () => WalletHistoryView(),
+    ),
+    GetPage(
+      name: '/setting-menu',
+      page: () => SettingMenuView(),
     ),
   ];
 }

@@ -925,7 +925,7 @@ class UserController extends GetxController {
     }
     String errorString = await getUsersProfile(1);
     if (errorString == "") {
-      Get.offNamed("/user-profile");
+      Get.to(() => UsersProfileView(userId: userId));
     } else {
       Fluttertoast.showToast(msg: "$errorString".tr);
     }
@@ -2250,11 +2250,11 @@ class UserController extends GetxController {
     await GetStorage().remove('current_user');
     await GetStorage().remove('EULA_agree');
 
-    page = 0;
-    activeTab.value = 1;
-    authService.currentUser.value = User();
-    authService.currentUser.refresh();
-    Get.back();
+    // page = 0;
+    // activeTab.value = 1;
+    // authService.currentUser.value = User();
+    // authService.currentUser.refresh();
+    // Get.back();
     dashboardController.getVideos();
     dashboardService.currentPage.value = 0;
     dashboardService.currentPage.refresh();
@@ -2311,7 +2311,9 @@ class UserController extends GetxController {
                   child: InkWell(
                     onTap: () async {
                       Get.back(closeOverlays: true);
-                      logout();
+                      Future.delayed(Duration.zero, () {
+                        logout();
+                      });
                     },
                     child: Container(
                       decoration: BoxDecoration(

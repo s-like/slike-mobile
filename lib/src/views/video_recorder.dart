@@ -168,7 +168,7 @@ class _VideoRecorderState extends State<VideoRecorder> with TickerProviderStateM
                     dashboardService.showFollowingPage.value = false;
                     dashboardService.showFollowingPage.refresh();
                     dashboardController.getVideos();
-                    Get.offNamed("/home");
+                    Get.back();
                   },
                   elevation: 2.0,
                   fillColor: Colors.white,

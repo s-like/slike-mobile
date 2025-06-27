@@ -68,13 +68,7 @@ class CustomBottomNavBar extends StatelessWidget {
               }
             }
           }),
-          _buildNavItem(3, 'assets/icons/market.svg', () {
-            if (authService.currentUser.value.accessToken != '') {
-              // onTap(3);
-            } else {
-              Get.offNamed('/login');
-            }
-          }),
+          _buildNavItem(3, 'assets/icons/market.svg', () => onTap(3)),
           Obx(() {
             final bool isSelected = 4 == currentIndex;
             final bool isAuthenticated = authService.currentUser.value.accessToken != '';
@@ -174,6 +168,12 @@ class _DashboardViewState extends State<DashboardView> {
     );
     CommonHelper.isRTL();
 
+    // Ensure home page is active by default
+    dashboardService.currentPage.value = 0;
+    dashboardService.currentPage.refresh();
+    mainService.isOnHomePage.value = true;
+    mainService.isOnHomePage.refresh();
+
     // TODO: implement initState
     super.initState();
   }
@@ -181,156 +181,64 @@ class _DashboardViewState extends State<DashboardView> {
   // DateTime currentBackPressTime = DateTime.now();
   Widget build(BuildContext context) {
     return Obx(() {
-      return Scaffold(
-        backgroundColor: Colors.black,
-        resizeToAvoidBottomInset: false,
-        bottomNavigationBar: CustomBottomNavBar(
-          currentIndex: dashboardService.currentPage.value,
-          onTap: (newIndex) {
-            dashboardService.currentPage.value = newIndex;
-            dashboardService.currentPage.refresh();
-            if (newIndex == 0) {
-              mainService.isOnHomePage.value = true;
-              mainService.isOnHomePage.refresh();
-            } else {
-              mainService.isOnHomePage.value = false;
-              mainService.isOnHomePage.refresh();
+      return WillPopScope(
+        onWillPop: () async {
+          DateTime now = DateTime.now();
+          if (dashboardController.pc.isPanelOpen) {
+            dashboardController.pc.close();
+            return Future.value(false);
+          }
+          
+          // Always navigate to home view with home icon active
+          dashboardService.currentPage.value = 0;
+          dashboardService.currentPage.refresh();
+          mainService.isOnHomePage.value = true;
+          mainService.isOnHomePage.refresh();
+          
+          // If already on home page, handle app exit
+          if (dashboardService.currentPage.value == 0) {
+            if (now.difference(currentBackPressTime) > Duration(seconds: 2)) {
+              currentBackPressTime = now;
+              Fluttertoast.showToast(msg: "Tap again to exit an app.".tr);
+              return Future.value(false);
             }
-            dashboardService.pageController.value.animateToPage(
-              newIndex,
-              duration: Duration(milliseconds: 100),
-              curve: Curves.linear,
-            );
-            dashboardService.pageController.refresh();
-          },
-        ),
-        appBar: (dashboardService.currentPage.value != 4 && dashboardService.currentPage.value != 1) ? AppBar(
-          leading: Image.asset("assets/images/video-logo.png"),
-          leadingWidth: 189,
-          toolbarHeight: 59,
+            SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+            return Future.value(false);
+          }
+          
+          // Navigate to home page
+          dashboardService.pageController.value.animateToPage(
+            0,
+            duration: Duration(milliseconds: 100),
+            curve: Curves.linear,
+          );
+          dashboardService.pageController.refresh();
+          return Future.value(false);
+        },
+        child: Scaffold(
           backgroundColor: Colors.black,
-          actions: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Search Icon
-                IconButton(
-                  icon: SvgPicture.asset(
-                    "assets/icons/search.svg",
-                    width: 26,
-                    height: 26,
-                    color: Color(0xFFFFD700),
-                  ),
-                  onPressed: () {
-                    // Your search action
-                  },
-                ),
-                // Notification Badge
-                badges.Badge(
-                  badgeContent: Text(
-                    '15',
-                    style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
-                  ),
-                  position: badges.BadgePosition.topEnd(top: 2, end: 2),
-                  showBadge: true,
-                  child: IconButton(
-                    icon: SvgPicture.asset(
-                      "assets/icons/notification.svg",
-                      width: 26,
-                      height: 26,
-                      color: Color(0xFFFFD700),
-                    ),
-                    onPressed: () {
-                      Get.toNamed("/notifications");
-                    },
-                  ),
-                ),
-                // Message Badge
-                badges.Badge(
-                  badgeContent: Text(
-                    '12',
-                    style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
-                  ),
-                  position: badges.BadgePosition.topEnd(top: 2, end: 2),
-                  showBadge: true,
-                  child: IconButton(
-                    icon: SvgPicture.asset(
-                      "assets/icons/chat.svg",
-                      width: 26,
-                      height: 26,
-                      color: Color(0xFFFFD700),
-                    ),
-                    onPressed: () {
-                      Get.toNamed("/chat");
-                    },
-                  ),
-                ),
-                SizedBox(width: 8),
-              ],
-            ),
-          ],
-        ) : null,
-        body: WillPopScope(
-          onWillPop: () {
-            if (EasyLoading.isShow) {
-              EasyLoading.dismiss();
-              return Future.value(false);
-            }
-            DateTime now = DateTime.now();
-            if (dashboardController.pc.isPanelOpen) {
-              dashboardController.pc.close();
-              return Future.value(false);
-            }
-            if (dashboardService.prevPage.value == "UserProfile") {
-              Get.offNamed("profile-view");
-              mainService.userVideoObj.value.userId = 0;
-              mainService.userVideoObj.value.videoId = 0;
-              mainService.userVideoObj.value.hashTag = '';
-              mainService.userVideoObj.value.name = '';
-              mainService.userVideoObj.refresh();
-              dashboardService.prevPage.value = "";
-              dashboardService.prevPage.refresh();
-              return Future.value(false);
-            } else {
-              if (mainService.userVideoObj.value.videoId > 0 ||
-                  mainService.userVideoObj.value.userId > 0 ||
-                  mainService.userVideoObj.value.hashTag != "" ||
-                  mainService.userVideoObj.value.name != "") {
-                mainService.userVideoObj.value.videoId = 0;
-                mainService.userVideoObj.value.userId = 0;
-                mainService.userVideoObj.value.name = "";
-                mainService.userVideoObj.value.hashTag = "";
-                mainService.userVideoObj.refresh();
-                /*if (!dashboardService.showFollowingPage.value) {
-                  dashboardController.stopController(dashboardService.pageIndex.value);
-                  Get.offNamed('/home');
-                  dashboardController.getVideos();
-                }*/
-                dashboardController.getVideos();
-                return Future.value(false);
-              } else if (dashboardService.currentPage.value > 0) {
-                dashboardService.currentPage.value = 0;
-                dashboardService.currentPage.refresh();
-                dashboardService.pageController.value.animateToPage(
-                    dashboardService.currentPage.value,
-                    duration: Duration(milliseconds: 100),
-                    curve: Curves.linear);
-                dashboardController
-                    .stopController(dashboardService.pageIndex.value);
-                dashboardController.getVideos();
-                return Future.value(false);
+          resizeToAvoidBottomInset: false,
+          bottomNavigationBar: CustomBottomNavBar(
+            currentIndex: dashboardService.currentPage.value,
+            onTap: (newIndex) {
+              dashboardService.currentPage.value = newIndex;
+              dashboardService.currentPage.refresh();
+              if (newIndex == 0) {
+                mainService.isOnHomePage.value = true;
+                mainService.isOnHomePage.refresh();
+              } else {
+                mainService.isOnHomePage.value = false;
+                mainService.isOnHomePage.refresh();
               }
-              if (now.difference(currentBackPressTime) > Duration(seconds: 2)) {
-                currentBackPressTime = now;
-                Fluttertoast.showToast(msg: "Tap again to exit an app.".tr);
-                return Future.value(false);
-              }
-              SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-              return Future.value(false);
-            }
-          },
-          child: Stack(
+              dashboardService.pageController.value.animateToPage(
+                newIndex,
+                duration: Duration(milliseconds: 100),
+                curve: Curves.linear,
+              );
+              dashboardService.pageController.refresh();
+            },
+          ),
+          body: Stack(
             alignment: AlignmentDirectional.center,
             children: [
               Column(
