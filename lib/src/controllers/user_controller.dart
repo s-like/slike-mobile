@@ -2311,7 +2311,9 @@ class UserController extends GetxController {
                   child: InkWell(
                     onTap: () async {
                       Get.back(closeOverlays: true);
-                      logout();
+                      Future.delayed(Duration.zero, () {
+                        logout();
+                      });
                     },
                     child: Container(
                       decoration: BoxDecoration(

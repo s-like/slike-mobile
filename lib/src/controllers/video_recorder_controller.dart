@@ -1665,7 +1665,7 @@ class VideoRecorderController extends GetxController {
             ..createdAt = DateTime.now().toIso8601String();
           dashboardService.videosData.value.videos.insert(0, uploadedVideo);
           dashboardService.videosData.refresh();
-          Get.offAllNamed('/video-feed', arguments: {'videoId': uploadedVideoId});
+          Get.offAllNamed('/home');
         } else {
           Fluttertoast.showToast(
             msg: "Video upload failed. Please try again.",

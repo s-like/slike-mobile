@@ -25,16 +25,16 @@ class LoginView extends GetView<UserController> {
         return WillPopScope(
           onWillPop: () {
             // Reset navigation state before going back
-            dashboardService.currentPage.value = 1; // Set to video feed page
+            dashboardService.currentPage.value = 0; // Set to home page
             dashboardService.currentPage.refresh();
-            mainService.isOnHomePage.value = false;
+            mainService.isOnHomePage.value = true;
             mainService.isOnHomePage.refresh();
             // Reset video feed state
             dashboardService.pageIndex.value = 0;
             dashboardService.videosData.value.videos = [];
             dashboardService.videosData.refresh();
-            // Navigate back to video feed
-            Get.offNamed('/video-feed');
+            // Navigate back to home
+            Get.offNamed('/home');
             return Future.value(false);
           },
           child: Scaffold(
