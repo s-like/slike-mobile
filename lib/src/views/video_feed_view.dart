@@ -134,60 +134,6 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
             ],
           ),
         ),
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            color: Colors.black,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          child: CustomBottomNavBar(
-            currentIndex: 1, // Set to 1 for video feed
-            onTap: (newIndex) {
-              if (newIndex == 1) return; // Ignore if clicking video icon
-              
-              if (newIndex == 2) { // If clicking create video button
-                if (dashboardService.isUploading.value) {
-                  Fluttertoast.showToast(
-                    msg: 'Video is being uploaded kindly wait for the process to complete'.tr,
-                    textColor: Get.theme.primaryColor,
-                  );
-                } else {
-                  mainService.isOnHomePage.value = false;
-                  mainService.isOnHomePage.refresh();
-                  dashboardService.bottomPadding.value = 0.0;
-                  dashboardController.stopController(dashboardService.pageIndex.value);
-                  if (authService.currentUser.value.accessToken != '') {
-                    mainService.isOnRecordingPage.value = true;
-                    Get.put(VideoRecorderController(), permanent: true);
-                    Get.offNamed('/video-recorder');
-                  } else {
-                    // Reset navigation state before going to login
-                    dashboardService.currentPage.value = 1; // Keep video feed as current page
-                    dashboardService.currentPage.refresh();
-                    Get.offNamed('/login');
-                  }
-                }
-              } else {
-                // Handle other navigation items (home, conversations, profile)
-                dashboardService.currentPage.value = newIndex;
-                dashboardService.currentPage.refresh();
-                switch (newIndex) {
-                  case 0:
-                    Get.offNamed('/home');
-                    break;
-                  case 2:
-                    Get.offNamed('/conversations');
-                    break;
-                  case 4:
-                    Get.offNamed('/my-profile');
-                    break;
-                }
-              }
-            },
-          ),
-        ),
       ),
     );
   }

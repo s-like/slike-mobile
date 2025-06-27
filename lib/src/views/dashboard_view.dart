@@ -47,15 +47,7 @@ class CustomBottomNavBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildNavItem(0, 'assets/icons/home.svg', () => onTap(0)),
-          _buildNavItem(1, 'assets/icons/video.svg', () {
-            if (dashboardService.currentPage.value != 1) {
-              dashboardService.currentPage.value = 1;
-              dashboardService.currentPage.refresh();
-              mainService.isOnHomePage.value = false;
-              mainService.isOnHomePage.refresh();
-              Get.offNamed('/video-feed');
-            }
-          }),
+          _buildNavItem(1, 'assets/icons/video.svg', () => onTap(1)),
           _buildNavItem(2, 'assets/icons/create-video.svg', () {
             if (dashboardService.isUploading.value) {
               Fluttertoast.showToast(
@@ -76,13 +68,7 @@ class CustomBottomNavBar extends StatelessWidget {
               }
             }
           }),
-          _buildNavItem(3, 'assets/icons/market.svg', () {
-            if (authService.currentUser.value.accessToken != '') {
-              // onTap(3);
-            } else {
-              Get.offNamed('/login');
-            }
-          }),
+          _buildNavItem(3, 'assets/icons/market.svg', () => onTap(3)),
           Obx(() {
             final bool isSelected = 4 == currentIndex;
             final bool isAuthenticated = authService.currentUser.value.accessToken != '';
@@ -325,7 +311,7 @@ class _DashboardViewState extends State<DashboardView> {
                         physics: const NeverScrollableScrollPhysics(),
                         children: [
                           HomeView(),
-                          Container(), // Remove VideoFeedView from PageView
+                          VideoFeedView(),
                           SearchView(),
                           ConversationsView(),
                           MyProfileView(),

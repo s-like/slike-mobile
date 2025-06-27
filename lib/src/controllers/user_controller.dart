@@ -925,7 +925,7 @@ class UserController extends GetxController {
     }
     String errorString = await getUsersProfile(1);
     if (errorString == "") {
-      Get.offNamed("/user-profile");
+      Get.to(() => UsersProfileView(userId: userId));
     } else {
       Fluttertoast.showToast(msg: "$errorString".tr);
     }

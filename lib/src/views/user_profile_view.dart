@@ -48,15 +48,6 @@ class _UsersProfileViewState extends State<UsersProfileView> {
     return Obx(
       () => Scaffold(
         backgroundColor: Colors.black,
-        bottomNavigationBar: CustomBottomNavBar(
-          currentIndex: 4, // Profile page is at index 4
-          onTap: (newIndex) {
-            if (newIndex != 4) { // Avoid reloading the same page
-              dashboardService.currentPage.value = newIndex;
-              Get.offNamed('/home');
-            }
-          },
-        ),
         body: DefaultTabController(
           length: 3,
           child: Column(
