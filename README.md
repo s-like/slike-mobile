@@ -82,11 +82,41 @@ Slike is a comprehensive social media platform designed specifically for sports 
 
 Watch the Slike app in action:
 
-<video src="slike-demo.mp4" width="100%" controls>
+<!-- 
+IMPORTANT: For the video to display on GitHub, you need to:
+1. Upload the video through GitHub's asset system (drag & drop in an issue/PR)
+2. Use the generated URL from GitHub
+3. Or use the relative path if the video is in the repository
+
+Current video location: assets/videos/slike-demo.mp4
+-->
+
+<video src="assets/videos/slike-demo.mp4" width="100%" controls>
   Your browser does not support the video tag.
 </video>
 
 *Note: The demo video showcases the app's key features including video feed, user interactions, live streaming, and content creation tools.*
+
+### 🎥 How to Make Video Work on GitHub:
+
+**Method 1: Upload via GitHub Assets (Recommended)**
+1. Go to any issue or pull request in your repository
+2. Drag and drop `assets/videos/slike-demo.mp4` into the comment box
+3. GitHub will upload it and provide a URL like: `https://github.com/username/repo/assets/123456/slike-demo.mp4`
+4. Replace the video src with that URL
+
+**Method 2: Use GitHub's Video Embedding**
+```html
+<video width="100%" controls>
+  <source src="assets/videos/slike-demo.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+```
+
+**Method 3: Create a Video Thumbnail**
+If the video still doesn't show, create a thumbnail image and link to the video:
+![Demo Video Thumbnail](assets/images/demo-thumbnail.png)
+*[Watch Full Demo Video](assets/videos/slike-demo.mp4)*
 
 ## 🚀 Getting Started
 
