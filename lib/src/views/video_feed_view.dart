@@ -62,6 +62,24 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
     setState(() {
       _isInitialized = true;
     });
+    
+    print("=== VIDEO FEED INITIALIZATION DEBUG ===");
+    print("Before resetToAllVideos:");
+    print("userVideoObj.userId: ${mainService.userVideoObj.value.userId}");
+    print("userVideoObj.name: ${mainService.userVideoObj.value.name}");
+    print("userVideoObj.videoId: ${mainService.userVideoObj.value.videoId}");
+    print("userVideoObj.hashTag: ${mainService.userVideoObj.value.hashTag}");
+    
+    // Reset to show all videos (not just user's videos)
+    dashboardController.resetToAllVideos();
+    
+    print("After resetToAllVideos:");
+    print("userVideoObj.userId: ${mainService.userVideoObj.value.userId}");
+    print("userVideoObj.name: ${mainService.userVideoObj.value.name}");
+    print("userVideoObj.videoId: ${mainService.userVideoObj.value.videoId}");
+    print("userVideoObj.hashTag: ${mainService.userVideoObj.value.hashTag}");
+    print("=== END VIDEO FEED INITIALIZATION DEBUG ===");
+    
     await dashboardController.getVideos();
     if (initialVideoId != null) {
       final videos = dashboardService.videosData.value.videos;
@@ -75,6 +93,8 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
 
   void _retryVideoFetch() async {
     print("Retrying video fetch...");
+    // Reset to show all videos
+    dashboardController.resetToAllVideos();
     await dashboardController.getVideos();
   }
 
@@ -158,6 +178,8 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
                   _autoRetryTimer?.cancel(); // Cancel auto-retry
                   dashboardController.stopController(dashboardService.pageIndex.value);
                   dashboardService.postIds = [];
+                  // Reset to show all videos
+                  dashboardController.resetToAllVideos();
                   await dashboardController.getVideos();
                 },
                 child: _buildVideoFeed(),
@@ -267,6 +289,8 @@ class _VideoFeedViewState extends State<VideoFeedView> with SingleTickerProvider
                       dashboardService.pageIndex.value = 0;
                       dashboardService.videosData.value.videos = [];
                       dashboardService.videosData.refresh();
+                      // Reset to show all videos
+                      dashboardController.resetToAllVideos();
                       _retryVideoFetch();
                     },
                     icon: Icon(Icons.restart_alt, color: Colors.white),

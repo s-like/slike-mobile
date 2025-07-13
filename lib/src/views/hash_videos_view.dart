@@ -149,8 +149,8 @@ class HashVideosView extends StatelessWidget {
                                               mainService.userVideoObj.value.hashTag = searchService.currentHashTag.value.tag;
                                               mainService.userVideoObj.value.name = "#${searchService.currentHashTag.value.tag}";
                                             } else {
-                                              mainService.userVideoObj.value.userId = searchService.hashVideoData.value.videos[i].userId;
-                                              mainService.userVideoObj.value.name = searchService.hashVideoData.value.videos[i].username + "'s";
+                                              mainService.userVideoObj.value.userId = 0;
+                                              mainService.userVideoObj.value.name = "";
                                             }
                                             mainService.userVideoObj.value.videoId = searchService.hashVideoData.value.videos[i].id;
                                             searchService.currentHashTag.value = BannerModel.fromJSON({});

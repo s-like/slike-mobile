@@ -381,6 +381,16 @@ class DashboardController extends GetxController {
     return true;
   }
 
+  void resetToAllVideos() {
+    mainService.userVideoObj.value.userId = 0;
+    mainService.userVideoObj.value.videoId = 0;
+    mainService.userVideoObj.value.name = "";
+    mainService.userVideoObj.value.hashTag = "";
+    mainService.userVideoObj.value.searchType = "";
+    mainService.userVideoObj.refresh();
+    print("Reset to all videos - userVideoObj cleared (no user filtering)");
+  }
+
   Future<void> getVideos({bool showErrorMessages = true}) async {
     if (isLoading.value) return; // Prevent multiple simultaneous calls
     
@@ -406,15 +416,23 @@ class DashboardController extends GetxController {
       getAds();
       Map obj = {'userId': 0, 'videoId': 0};
 
-      if (mainService.userVideoObj.value.userId > 0) {
-        obj['userId'] = mainService.userVideoObj.value.userId;
-        obj['videoId'] = mainService.userVideoObj.value.videoId;
-      } else if (mainService.userVideoObj.value.videoId > 0) {
+      // For authorized users, only filter if explicitly viewing a specific video or hashtag
+      // Otherwise, show all videos (no user filtering)
+      if (mainService.userVideoObj.value.videoId > 0) {
+        // This is a specific video view
         obj['videoId'] = mainService.userVideoObj.value.videoId;
         obj['search_type'] = mainService.userVideoObj.value.searchType;
-      }
-      if (mainService.userVideoObj.value.hashTag != "") {
+        print("=== FILTERING BY VIDEO ===");
+        print("videoId: ${obj['videoId']}");
+        print("search_type: ${obj['search_type']}");
+      } else if (mainService.userVideoObj.value.hashTag != "") {
+        // This is a hashtag view
         obj['hashtag'] = mainService.userVideoObj.value.hashTag;
+        print("=== FILTERING BY HASHTAG ===");
+        print("hashtag: ${obj['hashtag']}");
+      } else {
+        // Show all videos - no user filtering
+        print("=== NO FILTERING - SHOWING ALL VIDEOS ===");
       }
 
       Map<String, String> requestData = {
@@ -425,11 +443,31 @@ class DashboardController extends GetxController {
         "hashtag": (obj['hashtag'] == null) ? '' : obj['hashtag'].toString(),
         "search_type": (obj['search_type'] == null) ? '' : obj['search_type'].toString(),
         "following": dashboardService.showFollowingPage.value ? '1' : '0',
+        "show_all": "1", // Explicitly request all videos
+        "all_videos": "1", // Alternative parameter to request all videos
+        "public_feed": "1", // Request public feed (all videos)
+        "include_all_users": "1", // Include videos from all users
+        "not_following_only": "1", // Include videos from users not being followed
+        "discover": "1", // Discover mode - show all videos
+        "non_following": "1", // Show videos from non-followed users
+        "trending": "1", // Show trending videos
       };
       var distinctIds = dashboardService.postIds.toSet().toList();
       if (distinctIds.isNotEmpty) {
         requestData['post_ids'] = distinctIds.join(",");
       }
+
+      print("=== VIDEO LOADING DEBUG ===");
+      print("userVideoObj.userId: ${mainService.userVideoObj.value.userId}");
+      print("userVideoObj.name: ${mainService.userVideoObj.value.name}");
+      print("userVideoObj.videoId: ${mainService.userVideoObj.value.videoId}");
+      print("userVideoObj.hashTag: ${mainService.userVideoObj.value.hashTag}");
+      print("isOnHomePage: ${mainService.isOnHomePage.value}");
+      print("showFollowingPage: ${dashboardService.showFollowingPage.value}");
+      print("authService.currentUser.value.id: ${authService.currentUser.value.id}");
+      print("authService.currentUser.value.accessToken: ${authService.currentUser.value.accessToken}");
+      print("Request data: $requestData");
+      print("Note: API might be filtering by following status. Check if 'is_following_videos' in response is 1");
 
       HTTP.Response response = await CommonHelper.sendRequestToServer(
         endPoint: "get-videos",
@@ -449,6 +487,15 @@ class DashboardController extends GetxController {
           mainService.firstTimeLoad.value = false;
           dashboardService.unreadMessageCount.value = jsonData['messagesCount'] ?? 0;
           dashboardService.unreadMessageCount.refresh();
+          
+          print("=== API RESPONSE DEBUG ===");
+          print("jsonData keys: ${jsonData.keys.toList()}");
+          print("jsonData['data'] type: ${jsonData['data'].runtimeType}");
+          print("jsonData['data']: ${jsonData['data']}");
+          print("jsonData['total']: ${jsonData['total']}");
+          print("jsonData['messagesCount']: ${jsonData['messagesCount']}");
+          print("jsonData['is_following_videos']: ${jsonData['is_following_videos']}");
+          print("Note: If is_following_videos is 1, the API is filtering to show only followed users' videos");
           
           if (page > 1) {
             var newVideos = VideoModel.fromJSON(json.decode(response.body)['data']).videos;
@@ -474,6 +521,7 @@ class DashboardController extends GetxController {
             }
           }
           dashboardService.videosData.refresh();
+          print("=== END API RESPONSE DEBUG ===");
         } else {
           print("API returned error status: ${jsonData['msg']}");
           if (showErrorMessages) {
@@ -501,14 +549,19 @@ class DashboardController extends GetxController {
   Future<void> listenForMoreVideos() async {
     print("listenForMoreVideos");
     Map obj = {'userId': 0, 'videoId': 0};
-    if (mainService.userVideoObj.value.userId > 0) {
-      obj['userId'] = mainService.userVideoObj.value.userId;
+    
+    // For authorized users, only filter if explicitly viewing a specific video or hashtag
+    // Otherwise, show all videos (no user filtering)
+    if (mainService.userVideoObj.value.videoId > 0) {
+      // This is a specific video view
       obj['videoId'] = mainService.userVideoObj.value.videoId;
-    } else if (mainService.userVideoObj.value.videoId > 0) {
-      obj['videoId'] = mainService.userVideoObj.value.videoId;
+      obj['search_type'] = mainService.userVideoObj.value.searchType;
     } else if (mainService.userVideoObj.value.hashTag != "") {
+      // This is a hashtag view
       obj['hashtag'] = mainService.userVideoObj.value.hashTag;
     }
+    // No user filtering - show all videos
+    
     Map<String, String> requestData = {
       "page_size": '10',
       "page": page.toString(),
@@ -517,6 +570,14 @@ class DashboardController extends GetxController {
       "hashtag": (obj['hashtag'] == null) ? '' : obj['hashtag'].toString(),
       "search_type": (obj['search_type'] == null) ? '' : obj['search_type'].toString(),
       "following": dashboardService.showFollowingPage.value ? '1' : '0',
+      "show_all": "1", // Explicitly request all videos
+      "all_videos": "1", // Alternative parameter to request all videos
+      "public_feed": "1", // Request public feed (all videos)
+      "include_all_users": "1", // Include videos from all users
+      "not_following_only": "1", // Include videos from users not being followed
+      "discover": "1", // Discover mode - show all videos
+      "non_following": "1", // Show videos from non-followed users
+      "trending": "1", // Show trending videos
     };
     var distinctIds = dashboardService.postIds.toSet().toList();
     if (distinctIds.isNotEmpty) {

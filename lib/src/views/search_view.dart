@@ -291,10 +291,14 @@ class _SearchViewState extends State<SearchView> {
                                                     mainService.userVideoObj.value.hashTag = searchService.currentHashTag.value.tag;
                                                     mainService.userVideoObj.value.name = "#${searchService.currentHashTag.value.tag}";
                                                   } else {
-                                                    mainService.userVideoObj.value.userId = searchService.searchPageData.value.videos[i].userId;
-                                                    mainService.userVideoObj.value.name = searchService.searchPageData.value.videos[i].username + "'s";
+                                                    // Don't set user filtering - show all videos
+                                                    mainService.userVideoObj.value.userId = 0;
+                                                    mainService.userVideoObj.value.name = "";
                                                   }
-                                                  mainService.userVideoObj.value.videoId = searchService.searchPageData.value.videos[i].id;
+                                                  // Don't set user filtering - show all videos
+                                                  mainService.userVideoObj.value.userId = 0;
+                                                  mainService.userVideoObj.value.videoId = searchService.searchData.value.videos[i].id;
+                                                  mainService.userVideoObj.value.name = "";
                                                   searchService.currentHashTag.value = BannerModel.fromJSON({});
                                                   searchService.currentHashTag.refresh();
                                                   dashboardController.getVideos().whenComplete(() {

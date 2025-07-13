@@ -288,6 +288,7 @@ class _HomeViewState extends State<HomeView>
 
           dashboardService.postIds = [];
           Get.offNamed('/home');
+          dashboardController.resetToAllVideos();
           dashboardController.getVideos();
           return Future.value(false);
         }
@@ -379,6 +380,7 @@ class _HomeViewState extends State<HomeView>
                       .stopController(dashboardService.pageIndex.value);
                   Get.offNamed('/home');
                   dashboardService.postIds = [];
+                  dashboardController.resetToAllVideos();
                   return dashboardController.getVideos();
                 },
                 child: homeWidget(),
@@ -629,14 +631,16 @@ class _HomeViewState extends State<HomeView>
                               bottom: 8,
                               right: 8,
                               child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
                                   color: Colors.black54,
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
                                   '10,3K',
-                                  style: TextStyle(color: Colors.white, fontSize: 12),
+                                  style:
+                                      TextStyle(color: Colors.white, fontSize: 12),
                                 ),
                               ),
                             ),
@@ -645,34 +649,33 @@ class _HomeViewState extends State<HomeView>
                       );
                     },
                   ),
-                  // OUTSIDE CONTAINER (top layer, overlays images)
-                  GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onTap: () {}, // Absorb tap, do nothing
-                    child: AnimatedContainer(
-                      duration: Duration(milliseconds: 300),
-                      width: isExpanded ? expandedWidth : 36,
-                      height: rowHeight,
-                      decoration: BoxDecoration(
-                        border: Border(
-                          left: BorderSide.none,
-                          right: BorderSide(color: labelColor, width: 2),
-                          top: BorderSide(color: labelColor, width: 2),
-                          bottom: BorderSide(color: labelColor, width: 2),
+                  // TAB CONTAINER (top layer)
+                  Positioned(
+                    left: 0,
+                    child: GestureDetector(
+                      onTap: onTabTap,
+                      child: AnimatedContainer(
+                        duration: Duration(milliseconds: 300),
+                        width: isExpanded ? expandedWidth : 36,
+                        height: rowHeight,
+                        decoration: BoxDecoration(
+                          border: Border(
+                            left: BorderSide.none,
+                            right: BorderSide(color: labelColor, width: 2),
+                            top: BorderSide(color: labelColor, width: 2),
+                            bottom: BorderSide(color: labelColor, width: 2),
+                          ),
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(8),
+                            bottomRight: Radius.circular(8),
+                          ),
+                          color: Colors.black.withOpacity(0.8),
                         ),
-                        borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(8),
-                          bottomRight: Radius.circular(8),
-                        ),
-                        color: Colors.black.withOpacity(0.8), // semi-transparent
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(top: 10),
-                            child: GestureDetector(
-                              onTap: onTabTap,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(top: 10),
                               child: Container(
                                 width: 32,
                                 height: double.infinity,
@@ -696,64 +699,64 @@ class _HomeViewState extends State<HomeView>
                                 ),
                               ),
                             ),
-                          ),
-                          if (isExpanded && (expandedWidth == 220.0))
-                            Expanded(
-                              child: Align(
-                                alignment: Alignment(0, -0.2),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    SizedBox(
-                                      width: 160,
-                                      child: Text(
-                                        "No story, add new one",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 13,
+                            if (isExpanded && (expandedWidth == 220.0))
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment(0, -0.2),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      SizedBox(
+                                        width: 160,
+                                        child: Text(
+                                          "No story, add new one",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 13,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                        textAlign: TextAlign.center,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                    ),
-                                    SizedBox(height: 6),
-                                    Container(
-                                      width: 48,
-                                      height: 48,
-                                      decoration: BoxDecoration(
-                                        color: Color(0xFFFFCC00),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          if (dashboardService.isUploading.value) {
-                                            Fluttertoast.showToast(
-                                              msg: 'Video is being uploaded kindly wait for the process to complete'.tr,
-                                              textColor: Get.theme.primaryColor,
-                                            );
-                                          } else {
-                                            mainService.isOnHomePage.value = false;
-                                            mainService.isOnHomePage.refresh();
-                                            dashboardService.bottomPadding.value = 0.0;
-                                            dashboardController.stopController(dashboardService.pageIndex.value);
-                                            if (authService.currentUser.value.accessToken != '') {
-                                              mainService.isOnRecordingPage.value = true;
-                                              Get.put(VideoRecorderController(), permanent: true);
-                                              Get.offNamed('/video-recorder');
+                                      SizedBox(height: 6),
+                                      Container(
+                                        width: 48,
+                                        height: 48,
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFFFFCC00),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            if (dashboardService.isUploading.value) {
+                                              Fluttertoast.showToast(
+                                                msg: 'Video is being uploaded kindly wait for the process to complete'.tr,
+                                                textColor: Get.theme.primaryColor,
+                                              );
                                             } else {
-                                              Get.offNamed('/login');
+                                              mainService.isOnHomePage.value = false;
+                                              mainService.isOnHomePage.refresh();
+                                              dashboardService.bottomPadding.value = 0.0;
+                                              dashboardController.stopController(dashboardService.pageIndex.value);
+                                              if (authService.currentUser.value.accessToken != '') {
+                                                mainService.isOnRecordingPage.value = true;
+                                                Get.put(VideoRecorderController(), permanent: true);
+                                                Get.offNamed('/video-recorder');
+                                              } else {
+                                                Get.offNamed('/login');
+                                              }
                                             }
-                                          }
-                                        },
-                                        child: Icon(Icons.add, size: 32, color: Colors.white),
+                                          },
+                                          child: Icon(Icons.add, size: 32, color: Colors.white),
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -786,88 +789,91 @@ class _HomeViewState extends State<HomeView>
                   );
                 },
               ),
-              AnimatedContainer(
-                duration: Duration(milliseconds: 300),
-                width: isExpanded ? expandedWidth : 36,
-                height: rowHeight,
-                decoration: BoxDecoration(
-                  border: Border(
-                    left: BorderSide.none,
-                    right: BorderSide(color: labelColor, width: 2),
-                    top: BorderSide(color: labelColor, width: 2),
-                    bottom: BorderSide(color: labelColor, width: 2),
-                  ),
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(8),
-                    bottomRight: Radius.circular(8),
-                  ),
-                  color: Colors.black.withOpacity(0.8),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: 10),
-                      child: GestureDetector(
-                        onTap: onTabTap,
-                        child: Container(
-                          width: 32,
-                          height: double.infinity,
-                          child: RotatedBox(
-                            quarterTurns: -1,
-                            child: Container(
-                              alignment: Alignment.bottomRight,
-                              child: Text(
-                                label,
-                                style: TextStyle(
-                                  fontFamily: 'ArimoHebrewSubsetItalic',
-                                  fontWeight: FontWeight.w700,
-                                  fontStyle: FontStyle.italic,
-                                  fontSize: 30,
-                                  height: 1.0,
-                                  letterSpacing: -0.3,
-                                  color: labelColor,
+              Positioned(
+                left: 0,
+                child: GestureDetector(
+                  onTap: onTabTap,
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 300),
+                    width: isExpanded ? expandedWidth : 36,
+                    height: rowHeight,
+                    decoration: BoxDecoration(
+                      border: Border(
+                        left: BorderSide.none,
+                        right: BorderSide(color: labelColor, width: 2),
+                        top: BorderSide(color: labelColor, width: 2),
+                        bottom: BorderSide(color: labelColor, width: 2),
+                      ),
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(8),
+                        bottomRight: Radius.circular(8),
+                      ),
+                      color: Colors.black.withOpacity(0.8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(top: 10),
+                          child: Container(
+                            width: 32,
+                            height: double.infinity,
+                            child: RotatedBox(
+                              quarterTurns: -1,
+                              child: Container(
+                                alignment: Alignment.bottomRight,
+                                child: Text(
+                                  label,
+                                  style: TextStyle(
+                                    fontFamily: 'ArimoHebrewSubsetItalic',
+                                    fontWeight: FontWeight.w700,
+                                    fontStyle: FontStyle.italic,
+                                    fontSize: 30,
+                                    height: 1.0,
+                                    letterSpacing: -0.3,
+                                    color: labelColor,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                    if (isExpanded && (expandedWidth == 380.0))
-                      Expanded(
-                        child: Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // COMING SOON banner
-                              Container(
-                                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                child: Center(
-                                  child: Image.asset(
-                                    'assets/images/coming-soon.png',
-                                    height: 100,  // Increased height for prominence
-                                    fit: BoxFit.contain,
+                        if (isExpanded && (expandedWidth == 380.0))
+                          Expanded(
+                            child: Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // COMING SOON banner
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                    child: Center(
+                                      child: Image.asset(
+                                        'assets/images/coming-soon.png',
+                                        height: 100,  // Increased height for prominence
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                              // SizedBox(height: 18),
-                              SizedBox(
-                                width: 220,
-                                child: Text(
-                                  'Here you will find News\nand  sports updates',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 13,
+                                  // SizedBox(height: 18),
+                                  SizedBox(
+                                    width: 220,
+                                    child: Text(
+                                      'Here you will find News\nand  sports updates',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 13,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
-                                  textAlign: TextAlign.center,
-                                ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
-                  ],
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -916,88 +922,91 @@ class _HomeViewState extends State<HomeView>
                     );
                   },
                 ),
-                AnimatedContainer(
-                  duration: Duration(milliseconds: 300),
-                  width: isExpanded && label == 'SPORT' ? 380.0 : isExpanded ? 380.0 : 36, // Increased collapsed width to prevent overflow
-                  height: rowHeight,
-                  decoration: BoxDecoration(
-                    border: Border(
-                      left: BorderSide.none,
-                      right: BorderSide(color: labelColor, width: 2),
-                      top: BorderSide(color: labelColor, width: 2),
-                      bottom: BorderSide(color: labelColor, width: 2),
-                    ),
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(8),
-                      bottomRight: Radius.circular(8),
-                    ),
-                    color: Colors.black.withOpacity(0.8),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(top: 10), // Match NEWS tab
-                        child: GestureDetector(
-                          onTap: onTabTap,
-                          child: Container(
-                            width: 32, // Match NEWS tab
-                            height: double.infinity,
-                            child: RotatedBox(
-                              quarterTurns: -1,
-                              child: Container(
-                                alignment: Alignment.bottomRight,
-                                child: Text(
-                                  label,
-                                  style: TextStyle(
-                                    fontFamily: 'ArimoHebrewSubsetItalic',
-                                    fontWeight: FontWeight.w700,
-                                    fontStyle: FontStyle.italic,
-                                    fontSize: 30,
-                                    height: 1.0,
-                                    letterSpacing: -0.3,
-                                    color: labelColor,
+                Positioned(
+                  left: 0,
+                  child: GestureDetector(
+                    onTap: onTabTap,
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: 300),
+                      width: isExpanded && label == 'SPORT' ? 380.0 : isExpanded ? 380.0 : 36, // Increased collapsed width to prevent overflow
+                      height: rowHeight,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          left: BorderSide.none,
+                          right: BorderSide(color: labelColor, width: 2),
+                          top: BorderSide(color: labelColor, width: 2),
+                          bottom: BorderSide(color: labelColor, width: 2),
+                        ),
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(8),
+                          bottomRight: Radius.circular(8),
+                        ),
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: 10), // Match NEWS tab
+                            child: Container(
+                              width: 32, // Match NEWS tab
+                              height: double.infinity,
+                              child: RotatedBox(
+                                quarterTurns: -1,
+                                child: Container(
+                                  alignment: Alignment.bottomRight,
+                                  child: Text(
+                                    label,
+                                    style: TextStyle(
+                                      fontFamily: 'ArimoHebrewSubsetItalic',
+                                      fontWeight: FontWeight.w700,
+                                      fontStyle: FontStyle.italic,
+                                      fontSize: 30,
+                                      height: 1.0,
+                                      letterSpacing: -0.3,
+                                      color: labelColor,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                      if (isExpanded && (label == 'SPORT'))
-                        Expanded(
-                          child: Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                // COMING SOON banner
-                                Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                  child: Center(
-                                    child: Image.asset(
-                                      'assets/images/coming-soon.png',
-                                      height: 100,  // Increased height for prominence
-                                      fit: BoxFit.contain,
+                          if (isExpanded && (label == 'SPORT'))
+                            Expanded(
+                              child: Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // COMING SOON banner
+                                    Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                      child: Center(
+                                        child: Image.asset(
+                                          'assets/images/coming-soon.png',
+                                          height: 100,  // Increased height for prominence
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                                // SizedBox(height: 18),
-                                SizedBox(
-                                  width: 220,
-                                  child: Text(
-                                    'Here you will find sports',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
+                                    // SizedBox(height: 18),
+                                    SizedBox(
+                                      width: 220,
+                                      child: Text(
+                                        'Here you will find sports',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 13,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
-                                    textAlign: TextAlign.center,
-                                  ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
-                    ],
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ],

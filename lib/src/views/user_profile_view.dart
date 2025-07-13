@@ -287,9 +287,10 @@ class _UsersProfileViewState extends State<UsersProfileView> {
             final item = videos.elementAt(index);
             return GestureDetector(
               onTap: () {
-                mainService.userVideoObj.value.userId = item.userId;
+                // Don't set user filtering - show all videos
+                mainService.userVideoObj.value.userId = 0;
                 mainService.userVideoObj.value.videoId = item.videoId;
-                mainService.userVideoObj.value.name = "${userService.userProfile.value.name.split(" ").first}'s";
+                mainService.userVideoObj.value.name = "";
                 dashboardService.showFollowingPage.value = false;
                 dashboardService.postIds = [];
                 dashboardService.currentPage.value = 0;
