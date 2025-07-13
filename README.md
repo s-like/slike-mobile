@@ -82,7 +82,9 @@ Slike is a comprehensive social media platform designed specifically for sports 
 
 Watch the Slike app in action:
 
-https://github.com/your-username/flutter_app/assets/slike-demo.mp4
+<video src="slike-demo.mp4" width="100%" controls>
+  Your browser does not support the video tag.
+</video>
 
 *Note: The demo video showcases the app's key features including video feed, user interactions, live streaming, and content creation tools.*
 
